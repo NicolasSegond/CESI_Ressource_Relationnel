@@ -7,9 +7,10 @@ use App\Entity\Utilisateur;
 use App\Repository\UtilisateurRepository;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfonycasts\MicroMapper\AsMapper;
+use Symfonycasts\MicroMapper\MapperInterface;
 
 #[AsMapper(from: UtilisateurAPI::class, to: Utilisateur::class)]
-class UtilisateurApiToEntityMapper
+class UtilisateurApiToEntityMapper implements MapperInterface
 {
     public function __construct(
         private UtilisateurRepository $userRepository,
