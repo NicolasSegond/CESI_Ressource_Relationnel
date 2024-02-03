@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import {Button, TextField} from "@mui/material";
+import "./inscriptionDesign.css";
 const Inscription = () => {
     const [nom, setNom] = useState("");
     const [email, setEmail] = useState("");
@@ -22,24 +24,27 @@ const Inscription = () => {
 
     return (
         <div>
-            <h2>Inscription</h2>
+
+            <img src={"./logo.png"} alt={"Logo Du site internet"}/>
+            <h1 className={"title"}>Inscription</h1>
             <form onSubmit={handleSubmit}>
+
                 <label>
                     Nom:
-                    <input type="text" value={nom} onChange={(e) => setNom(e.target.value)} />
+                    <TextField id="outlined-basic" label="Outlined" variant="outlined"/>
                 </label>
-                <br />
+                <br/>
                 <label>
                     Email:
-                    <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                    <TextField id="outlined-basic" label="Outlined" variant="outlined"/>
                 </label>
-                <br />
+                <br/>
                 <label>
                     Mot de passe:
-                    <input type="password" value={motDePasse} onChange={(e) => setMotDePasse(e.target.value)} />
+                    <TextField id="outlined-basic" label="Outlined" variant="outlined"/>
                 </label>
-                <br />
-                <button type="submit">S'inscrire</button>
+                <br/>
+                <Button className={"send"} variant="contained">Envoyer</Button>
             </form>
         </div>
     );

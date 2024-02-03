@@ -1,7 +1,7 @@
 import React from "react";
 import './App.css';
 import {createBrowserRouter, RouterProvider} from "react-router-dom";
-import Inscription from "./page/inscription";
+import Inscription from "./page/Inscription/inscription";
 
 function App() {
   const router = createBrowserRouter([
