@@ -24,28 +24,37 @@ const Inscription = () => {
 
     return (
         <div>
+            <div>
+                <img src={"./logo.png"} alt={"Logo Du site internet"}/>
+                <h1 className={"title"}>Inscription</h1>
+                <form onSubmit={handleSubmit}>
 
-            <img src={"./logo.png"} alt={"Logo Du site internet"}/>
-            <h1 className={"title"}>Inscription</h1>
-            <form onSubmit={handleSubmit}>
-
-                <label>
-                    Nom:
-                    <TextField id="outlined-basic" label="Outlined" variant="outlined"/>
-                </label>
-                <br/>
-                <label>
-                    Email:
-                    <TextField id="outlined-basic" label="Outlined" variant="outlined"/>
-                </label>
-                <br/>
-                <label>
-                    Mot de passe:
-                    <TextField id="outlined-basic" label="Outlined" variant="outlined"/>
-                </label>
-                <br/>
-                <Button className={"send"} variant="contained">Envoyer</Button>
-            </form>
+                    <label>
+                        <TextField id="outlined-basic" label="Nom" variant="outlined"/>
+                    </label>
+                    <br/>
+                    <label>
+                        <TextField id="outlined-basic" label="Prénom" variant="outlined"/>
+                    </label>
+                    <br/>
+                    <label>
+                        <TextField id="outlined-basic" label="Email" variant="outlined"/>
+                    </label>
+                    <br/>
+                    <label>
+                        <TextField id="outlined-basic" label="Mot de Passe" variant="outlined"/>
+                    </label>
+                    <br/>
+                    <label>
+                        <TextField id="outlined-basic" label="Mot de Passe" variant="outlined"/>
+                    </label>
+                    <br/>
+                    <Button className={"send"} variant="contained">Envoyer</Button>
+                </form>
+            </div>
+            <div>
+                <img src={"./imageADroite.jpg"}/>
+            </div>
         </div>
     );
 };
