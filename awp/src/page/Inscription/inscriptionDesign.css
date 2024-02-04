@@ -5,8 +5,7 @@
 .send
 {
     background-color: #03989E!important;
-    width: 200px;
-
+    width: 400px;
 }
 .MuiInputBase-root
 {
@@ -26,6 +25,7 @@
 .left-div {
     flex: 1; /* Occupe tout l'espace disponible */
     margin-right: 20px; /* Ajoute une marge à droite pour l'écart avec la div à droite */
+    margin-top: 100px;
 }
 
 /* Div à droite */
@@ -45,9 +45,28 @@
     flex-direction: column;
     align-items: center;
 }
-form label {
+form label{
     width: 100%; /* La largeur à 100% pour étendre sur toute la largeur du conteneur */
     display: block; /* Pour que chaque label soit sur une nouvelle ligne */
     margin-bottom: 20px;
     align-items: center;
+}
+.textfield{
+    width: 100%;
+}
+.pasDeCompte{
+    text-align: center;
+}
+/* Style pour la div contenant l'image "filigranes" */
+.filigranes-container {
+    position: absolute;
+    bottom: 0;
+    width: 5%;
+}
+
+/* Style pour l'image "filigranes" */
+.filigranes {
+    width: 200%; /* Ajuster la largeur à 200% pour compenser la moitié coupée */
+    height: auto;
+    transform: translateX(-50%);
 }

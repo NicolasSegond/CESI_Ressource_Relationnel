@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import {Button, TextField} from "@mui/material";
+import { Link } from 'react-router-dom';
 import "./inscriptionDesign.css";
 const Inscription = () => {
     const [nom, setNom] = useState("");
@@ -23,30 +24,39 @@ const Inscription = () => {
     };
 
     return (
+
         <div className="container">
+
             <div className="left-div">
+                <div className="filigranes-container">
+                    <img src={"./filigranes.png"} className="filigranes" alt="Filigranes"/>
+                </div>
+
                 <div className="form-container">
                     <img className={"logo"} src={"./logo.png"} alt={"Logo Du site internet"}/>
                     <h1 className={"title"}>S'inscrire</h1>
                     <form onSubmit={handleSubmit}>
                         <label>
-                            <TextField id="outlined-basic" label="Nom" variant="outlined"/>
+                            <TextField id="outlined-basic" label="Nom" variant="outlined" className={"textfield"}/>
                         </label>
                         <label>
-                            <TextField id="outlined-basic" label="Prénom" variant="outlined"/>
+                            <TextField id="outlined-basic" label="Prénom" variant="outlined" className={"textfield"}/>
                         </label>
                         <label>
-                            <TextField id="outlined-basic" label="Email" variant="outlined"/>
+                            <TextField id="outlined-basic" label="Email" variant="outlined" className={"textfield"}/>
                         </label>
                         <label>
-                            <TextField id="outlined-basic" label="Mot de Passe" variant="outlined"/>
+                            <TextField id="outlined-basic" label="Mot de Passe" variant="outlined"
+                                       className={"textfield"}/>
                         </label>
                         <label>
-                            <TextField id="outlined-basic" label="Mot de Passe" variant="outlined"/>
+                            <TextField id="outlined-basic" label="Mot de Passe" variant="outlined"
+                                       className={"textfield"}/>
                         </label>
-                        <Button className={"send"} variant="contained">Envoyer</Button>
+                        <Button className={"send"} variant="contained">S'inscrire</Button>
                     </form>
                 </div>
+                <p className={"pasDeCompte"}>Vous avez déjà un compte? <Link to="/connexion">Connectez-vous!</Link></p>
             </div>
             <div className="right-div">
                 <img src={"./imageADroite.jpg"}/>
