@@ -5,10 +5,49 @@
 .send
 {
     background-color: #03989E!important;
+    width: 200px;
 
 }
-
 .MuiInputBase-root
 {
     height: 50px;
+}
+.logo{
+    height: 200px;
+    width: 200px;
+}
+/* Container principal */
+.container {
+    display: flex;
+    justify-content: center;
+}
+
+/* Div à gauche */
+.left-div {
+    flex: 1; /* Occupe tout l'espace disponible */
+    margin-right: 20px; /* Ajoute une marge à droite pour l'écart avec la div à droite */
+}
+
+/* Div à droite */
+.right-div {
+    flex: 1; /* Occupe tout l'espace disponible */
+    margin-left: 20px; /* Ajoute une marge à gauche pour l'écart avec la div à gauche */
+}
+.right-div img {
+    border-radius: 80px;
+    height: 100%;
+    width: 100%;
+}
+
+/* Style pour le formulaire, vous pouvez l'ajuster en fonction de vos besoins */
+.form-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+form label {
+    width: 100%; /* La largeur à 100% pour étendre sur toute la largeur du conteneur */
+    display: block; /* Pour que chaque label soit sur une nouvelle ligne */
+    margin-bottom: 20px;
+    align-items: center;
 }

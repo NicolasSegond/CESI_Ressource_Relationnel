@@ -23,36 +23,32 @@ const Inscription = () => {
     };
 
     return (
-        <div>
-            <div>
-                <img src={"./logo.png"} alt={"Logo Du site internet"}/>
-                <h1 className={"title"}>Inscription</h1>
-                <form onSubmit={handleSubmit}>
-
-                    <label>
-                        <TextField id="outlined-basic" label="Nom" variant="outlined"/>
-                    </label>
-                    <br/>
-                    <label>
-                        <TextField id="outlined-basic" label="Prénom" variant="outlined"/>
-                    </label>
-                    <br/>
-                    <label>
-                        <TextField id="outlined-basic" label="Email" variant="outlined"/>
-                    </label>
-                    <br/>
-                    <label>
-                        <TextField id="outlined-basic" label="Mot de Passe" variant="outlined"/>
-                    </label>
-                    <br/>
-                    <label>
-                        <TextField id="outlined-basic" label="Mot de Passe" variant="outlined"/>
-                    </label>
-                    <br/>
-                    <Button className={"send"} variant="contained">Envoyer</Button>
-                </form>
+        <div className="container">
+            <div className="left-div">
+                <div className="form-container">
+                    <img className={"logo"} src={"./logo.png"} alt={"Logo Du site internet"}/>
+                    <h1 className={"title"}>S'inscrire</h1>
+                    <form onSubmit={handleSubmit}>
+                        <label>
+                            <TextField id="outlined-basic" label="Nom" variant="outlined"/>
+                        </label>
+                        <label>
+                            <TextField id="outlined-basic" label="Prénom" variant="outlined"/>
+                        </label>
+                        <label>
+                            <TextField id="outlined-basic" label="Email" variant="outlined"/>
+                        </label>
+                        <label>
+                            <TextField id="outlined-basic" label="Mot de Passe" variant="outlined"/>
+                        </label>
+                        <label>
+                            <TextField id="outlined-basic" label="Mot de Passe" variant="outlined"/>
+                        </label>
+                        <Button className={"send"} variant="contained">Envoyer</Button>
+                    </form>
+                </div>
             </div>
-            <div>
+            <div className="right-div">
                 <img src={"./imageADroite.jpg"}/>
             </div>
         </div>
