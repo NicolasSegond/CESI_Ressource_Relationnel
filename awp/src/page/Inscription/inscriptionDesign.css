@@ -70,3 +70,32 @@ form label{
     height: auto;
     transform: translateX(-50%);
 }
+/* Add media query for mobile devices */
+@media screen and (max-width: 600px) {
+    /* Hide images on smaller screens */
+    .right-div img {
+        display: none;
+    }
+
+    /* Adjust the flex-direction to column for smaller screens */
+    .container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    /* Set both divs to take 100% width on smaller screens */
+    .left-div, .right-div {
+        width: 100%;
+        margin: 0; /* Reset margins to remove the space between divs */
+    }
+
+    .filigranes-container {
+        width: 10%; /* Adjust the width for smaller screens */
+    }
+
+    .filigranes {
+        width: 100%; /* Make the image fill the container on smaller screens */
+        height: auto;
+        transform: translateX(-50%); /* Reset the horizontal translation */
+    }
+}
