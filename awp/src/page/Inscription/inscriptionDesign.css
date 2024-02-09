@@ -1,6 +1,8 @@
 .title
 {
     color: #03989E;
+    font-size: 26px;
+    font-weight: bold;
 }
 .send
 {
@@ -19,24 +21,32 @@
 .container {
     display: flex;
     justify-content: center;
+    width: 100vw;
+    height: 100vh
 }
 
 /* Div à gauche */
 .left-div {
-    flex: 1; /* Occupe tout l'espace disponible */
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width:100%; /* Occupe tout l'espace disponible */
     margin-right: 20px; /* Ajoute une marge à droite pour l'écart avec la div à droite */
-    margin-top: 100px;
 }
 
 /* Div à droite */
 .right-div {
-    flex: 1; /* Occupe tout l'espace disponible */
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%; /* Occupe tout l'espace disponible */
     margin-left: 20px; /* Ajoute une marge à gauche pour l'écart avec la div à gauche */
 }
 .right-div img {
     border-radius: 80px;
-    height: 100%;
-    width: 100%;
+    height: 90%;
+    width: 90%;
 }
 
 /* Style pour le formulaire, vous pouvez l'ajuster en fonction de vos besoins */
@@ -45,15 +55,19 @@
     flex-direction: column;
     align-items: center;
 }
-form label{
-    width: 100%; /* La largeur à 100% pour étendre sur toute la largeur du conteneur */
-    display: block; /* Pour que chaque label soit sur une nouvelle ligne */
-    margin-bottom: 20px;
+
+.form {
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
     align-items: center;
 }
+
 .textfield{
     width: 100%;
+    margin-top: 10px;
 }
+
 .pasDeCompte{
     text-align: center;
 }
@@ -61,6 +75,7 @@ form label{
 .filigranes-container {
     position: absolute;
     bottom: 0;
+    left: 0;
     width: 5%;
 }
 
@@ -71,7 +86,7 @@ form label{
     transform: translateX(-50%);
 }
 /* Add media query for mobile devices */
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 1000px) {
     /* Hide images on smaller screens */
     .right-div img {
         display: none;

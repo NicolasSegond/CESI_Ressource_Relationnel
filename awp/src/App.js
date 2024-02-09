@@ -1,4 +1,5 @@
 import React from "react";
+import Connexion from "./page/connexion";
 import './App.css';
 import {createBrowserRouter, RouterProvider} from "react-router-dom";
 import Inscription from "./page/Inscription/inscription";
@@ -9,6 +10,10 @@ function App() {
       path: '/inscription',
       element: <Inscription/>,
     },
+    {
+        path: '/connexion',
+            element: <Connexion/>,
+    }
   ]);
   return (
       <div>
