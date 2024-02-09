@@ -1,0 +1,116 @@
+.title
+{
+    color: #03989E;
+    font-size: 26px;
+    font-weight: bold;
+}
+.send
+{
+    background-color: #03989E!important;
+    width: 400px;
+}
+.MuiInputBase-root
+{
+    height: 50px;
+}
+.logo{
+    height: 200px;
+    width: 200px;
+}
+/* Container principal */
+.container {
+    display: flex;
+    justify-content: center;
+    width: 100vw;
+    height: 100vh
+}
+
+/* Div à gauche */
+.left-div {
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width:100%; /* Occupe tout l'espace disponible */
+    margin-right: 20px; /* Ajoute une marge à droite pour l'écart avec la div à droite */
+}
+
+/* Div à droite */
+.right-div {
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%; /* Occupe tout l'espace disponible */
+    margin-left: 20px; /* Ajoute une marge à gauche pour l'écart avec la div à gauche */
+}
+.right-div img {
+    border-radius: 80px;
+    height: 90%;
+    width: 90%;
+}
+
+/* Style pour le formulaire, vous pouvez l'ajuster en fonction de vos besoins */
+.form-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.form {
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.textfield{
+    width: 100%;
+    margin-top: 10px;
+}
+
+.pasDeCompte{
+    text-align: center;
+}
+/* Style pour la div contenant l'image "filigranes" */
+.filigranes-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 5%;
+}
+
+/* Style pour l'image "filigranes" */
+.filigranes {
+    width: 200%; /* Ajuster la largeur à 200% pour compenser la moitié coupée */
+    height: auto;
+    transform: translateX(-50%);
+}
+/* Add media query for mobile devices */
+@media screen and (max-width: 1000px) {
+    /* Hide images on smaller screens */
+    .right-div img {
+        display: none;
+    }
+
+    /* Adjust the flex-direction to column for smaller screens */
+    .container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    /* Set both divs to take 100% width on smaller screens */
+    .left-div, .right-div {
+        width: 100%;
+        margin: 0; /* Reset margins to remove the space between divs */
+    }
+
+    .filigranes-container {
+        width: 10%; /* Adjust the width for smaller screens */
+    }
+
+    .filigranes {
+        width: 100%; /* Make the image fill the container on smaller screens */
+        height: auto;
+        transform: translateX(-50%); /* Reset the horizontal translation */
+    }
+}
