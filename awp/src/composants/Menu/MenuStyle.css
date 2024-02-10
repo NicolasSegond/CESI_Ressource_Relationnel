@@ -1,0 +1,218 @@
+/* MenuStyle.css */
+.grid-container{
+    width: 100%;
+}
+
+.sidebar-grid{
+    position: fixed;
+    width: 330px; /* Ajoutez une largeur fixe pour la barre latérale */
+    height: 100%;
+    z-index: 999;
+    max-width: 100vw !important;
+}
+
+.navbar-grid{
+    position: fixed;
+    margin-left: 330px !important;
+    width: calc(100vw - 330px); /* Ajoutez une largeur fixe pour la barre latérale */
+    height: 150px;
+    z-index: 998;
+    background-color: #ffffff;
+    max-width: 100vw !important;
+}
+
+.main-grid{
+    margin-left: 330px !important;
+    margin-top: 150px !important;
+    width: calc(100vw - 330px); /* Ajoutez une largeur fixe pour la barre latérale */
+    height: 100%;
+    max-width: 100vw !important;
+}
+
+.sidebar-container {
+    min-height: 100vh;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: #555 -2px 4px 8px;
+    display: flex;
+}
+
+.sidebar-grid.opened {
+    display: flex;
+    animation: slideIn 0.3s ease-in-out forwards; /* Utilisation d'une animation pour le glissement */
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(-100%); /* Commence décalé vers la gauche */
+    }
+    to {
+        transform: translateX(0); /* Glisse vers la droite */
+    }
+}
+
+.logo {
+    width: 200px;
+    height: auto;
+    margin: 20px 0;
+}
+
+.logoMinistere{
+    width: 150px;
+    height: auto;
+    margin: 20px 0;
+}
+
+.lien-menuSideBar {
+    text-decoration: none;
+    padding: 20px;
+    width: 200px;
+    border-radius: 10px;
+    color: #999999;
+    font-size: 18px;
+    margin: 10px 0;
+    display:flex;
+    align-items: center;
+}
+
+.lien-menuSideBar:first-of-type {
+    text-decoration: none;
+    text-align: center;
+    padding: 20px;
+    width: 200px;
+    border-radius: 10px;
+    font-size: 18px;
+    margin: 10px 0;
+    display:flex;
+    align-items: center;
+    background-color: #03989E;
+    color: white;
+}
+
+.icon {
+    margin-right: 10px;
+}
+
+.fermeture_croix{
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 30px;
+    cursor: pointer;
+}
+
+.bouton-hamburger{
+    cursor: pointer;
+    font-size: 200px;
+}
+
+.title_container{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.title_page{
+    font-size: 20px;
+    font-weight: 600;
+    color: #000;
+    margin: 5px 0;
+}
+
+.title_bienvenue{
+    font-size: 16px;
+    color: #999999;
+}
+
+.champ_recherche{
+    width: 250px;
+    border: #F2F2F2 1px solid;
+    margin: 0 10px;
+}
+
+.btn_creer{
+    background-color: #1AA4C8;
+    color: white;
+    height: 46px;
+    width: 150px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 0 10px;
+    font-size: 18px;
+}
+
+.avatar{
+    margin: 3px;
+    width: 40px;
+    height: 40px;
+}
+
+.menu_item{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100px;
+    height: 50px;
+    text-decoration: none;
+    color: #000000;
+}
+
+.menu_item:hover{
+    background-color: #F2F2F2;
+    border-radius: 5px;
+}
+
+@media (max-width: 900px) {
+    .sidebar-container {
+        display: flex;
+        position: absolute;
+        z-index: 1000;
+        width: 100%;
+        background-color: white;
+    }
+
+    .sidebar-grid.closed{
+        animation: slideOut 0.3s ease-in-out forwards; /* Utilisation d'une animation pour le glissement */
+    }
+
+    @keyframes slideOut {
+        from {
+            transform: translateX(0%); /* Commence décalé vers la droite */
+        }
+        to {
+            transform: translateX(-100%); /* Glisse vers la gauche */
+        }
+    }
+
+    .title_container{
+        display:none;
+    }
+
+    .champ_recherche{
+        width: auto;
+        height: auto;
+    }
+
+    .sidebar-grid{
+        width: 100%; /* Ajoutez une largeur fixe pour la barre latérale */
+        max-width: 100vw !important;
+    }
+
+    .navbar-grid{
+        margin-left: 0 !important;
+        width: 100%; /* Ajoutez une largeur fixe pour la barre latérale */
+        height: 150px;
+        z-index: 998;
+        background-color: #ffffff;
+        max-width: 100vw !important;
+    }
+
+    .main-grid{
+        margin-left: 0 !important;
+        margin-top: 150px !important;
+        width: 100%; /* Ajoutez une largeur fixe pour la barre latérale */
+        height: 100%;
+        max-width: 100vw !important;
+    }
+}
