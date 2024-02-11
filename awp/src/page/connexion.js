@@ -1,17 +1,25 @@
 // Connexion.js
 import React, { useState } from "react";
 import MyForm from "../composants/MyForm";
+import {Link,useNavigate} from "react-router-dom";
+import "./Inscription/inscriptionDesign.css";
+
 
 const Connexion = () => {
     const [formData, setFormData] = useState([
         { label: "Email", type: "email", name: "email", value: "" },
         { label: "Mot de passe", type: "password", name: "motDePasse", value: "" },
     ]);
+    const [isPasswordValid, setIsPasswordValid] = useState(false);
+    const navigate = useNavigate();
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         const newFormData = formData.map((field) => {
             if (field.name === name) {
+                if (name === "motDePasse") {
+                    setIsPasswordValid(isValidPassword(value));
+                }
                 return { ...field, value };
             }
             return field;
@@ -38,7 +46,6 @@ const Connexion = () => {
             email: email,
             password: motDePasse,
         });
-        console.log(body)
         fetch('http://127.0.0.1:8000/api/login', {
             method: 'POST',
             headers: {
@@ -54,8 +61,9 @@ const Connexion = () => {
                 return response.json();
             })
             .then(data => {
-                console.log('Success:', data);
-                localStorage.setItem('token', data.token);
+                sessionStorage.setItem('token', data.token); // Stocke le token dans le session storage
+                navigate('/'); // Redirige l'utilisateur vers la page souhaitée
+
                 // Gérez ici la réponse de succès
             })
             .catch((error) => {
@@ -65,17 +73,30 @@ const Connexion = () => {
     };
 
     return (
-        <div>
-            <h2>Connexion</h2>
-            <MyForm
-                formData={formData}
-                onChange={handleChange}
-                onSubmit={handleSubmit}
-                buttonText="Se connecter"
-                buttonDisabled={isValidPassword}
-            />
+        <div className={"container"}>
+            <div className={"filigranes-container"}>
+                <img src={"./filigranes.png"} className={"filigranes"} alt={"Filigranes"}/>
+            </div>
+            <div className={"left-div"}>
+                <div className={"form-container"}>
+                    <img className={"logo"} src={"./logo.png"} alt={"Logo Du site internet"}/>
+                    <div className={"title"}>Se Connecter</div>
+                    <MyForm
+                        formData={formData}
+                        onChange={handleChange}
+                        onSubmit={handleSubmit}
+                        buttonText="Se connecter"
+                        buttonDisabled={!isPasswordValid}
+                    />
+                </div>
+                <p className={"pasDeCompte"}> <Link to="/connexion">Mot de passe Oublié ?</Link></p>
+            </div>
+            <div className={"right-div"}>
+                <img src={"./imageADroite.jpg"}/>
+            </div>
         </div>
-    );
+)
+    ;
 };
 
 export default Connexion;

@@ -10,7 +10,7 @@ const MyForm = ({ formData, onChange, onSubmit, buttonText, buttonDisabled }) =>
                     <TextField
                         type={field.type}
                         name={field.name}
-                        label={field.name}
+                        label={field.label}
                         value={field.value}
                         onChange={onChange}
                         className={"textfield"}
