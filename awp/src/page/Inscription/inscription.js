@@ -2,7 +2,6 @@
 import React, { useState } from "react";
 import MyForm from "../../composants/MyForm";
 import {Link} from 'react-router-dom';
-import axios from 'axios';
 import "./inscriptionDesign.css";
 
 const Inscription = () => {
