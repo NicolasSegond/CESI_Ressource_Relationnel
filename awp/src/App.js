@@ -17,10 +17,6 @@ function App() {
             element: <Inscription/>,
         },
         {
-            path: '/inscription',
-            element: <Inscription/>,
-        },
-        {
             path: '/connexion',
             element: <Connexion/>,
         }

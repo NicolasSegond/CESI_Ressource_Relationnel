@@ -9,7 +9,7 @@ import {
 import { Box } from "@mui/system";
 import { useLocation } from "react-router-dom";
 import PersonIcon from '@mui/icons-material/Person';
-import {getToken} from "../../utils/authentification";
+import { getToken } from "../../utils/authentification"; // Correction ici, getToken doit être importé depuis le bon chemin
 import LogoMinistere from "../../assets/logoMinistere.png";
 
 function ResponsiveAppBar({ toggleSidebar }) {
@@ -40,7 +40,6 @@ function ResponsiveAppBar({ toggleSidebar }) {
     };
 
     const getPageTitle = () => {
-
         switch (path) {
             case '/dashboard':
                 return 'Mon tableau de bord';
@@ -51,20 +50,20 @@ function ResponsiveAppBar({ toggleSidebar }) {
 
     return (
         <Container maxWidth="auto" className={"navbar"}>
-            <Toolbar style={{padding: 0, margin: 0}}>
-                {windowWidth < 900 && token && (
-                    <MenuIcon className={"bouton-hamburger"} style={{fontSize: "40px",}} onClick={toggleSidebar}/>
+            <Toolbar style={{ padding: 0, margin: 0 }}>
+                {windowWidth < 900 && token && token.token && ( // Correction ici, vérifiez si token est défini et s'il a une propriété token
+                    <MenuIcon className={"bouton-hamburger"} style={{ fontSize: "40px" }} onClick={toggleSidebar} />
                 )}
-                <img src={LogoMinistere} alt="logo" className={"logoMinistere"}/>
+                <img src={LogoMinistere} alt="logo" className={"logoMinistere"} />
                 <div className={"title_container"}>
                     <div className={"title_page"}>{getPageTitle()}</div>
                     <div className={"title_bienvenue"}> Bienvenue</div>
                 </div>
-                <Box sx={{flexGrow: 1}}/>
-                {token && (
+                <Box sx={{ flexGrow: 1 }} />
+                {token && token.token && ( // Correction ici, vérifiez si token est défini et s'il a une propriété token
                     <>
                         <button className={"btn_creer"}> + Créer</button>
-                        <Avatar className={"avatar"} onClick={handleClick}><PersonIcon/></Avatar>
+                        <Avatar className={"avatar"} onClick={handleClick}><PersonIcon /></Avatar>
                         <Menu
                             id="simple-menu"
                             anchorEl={anchorEl}
@@ -78,7 +77,7 @@ function ResponsiveAppBar({ toggleSidebar }) {
                     </>
                 )}
                 {windowWidth < 900 && !token && (
-                    <MenuIcon className={"bouton-hamburger"} style={{fontSize: "40px",}} onClick={toggleSidebar}/>
+                    <MenuIcon className={"bouton-hamburger"} style={{ fontSize: "40px" }} onClick={toggleSidebar} />
                 )}
             </Toolbar>
         </Container>

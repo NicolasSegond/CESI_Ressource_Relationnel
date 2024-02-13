@@ -46,7 +46,6 @@ const Inscription = () => {
 
         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailPattern.test(email)) {
-            console.log(nom, prenom, email, motDePasse, motDePasseControl);
             alert("Veuillez entrer une adresse e-mail valide.");
             return;
         }
@@ -71,9 +70,7 @@ const Inscription = () => {
 
             const body = JSON.stringify(formDataObject);
 
-            console.log(body);
-
-            fetch('http://127.0.0.1:8000/api/utilisateurs', {
+            fetch('https://127.0.0.1:8000/api/utilisateurs', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/ld+json', // Mise à jour du type de contenu ici

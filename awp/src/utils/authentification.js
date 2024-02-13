@@ -3,18 +3,27 @@ import dayjs from "dayjs";
 import apiConfig from "./config";
 
 export function getToken() {
-    const tokens = sessionStorage.getItem('token');
+    const tokensString = sessionStorage.getItem('token');
+    console.log(tokensString);
 
-    if(tokens) {
-        const TokensOk = JSON.parse(tokens);
+    if (!tokensString) {
+        return null;
+    }
 
-        if (TokensOk.token && TokensOk.refresh_token && typeof TokensOk.token === 'string' && typeof TokensOk.refresh_token === 'string') {
-            return TokensOk;
-        } else{
+    try {
+        const tokens = JSON.parse(tokensString);
+
+        if (tokens.token && tokens.refresh_token && typeof tokens.token === 'string' && typeof tokens.refresh_token === 'string') {
+            return tokens;
+        } else {
             return null;
         }
+    } catch (error) {
+        console.error("Erreur lors de l'analyse du token:", error);
+        return null; // La valeur n'est pas un JSON valide
     }
 }
+
 
 export function getTokenExpiration(token) {
     try{

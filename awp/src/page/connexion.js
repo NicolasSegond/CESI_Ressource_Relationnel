@@ -46,7 +46,7 @@ const Connexion = () => {
             email: email,
             password: motDePasse,
         });
-        fetch('http://127.0.0.1:8000/api/login', {
+        fetch('https://127.0.0.1:8000/api/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -61,7 +61,7 @@ const Connexion = () => {
                 return response.json();
             })
             .then(data => {
-                sessionStorage.setItem('token', data.token); // Stocke le token dans le session storage
+                sessionStorage.setItem('token', JSON.stringify(data)); // Stocke le token dans le session storage
                 navigate('/'); // Redirige l'utilisateur vers la page souhaitée
 
                 // Gérez ici la réponse de succès
