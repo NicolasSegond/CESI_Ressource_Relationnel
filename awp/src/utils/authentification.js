@@ -4,7 +4,6 @@ import apiConfig from "./config";
 
 export function getToken() {
     const tokensString = sessionStorage.getItem('token');
-    console.log(tokensString);
 
     if (!tokensString) {
         return null;

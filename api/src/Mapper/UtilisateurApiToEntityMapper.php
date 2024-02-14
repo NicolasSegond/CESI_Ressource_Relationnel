@@ -50,8 +50,12 @@ class UtilisateurApiToEntityMapper implements MapperInterface
         // Remplit les propriétés de l'entité avec les valeurs du DTO.
         $entity->setEmail($dto->email);
 
-        if($dto->password){
-            $entity->setPassword($this->passwordHasher->hashPassword($entity, $dto->password));
+        if ($dto->password !== null) {
+            // Vérifier si le nouveau mot de passe est différent du mot de passe actuel
+            if ($dto->password !== $entity->getPassword()) {
+                // Régénérer le hachage du mot de passe
+                $entity->setPassword($this->passwordHasher->hashPassword($entity, $dto->password));
+            }
         }
 
         $entity->setNom($dto->nom);
@@ -61,7 +65,7 @@ class UtilisateurApiToEntityMapper implements MapperInterface
         $entity->setCode($dto->code);
 
         $entity->setVerif($dto->verif);
-        
+
         $entity->setRoles($dto->roles);
 
         // Retourne l'entité utilisateur mise à jour.

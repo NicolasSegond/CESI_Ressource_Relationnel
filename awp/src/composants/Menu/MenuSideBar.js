@@ -16,10 +16,19 @@ const SideBar = ({ isOpen, toggleSidebar }) => {
     const token = getToken();
 
     useEffect(() => {
-        if (token) {
-            const roles = getRolesUser(token.token);
-            setUserRoles(roles);
-        }
+        const fetchUserRoles = async () => {
+            if (token) {
+                try {
+                    const roles = await getRolesUser(token.token);
+                    setUserRoles(roles);
+                } catch (error) {
+                    console.error("Error fetching user roles:", error);
+                    // Gérer les erreurs de récupération des rôles utilisateur
+                }
+            }
+        };
+
+        fetchUserRoles();
     }, [token]);
 
     return (
