@@ -20,7 +20,6 @@ use App\State\EntityToDtoStateProvider;
         new Get(security: "is_granted('ROLE_USER')"),
         new Post(),
         new Patch(security: "is_granted('ROLE_USER')"),
-        new Put(security: "is_granted('ROLE_USER')")
     ],
     provider: EntityToDtoStateProvider::class, # GET, GET collection
     processor: DtoToEntityStateProcessor::class, # POST, PUT, PATCH
