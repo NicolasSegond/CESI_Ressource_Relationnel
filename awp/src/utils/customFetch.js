@@ -1,4 +1,4 @@
-import {addBearerToTheHeader, getToken, getTokenExpiration, refreshToken} from "./connexionUtil";
+import {addBearerToTheHeader, getToken, getTokenExpiration, refreshToken} from "./authentification";
 
 let refreshTokenVar = undefined;
 
