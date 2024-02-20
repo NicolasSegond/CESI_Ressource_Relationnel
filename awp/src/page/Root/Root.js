@@ -34,10 +34,6 @@ const Root = () => {
 
                 <main style={{margin: 5}}>
                     <Outlet/>
-                    <div style={{height: '2000px'}}>
-                        <h1>Contenu de test</h1>
-                        <p>Ce contenu est ajouté pour tester le positionnement fixed.</p>
-                    </div>
                 </main>
                 <Footer/>
             </Grid>

@@ -1,0 +1,77 @@
+.ajout-form-container{
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+}
+
+.partie-gauche{
+    width: 70%;
+    padding: 20px;
+}
+
+.partie-droite{
+    width: 30%;
+    padding: 20px;
+}
+
+.titre-label{
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.textfield{
+    width: 100%;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4), /* ombre principale */
+    2px 2px 4px rgba(0, 0, 0, 0.2), /* décalage à droite */
+    -2px 2px 4px rgba(0, 0, 0, 0.2); /* décalage à gauche */
+    border-radius: 4px;
+}
+
+.partie-options{
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    margin: 25px 0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4), /* ombre principale */
+    2px 2px 4px rgba(0, 0, 0, 0.2), /* décalage à droite */
+    -2px 2px 4px rgba(0, 0, 0, 0.2); /* décalage à gauche */
+    border-radius: 4px;
+}
+
+.partie-options-label{
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+.partie-options-select{
+    display:flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.partie-options-select .select-label, .categorie-label{
+    width: 100%;
+    font-size: 15px;
+}
+
+.helper{
+    margin-right: 2px;
+    margin-bottom: 10px;
+    font-size: 12px;
+    color: #666;
+    text-align: right;
+}
+
+.button-submit{
+    width: 100%;
+    padding: 10px;
+    margin-top: 20px;
+    background-color: #03989E;
+    font-size: 18px;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
