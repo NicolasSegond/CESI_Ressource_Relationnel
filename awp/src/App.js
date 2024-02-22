@@ -4,6 +4,7 @@ import './App.css';
 import {createBrowserRouter, RouterProvider} from "react-router-dom";
 import Inscription from "./page/Inscription/inscription";
 import Root from "./page/Root/Root";
+import VerifCodeInscription from "./page/verifCodeInscription";
 
 function App() {
     const router = createBrowserRouter([
@@ -19,6 +20,10 @@ function App() {
         {
             path: '/connexion',
             element: <Connexion/>,
+        },
+        {
+            path: '/verifCode/:id/:code',
+            element: <VerifCodeInscription/>,
         }
     ]);
     return (
