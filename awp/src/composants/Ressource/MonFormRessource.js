@@ -10,10 +10,13 @@ import CheckIcon from "@mui/icons-material/Check";
 const MyForm = ({formData, onChange, onSubmit, buttonText, buttonDisabled}) => {
     const [visibilite, setVisibilite] = useState('');
     const [value, setContenu] = useState('');
-    const [selectedNames, setSelectedNames] = useState([]);
 
     const handleVisibiliteChange = (event) => {
         setVisibilite(event.target.value);
+    };
+
+    const handleTagClick = (value) => {
+        setVisibilite(value);
     };
 
     const modules = {
@@ -40,7 +43,8 @@ const MyForm = ({formData, onChange, onSubmit, buttonText, buttonDisabled}) => {
                             {field.select_type === 'text' && (
                                 <>
                                     <p className={"ajout-label"}>{field.label}</p>
-                                    <TextField type={"text"} name={field.name} label={field.label} value={field.value} className={"textfield-ajout"}/>
+                                    <TextField type={"text"} name={field.name} label={field.label} value={field.value}
+                                               className={"textfield-ajout"}/>
                                 </>
                             )}
                             {field.select_type === 'textarea' && (
@@ -65,12 +69,26 @@ const MyForm = ({formData, onChange, onSubmit, buttonText, buttonDisabled}) => {
                         <p className={"partie-options-label"}> Options de la ressource : </p>
                         {inputsDroite.map((field, index) => (
                             <div key={index}>
+                                {field.select_type === 'tags' && (
+                                    <div className="tags">
+                                        {field.options.map((option, index) => (
+                                            <span
+                                                key={index}
+                                                className={visibilite === option ? `tag selected tag${index + 1}` : `tag tag${index + 1}`}
+                                                onClick={() => handleTagClick(option)}
+                                            >
+                                              {option}
+                                            </span>
+                                        ))}
+                                    </div>
+                                )}
                                 {field.select_type === 'select' && (
                                     <>
                                         <div className={"partie-options-select"}>
                                             <p className={"select-label"}>{field.label_select}</p>
                                             <FormControl id={"select-visibilite"}>
-                                                <InputLabel id="demo-simple-select-helper-label"> {field.label} </InputLabel>
+                                                <InputLabel
+                                                    id="demo-simple-select-helper-label"> {field.label} </InputLabel>
                                                 <Select
                                                     labelId="demo-simple-select-helper-label"
                                                     id="demo-simple-select-helper"
@@ -79,71 +97,70 @@ const MyForm = ({formData, onChange, onSubmit, buttonText, buttonDisabled}) => {
                                                     onChange={handleVisibiliteChange}
                                                 >
                                                     {field.options.map((option, index) => (
-                                                        <MenuItem key={index} value={option.value}>{option.label}</MenuItem>
+                                                        <MenuItem key={index} value={option}>{option}</MenuItem>
                                                     ))}
                                                 </Select>
                                             </FormControl>
                                         </div>
-                                        <p className={"helper"}>{field.require}</p>
                                     </>
                                 )}
-                                {field.select_type === 'select' && visibilite === "Partager" && (
+                                {field.select_type === 'tags' && visibilite === "Partager" && (
                                     <>
                                         <p className={"select-label"}> Partager avec : </p>
-                                        <TextField type={"text"} name={"nom_partager"} value={""} placeholder={"Saissisez les adresses mail"} className={"textfield-ajout"}/>
+                                        <TextField type={"text"} name={"nom_partager"} value={""}
+                                                   placeholder={"Saissisez les adresses mail"}
+                                                   className={"textfield-ajout"}/>
                                     </>
                                 )}
                                 {field.select_type === 'multi-select' && (
-                                    <FormControl sx={{width: '100%'}}>
-                                    <InputLabel>{field.label}</InputLabel>
-                                        <Select
-                                            multiple
-                                            value={selectedNames}
-                                            onChange={(e) => {
-                                                if (e.target.value.length <= 3) {
-                                                    setSelectedNames(e.target.value);
-                                                }
-                                            }}
-                                            input={<OutlinedInput label={field.label}/>}
-                                            renderValue={(selected) => (
-                                                <Stack gap={1} direction="row" flexWrap="wrap">
-                                                    {selected.map((value) => (
-                                                        <Chip
-                                                            key={value}
-                                                            label={value}
-                                                            onDelete={() =>
-                                                                setSelectedNames(
-                                                                    selectedNames.filter((item) => item !== value)
-                                                                )
-                                                            }
-                                                            deleteIcon={
-                                                                <CancelIcon
-                                                                    onMouseDown={(event) => event.stopPropagation()}
-                                                                />
-                                                            }
-                                                        />
-                                                    ))}
-                                                </Stack>
-                                            )}
-                                        >
-                                            {field.name.map((name) => (
-                                                <MenuItem
-                                                    key={name}
-                                                    value={name}
-                                                    sx={{justifyContent: "space-between"}}
-                                                >
-                                                    {name}
-                                                    {selectedNames.includes(name) ? <CheckIcon color="info"/> : null}
-                                                </MenuItem>
-                                            ))}
-                                        </Select>
-                                    </FormControl>
+                                    <div className={"partie-options-select"}>
+                                        <p className={"select-label"}>{field.label_select}</p>
+                                        <FormControl sx={{width: '100%'}}>
+                                            <InputLabel>{field.label}</InputLabel>
+                                            <Select
+                                                multiple
+                                                value={field.value}
+                                                onChange={field.onChange}
+                                                input={<OutlinedInput label={field.label}/>}
+                                                renderValue={(selected) => (
+                                                    <Stack gap={1} direction="row" flexWrap="wrap">
+                                                        {selected.map((value) => (
+                                                            <Chip
+                                                                key={value}
+                                                                label={value}
+                                                                onDelete={() => field.onDelete(value)}
+                                                                deleteIcon={
+                                                                    <CancelIcon
+                                                                        onMouseDown={(event) => event.stopPropagation()}
+                                                                    />
+                                                                }
+                                                            />
+                                                        ))}
+                                                    </Stack>
+                                                )}
+                                            >
+                                                {field.name.map((name) => (
+                                                    <MenuItem
+                                                        key={name}
+                                                        value={name}
+                                                        sx={{justifyContent: "space-between"}}
+                                                    >
+                                                        {name}
+                                                        {field.value.includes(name) ?
+                                                            <CheckIcon color="info"/> : null}
+                                                    </MenuItem>
+                                                ))}
+                                            </Select>
+                                        </FormControl>
+                                    </div>
                                 )}
                                 {field.select_type === 'telechargement' && (
                                     <>
-                                        <p className={"select-label"} style={{marginBlockStart: "10px"}}>{field.label}</p>
+                                        <p className={"select-label"}
+                                           style={{marginBlockStart: "10px"}}>{field.label}</p>
                                         <label htmlFor="images" className={field.className}>
-                                            <input style={{marginTop: "10px", marginBottom: "10px"}} type="file" name="images" id="images" multiple={field.ismultiple} required/>
+                                            <input style={{marginTop: "10px", marginBottom: "10px"}} type="file"
+                                                   name="images" id="images" multiple={field.ismultiple} required/>
                                         </label>
                                     </>
                                 )}
