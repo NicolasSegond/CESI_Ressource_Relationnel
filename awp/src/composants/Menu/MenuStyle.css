@@ -44,7 +44,7 @@
 
 @keyframes slideIn {
     from {
-        transform: translateX(-100%); /* Commence décalé vers la gauche */
+        transform: translateX(100%); /* Commence décalé vers la gauche */
     }
     to {
         transform: translateX(0); /* Glisse vers la droite */
@@ -185,7 +185,7 @@
             transform: translateX(0%); /* Commence décalé vers la droite */
         }
         to {
-            transform: translateX(-100%); /* Glisse vers la gauche */
+            transform: translateX(100%); /* Glisse vers la gauche */
         }
     }
 
