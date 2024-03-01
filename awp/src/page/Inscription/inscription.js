@@ -70,7 +70,7 @@ const Inscription = () => {
 
             const body = JSON.stringify(formDataObject);
 
-            fetch('https://127.0.0.1:8000/api/utilisateurs', {
+            fetch('http://127.0.0.1:8000/api/utilisateurs', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/ld+json', // Mise à jour du type de contenu ici
