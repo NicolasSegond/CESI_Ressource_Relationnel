@@ -17,7 +17,7 @@ class Ressource
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $Titre = null;
+    private ?string $titre = null;
 
     #[ORM\Column(length: 1000)]
     private ?string $contenu = null;
@@ -73,12 +73,12 @@ class Ressource
 
     public function getTitre(): ?string
     {
-        return $this->Titre;
+        return $this->titre;
     }
 
-    public function setTitre(string $Titre): static
+    public function setTitre(string $titre): static
     {
-        $this->Titre = $Titre;
+        $this->titre = $titre;
 
         return $this;
     }

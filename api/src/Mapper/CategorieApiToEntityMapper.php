@@ -4,7 +4,6 @@ namespace App\Mapper;
 
 use App\ApiResource\CategorieAPI;
 use App\Entity\Categorie;
-use App\Entity\Ressource;
 use App\Repository\CategorieRepository;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfonycasts\MicroMapper\AsMapper;
