@@ -22,7 +22,7 @@ class VisibiliteRepository extends ServiceEntityRepository
     }
 
 //    /**
-//     * @return Visibilite[] Returns an array of Visibilite objects
+//     * @return VisibiliteAPI[] Returns an array of VisibiliteAPI objects
 //     */
 //    public function findByExampleField($value): array
 //    {
@@ -36,7 +36,7 @@ class VisibiliteRepository extends ServiceEntityRepository
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?Visibilite
+//    public function findOneBySomeField($value): ?VisibiliteAPI
 //    {
 //        return $this->createQueryBuilder('v')
 //            ->andWhere('v.exampleField = :val')
