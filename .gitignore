@@ -6,5 +6,5 @@ awp/package-lock.json
 .idea/phpspec.xml
 .idea/php.xml
 .idea/codeception.xml
-awp/package-lock.json
-awp/package-lock.json
+.idea
+mobile/.idea
