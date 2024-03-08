@@ -12,6 +12,7 @@ use ApiPlatform\Metadata\Put;
 use App\Entity\Utilisateur;
 use App\State\DtoToEntityStateProcessor;
 use App\State\EntityToDtoStateProvider;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ApiResource(
     shortName: 'Utilisateur',
@@ -30,14 +31,23 @@ class UtilisateurAPI
 {
     public ?int $id = null;
 
+    #[Groups('ressource:read', 'ressource:write')]
     public ?string $email = null;
+
+    #[Groups('ressource:read')]
     public ?string $nom = null;
+
+    #[Groups('ressource:read')]
     public ?string $prenom = null;
 
     public ?string $password = null;
 
+    #[Groups('ressource:read')]
     public ?array $roles = [];
 
+    #[Groups('ressource:read')]
     public ?int $code = null;
+
+    #[Groups('ressource:read')]
     public ?bool $verif = false;
 }

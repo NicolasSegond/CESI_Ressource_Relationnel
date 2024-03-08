@@ -58,7 +58,7 @@ class RessourceApiToEntityMapper implements MapperInterface
 
         if ($dto->proprietaire) {
             $entity->setProprietaire($this->microMapper->map($dto->proprietaire, Utilisateur::class, [
-                MicroMapperInterface::MAX_DEPTH => 0,
+                MicroMapperInterface::MAX_DEPTH => 1,
             ]));
         } else {
             $entity->setProprietaire($this->security->getUser());

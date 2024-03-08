@@ -3,15 +3,15 @@
 namespace App\Mapper;
 
 use App\ApiResource\CategorieAPI;
+use App\ApiResource\CommentaireAPI;
 use App\ApiResource\RessourceAPI;
 use App\ApiResource\StatutAPI;
 use App\ApiResource\TypeDeRessourceAPI;
 use App\ApiResource\TypeRelationAPI;
 use App\ApiResource\UtilisateurAPI;
 use App\ApiResource\VisibiliteAPI;
+use App\Entity\Commentaire;
 use App\Entity\Ressource;
-use App\Entity\VoirRessource;
-use Doctrine\DBAL\Types\Type;
 use Symfonycasts\MicroMapper\AsMapper;
 use Symfonycasts\MicroMapper\MapperInterface;
 use Symfonycasts\MicroMapper\MicroMapperInterface;
@@ -55,33 +55,41 @@ class RessourceEntityToApiMapper implements MapperInterface
         $dto->dateModification = $entity->getDateModification();
         $dto->nombreVue = $entity->getNombreVue();
 
-        $dto->proprietaire = $this->microMapper->map($entity->getProprietaire(), UtilisateurAPI::class, [
-            MicroMapperInterface::MAX_DEPTH => 0,
+        $proprietaire = $entity->getProprietaire();
+
+        $dto->proprietaire = $this->microMapper->map($proprietaire, UtilisateurAPI::class, [
+            MicroMapperInterface::MAX_DEPTH => 1,
         ]);
 
-        $dto->statut = $this->microMapper->map($entity->getStatut(), StatutAPI::class, [
-            MicroMapperInterface::MAX_DEPTH => 0,
-        ]);
+//        $dto->statut = $this->microMapper->map($entity->getStatut(), StatutAPI::class, [
+//            MicroMapperInterface::MAX_DEPTH => 1,
+//        ]);
+//
+//        $dto->visibilite = $this->microMapper->map($entity->getVisibilite(), VisibiliteAPI::class, [
+//            MicroMapperInterface::MAX_DEPTH =>  1,
+//        ]);
+//
+//        $dto->typeDeRessource = $this->microMapper->map($entity->getTypeDeRessource(), TypeDeRessourceAPI::class, [
+//            MicroMapperInterface::MAX_DEPTH => 1,
+//        ]);
+//
+//        $dto->typeRelation = $this->microMapper->map($entity->getTypeRelation(), TypeRelationAPI::class, [
+//            MicroMapperInterface::MAX_DEPTH => 1,
+//        ]);
+//
+//        $dto->typeRelation = $this->microMapper->map($entity->getTypeRelation(), TypeRelationAPI::class, [
+//            MicroMapperInterface::MAX_DEPTH => 1,
+//        ]);
+//
+//        $dto->categorie = $this->microMapper->map($entity->getCategorie(), CategorieAPI::class, [
+//            MicroMapperInterface::MAX_DEPTH => 1,
+//        ]);
 
-        $dto->visibilite = $this->microMapper->map($entity->getVisibilite(), VisibiliteAPI::class, [
-            MicroMapperInterface::MAX_DEPTH => 0,
-        ]);
-
-        $dto->typeDeRessource = $this->microMapper->map($entity->getTypeDeRessource(), TypeDeRessourceAPI::class, [
-            MicroMapperInterface::MAX_DEPTH => 0,
-        ]);
-
-        $dto->typeRelation = $this->microMapper->map($entity->getTypeRelation(), TypeRelationAPI::class, [
-            MicroMapperInterface::MAX_DEPTH => 0,
-        ]);
-
-        $dto->typeRelation = $this->microMapper->map($entity->getTypeRelation(), TypeRelationAPI::class, [
-            MicroMapperInterface::MAX_DEPTH => 0,
-        ]);
-
-        $dto->categorie = $this->microMapper->map($entity->getCategorie(), CategorieAPI::class, [
-            MicroMapperInterface::MAX_DEPTH => 0,
-        ]);
+        $dto->commentaires = array_map(function (Commentaire $file) {
+            return $this->microMapper->map($file, CommentaireAPI::class, [
+                MicroMapperInterface::MAX_DEPTH => 1,
+            ]);
+        }, $entity->getCommentaires()->getValues());
 
         // Retourne l'API Utilisateur mise à jour.
         return $dto;

@@ -8,6 +8,7 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use App\State\EntityToDtoStateProvider;
 use App\Entity\Commentaire;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ApiResource(
     shortName: 'Commentaire',
@@ -21,6 +22,10 @@ use App\Entity\Commentaire;
 class CommentaireAPI
 {
     public ?int $id = null;
+
+    #[Groups(['ressource:read', 'ressource:write'])]
     public ?string $contenu = null;
+
+    #[Groups(['ressource:read', 'ressource:write'])]
     public ?\DateTimeInterface $date = null;
 }
