@@ -3,9 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\VoirRessourceRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: VoirRessourceRepository::class)]
 class VoirRessource
@@ -15,67 +14,39 @@ class VoirRessource
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: Utilisateur::class, inversedBy: 'voirRessources')]
-    private Collection $Utilisateur;
+    #[ORM\ManyToOne(inversedBy: 'voirRessources')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Utilisateur $Utilisateur = null;
 
-    #[ORM\ManyToOne(targetEntity: Ressource::class, inversedBy: 'voirRessources')]
-    private Collection $Ressource;
-
-    public function __construct()
-    {
-        $this->Utilisateur = new ArrayCollection();
-        $this->Ressource = new ArrayCollection();
-    }
+    #[ORM\ManyToOne(inversedBy: 'voirRessources')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Ressource $Ressource = null;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * @return Collection<int, Utilisateur>
-     */
-    public function getUtilisateur(): Collection
+    public function getUtilisateur(): ?Utilisateur
     {
         return $this->Utilisateur;
     }
 
-    public function addUtilisateur(Utilisateur $utilisateur): static
+    public function setUtilisateur(?Utilisateur $Utilisateur): static
     {
-        if (!$this->Utilisateur->contains($utilisateur)) {
-            $this->Utilisateur->add($utilisateur);
-        }
+        $this->Utilisateur = $Utilisateur;
 
         return $this;
     }
 
-    public function removeUtilisateur(Utilisateur $utilisateur): static
-    {
-        $this->Utilisateur->removeElement($utilisateur);
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Ressource>
-     */
-    public function getRessource(): Collection
+    public function getRessource(): ?Ressource
     {
         return $this->Ressource;
     }
 
-    public function addRessource(Ressource $ressource): static
+    public function setRessource(?Ressource $Ressource): static
     {
-        if (!$this->Ressource->contains($ressource)) {
-            $this->Ressource->add($ressource);
-        }
-
-        return $this;
-    }
-
-    public function removeRessource(Ressource $ressource): static
-    {
-        $this->Ressource->removeElement($ressource);
+        $this->Ressource = $Ressource;
 
         return $this;
     }

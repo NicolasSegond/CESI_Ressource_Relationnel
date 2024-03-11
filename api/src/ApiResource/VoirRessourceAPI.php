@@ -6,22 +6,30 @@ use ApiPlatform\Doctrine\Orm\State\Options;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
-use App\Entity\Visibilite;
+use ApiPlatform\Metadata\Post;
+use App\Entity\VoirRessource;
 use App\State\DtoToEntityStateProcessor;
 use App\State\EntityToDtoStateProvider;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ApiResource(
-    shortName: 'Visibilite',
+    shortName: 'VoirRessource',
     operations: [
         new GetCollection(),
-        new Get()
+        new Get(),
+        new Post()
     ],
     provider: EntityToDtoStateProvider::class, #GET, GET Collection
     processor: DtoToEntityStateProcessor::class, #POST, PUT, DELETE
-    stateOptions: new Options(entityClass: Visibilite::class)
+    stateOptions: new Options(entityClass: VoirRessource::class)
 )]
-class VisibiliteAPI
+class VoirRessourceAPI
 {
     public ?int $id = null;
-    public ?string $libelle = null;
+
+    #[Groups('ressource:read', 'ressource:write')]
+    public ?UtilisateurAPI $utilisateur = null;
+
+    #[Groups('ressource:read', 'ressource:write')]
+    public ?RessourceAPI $ressource = null;
 }

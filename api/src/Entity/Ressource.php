@@ -50,14 +50,14 @@ class Ressource
     #[ORM\ManyToOne(inversedBy: 'Ressource')]
     private ?Categorie $categorie = null;
 
-    #[ORM\ManyToMany(targetEntity: VoirRessource::class, mappedBy: 'Ressource')]
-    private Collection $voirRessources;
-
     #[ORM\OneToMany(mappedBy: 'Ressource', targetEntity: Commentaire::class)]
     private Collection $commentaires;
 
     #[ORM\OneToMany(mappedBy: 'Ressource', targetEntity: Progression::class)]
     private Collection $progressions;
+
+    #[ORM\OneToMany(mappedBy: 'Ressource', targetEntity: VoirRessource::class, cascade: ['persist'], orphanRemoval: true)]
+    private Collection $voirRessources;
 
     public function __construct()
     {
@@ -205,33 +205,6 @@ class Ressource
     }
 
     /**
-     * @return Collection<int, VoirRessource>
-     */
-    public function getVoirRessources(): Collection
-    {
-        return $this->voirRessources;
-    }
-
-    public function addVoirRessource(VoirRessource $voirRessource): static
-    {
-        if (!$this->voirRessources->contains($voirRessource)) {
-            $this->voirRessources->add($voirRessource);
-            $voirRessource->addRessource($this);
-        }
-
-        return $this;
-    }
-
-    public function removeVoirRessource(VoirRessource $voirRessource): static
-    {
-        if ($this->voirRessources->removeElement($voirRessource)) {
-            $voirRessource->removeRessource($this);
-        }
-
-        return $this;
-    }
-
-    /**
      * @return Collection<int, Commentaire>
      */
     public function getCommentaires(): Collection
@@ -285,6 +258,35 @@ class Ressource
             // set the owning side to null (unless already changed)
             if ($progression->getRessource() === $this) {
                 $progression->setRessource(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, VoirRessource>
+     */
+    public function getVoirRessources(): Collection
+    {
+        return $this->voirRessources;
+    }
+
+    public function addVoirRessource(VoirRessource $voirRessource): static
+    {
+        if (!$this->voirRessources->contains($voirRessource)) {
+            $this->voirRessources->add($voirRessource);
+        }
+
+        return $this;
+    }
+
+    public function removeVoirRessource(VoirRessource $voirRessource): static
+    {
+        if ($this->voirRessources->removeElement($voirRessource)) {
+            // set the owning side to null (unless already changed)
+            if ($voirRessource->getRessource() === $this) {
+                $voirRessource->setRessource(null);
             }
         }
 

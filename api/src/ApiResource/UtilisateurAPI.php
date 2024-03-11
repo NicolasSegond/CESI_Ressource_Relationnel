@@ -31,7 +31,7 @@ class UtilisateurAPI
 {
     public ?int $id = null;
 
-    #[Groups('ressource:read', 'ressource:write')]
+    #[Groups('ressource:read')]
     public ?string $email = null;
 
     #[Groups('ressource:read')]

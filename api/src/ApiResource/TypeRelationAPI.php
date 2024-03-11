@@ -6,7 +6,8 @@ use ApiPlatform\Doctrine\Orm\State\Options;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
-use App\Entity\TypeRelation as TypeRelationEntity;
+use App\Entity\TypeRelation;
+use App\State\DtoToEntityStateProcessor;
 use App\State\EntityToDtoStateProvider;
 
 #[ApiResource(
@@ -15,8 +16,9 @@ use App\State\EntityToDtoStateProvider;
         new GetCollection(),
         new Get()
     ],
-    provider: EntityToDtoStateProvider::class,
-    stateOptions: new Options(entityClass: TypeRelationEntity::class),
+    provider: EntityToDtoStateProvider::class, # GET, GET collection
+    processor: DtoToEntityStateProcessor::class, # POST, PUT, PATCH
+    stateOptions: new Options(entityClass: TypeRelation::class),
 )]
 class TypeRelationAPI
 {

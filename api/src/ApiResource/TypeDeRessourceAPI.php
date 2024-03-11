@@ -7,6 +7,7 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use App\Entity\TypeDeRessource as TypeDeRessourceEntity;
+use App\State\DtoToEntityStateProcessor;
 use App\State\EntityToDtoStateProvider;
 
 #[ApiResource(
@@ -15,7 +16,8 @@ use App\State\EntityToDtoStateProvider;
         new GetCollection(),
         new Get()
     ],
-    provider: EntityToDtoStateProvider::class,
+    provider: EntityToDtoStateProvider::class, # GET, GET collection
+    processor: DtoToEntityStateProcessor::class, # POST, PUT
     stateOptions: new Options(entityClass: TypeDeRessourceEntity::class),
 )]
 class TypeDeRessourceAPI

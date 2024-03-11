@@ -45,14 +45,14 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'proprietaire', targetEntity: Ressource::class)]
     private Collection $proprietaireRessource;
 
-    #[ORM\ManyToMany(targetEntity: VoirRessource::class, mappedBy: 'Utilisateur')]
-    private Collection $voirRessources;
-
     #[ORM\OneToMany(mappedBy: 'Utilisateur', targetEntity: Commentaire::class)]
     private Collection $commentaires;
 
     #[ORM\OneToMany(mappedBy: 'Utilisateur', targetEntity: Progression::class)]
     private Collection $progressions;
+
+    #[ORM\OneToMany(mappedBy: 'Utilisateur', targetEntity: VoirRessource::class)]
+    private Collection $voirRessources;
 
     public function __construct()
     {
@@ -60,6 +60,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         $this->voirRessources = new ArrayCollection();
         $this->commentaires = new ArrayCollection();
         $this->progressions = new ArrayCollection();
+        $this->Ressource = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -205,33 +206,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @return Collection<int, VoirRessource>
-     */
-    public function getVoirRessources(): Collection
-    {
-        return $this->voirRessources;
-    }
-
-    public function addVoirRessource(VoirRessource $voirRessource): static
-    {
-        if (!$this->voirRessources->contains($voirRessource)) {
-            $this->voirRessources->add($voirRessource);
-            $voirRessource->addUtilisateur($this);
-        }
-
-        return $this;
-    }
-
-    public function removeVoirRessource(VoirRessource $voirRessource): static
-    {
-        if ($this->voirRessources->removeElement($voirRessource)) {
-            $voirRessource->removeUtilisateur($this);
-        }
-
-        return $this;
-    }
-
-    /**
      * @return Collection<int, Commentaire>
      */
     public function getCommentaires(): Collection
@@ -290,4 +264,35 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
+    /**
+     * @return Collection<int, VoirRessource>
+     */
+    public function getVoirRessources(): Collection
+    {
+        return $this->voirRessources;
+    }
+
+    public function addVoirRessource(VoirRessource $voirRessource): static
+    {
+        if (!$this->voirRessources->contains($voirRessource)) {
+            $this->voirRessources->add($voirRessource);
+            $voirRessource->setUtilisateur($this);
+        }
+
+        return $this;
+    }
+
+    public function removeVoirRessource(VoirRessource $voirRessource): static
+    {
+        if ($this->voirRessources->removeElement($voirRessource)) {
+            // set the owning side to null (unless already changed)
+            if ($voirRessource->getUtilisateur() === $this) {
+                $voirRessource->setUtilisateur(null);
+            }
+        }
+
+        return $this;
+    }
+
 }

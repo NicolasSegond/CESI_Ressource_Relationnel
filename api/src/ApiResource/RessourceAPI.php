@@ -28,7 +28,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
     operations: [
         new GetCollection(),
         new Get(),
-        new Post(security: "is_granted('ROLE_USER')"),
+        new Post(),
         new Delete(security: "is_granted('ROLE_USER')")
     ],
     normalizationContext: [
@@ -64,25 +64,25 @@ class RessourceAPI
     #[Groups(['ressource:read', 'ressource:write'])]
     public ?UtilisateurAPI $proprietaire = null;
 
-    #[Groups(['ressource:read'])]
+    #[Groups(['ressource:read', 'ressource:write'])]
     public ?StatutAPI $statut = null;
 
-    #[Groups(['ressource:read'])]
+    #[Groups(['ressource:read', 'ressource:write'])]
     public ?VisibiliteAPI $visibilite = null;
 
-    #[Groups(['ressource:read'])]
+    #[Groups(['ressource:read', 'ressource:write'])]
     public ?TypeDeRessourceAPI $typeDeRessource = null;
 
-    #[Groups(['ressource:read'])]
+    #[Groups(['ressource:read', 'ressource:write'])]
     public ?TypeRelationAPI $typeRelation = null;
 
-    #[Groups(['ressource:read'])]
+    #[Groups(['ressource:read', 'ressource:write'])]
     public ?CategorieAPI $categorie = null;
 
-    #[Groups(['ressource:read'])]
+    #[Groups(['ressource:read', 'ressource:write'])]
     public array $voirRessources = [];
 
-    #[Groups(['ressource:read'])]
+    #[Groups(['ressource:read', 'ressource:write'])]
     public array $commentaires = [];
 
     #[Groups(['ressource:read'])]
