@@ -2,7 +2,6 @@
 
 namespace App\EventListener\Security;
 
-use App\Entity\User;
 use App\Entity\Utilisateur;
 use Lexik\Bundle\JWTAuthenticationBundle\Event\JWTCreatedEvent;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
@@ -30,15 +29,14 @@ class JwtCreatedListener
 
         $payload = $event->getData();
 
+        $payload['roles'] = "";
+
         $infoUser = [];
 
         $infoUser['uri_utilisateur'] = "/api/users/".$utilisateur->getId();
         $infoUser['id'] = $utilisateur->getId();
-        $infoUser['email'] = $utilisateur->getEmail();
-        $infoUser['roles'] = $utilisateur->getRoles();
 
         $payload['user'] = $infoUser;
-
 
         $event->setData($payload);
     }

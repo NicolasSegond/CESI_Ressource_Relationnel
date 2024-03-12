@@ -1,10 +1,11 @@
 import {jwtDecode} from "jwt-decode";
 import dayjs from "dayjs";
 import apiConfig from "./config";
+import {customFetch} from "./customFetch";
+import {redirect} from "react-router-dom";
 
 export function getToken() {
     const tokensString = sessionStorage.getItem('token');
-    console.log(tokensString);
 
     if (!tokensString) {
         return null;
@@ -26,7 +27,7 @@ export function getToken() {
 
 
 export function getTokenExpiration(token) {
-    try{
+    try {
         const exp = jwtDecode(token).exp;
         return dayjs.unix(exp).diff(dayjs());
     } catch (e) {
@@ -74,7 +75,7 @@ export function addBearerToTheHeader(token, requestConfigInit = {}) {
 export function getIdUser(token) {
     try {
         // Décoder le token
-        const decodedToken = jwtDecode(token);
+        const decodedToken = jwtDecode(token.token);
 
         // Récupérer l'id de l'utilisateur
         const user = decodedToken.user;
@@ -85,14 +86,31 @@ export function getIdUser(token) {
     }
 }
 
-export function getRolesUser(token) {
+export async function getRolesUser(id) {
     try {
-        // Décoder le token
-        const decodedToken = jwtDecode(token);
+        const { data, error } = await customFetch({
+            url: apiConfig.apiUrl + '/api/utilisateurs/' + id + '/roles',
+            method: 'GET'
+        }, true);
 
-        // Récupérer les rôles de l'utilisateur
-        return decodedToken.user.roles;
-    } catch (e) {
-        throw new Error('Unable to extract user roles');
+        if (error) {
+            if (error.message && error.message.includes('LOGOUT NEEDED')) {
+                // Rediriger vers la page de connexion si une déconnexion est nécessaire
+                redirect('/login');
+            } else {
+                console.error("Une erreur s'est produite lors de la récupération des rôles :", error);
+
+                throw new Error("Une erreur s'est produite lors de la récupération des rôles");
+            }
+        }
+
+        if (data && data['hydra:member'] && data['hydra:member'].length > 0) {
+            return data['hydra:member'][0].roles;
+        } else {
+            throw new Error("Aucun rôle trouvé pour l'utilisateur");
+        }
+    } catch (err) {
+        console.error("Une erreur s'est produite lors de la récupération des rôles :", err);
+        throw err;
     }
 }

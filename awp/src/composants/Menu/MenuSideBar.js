@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import Logo from "../../assets/logo.png";
 import { Link } from "react-router-dom";
 import IosShareIcon from '@mui/icons-material/IosShare';
@@ -6,14 +6,28 @@ import StarIcon from '@mui/icons-material/Star';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import CloseIcon from '@mui/icons-material/Close';
 import './MenuStyle.css';
-import { getRolesUser } from "../../utils/authentification";
+import {getIdUser, getRolesUser} from "../../utils/authentification";
 import HowToRegIcon from '@mui/icons-material/HowToReg';
 import PersonIcon from '@mui/icons-material/Person';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 
 const SideBar = ({ isOpen, toggleSidebar, token }) => {
-    const userRoles = token ? getRolesUser(token.token) : [];
+    const [userRoles, setUserRoles] = useState([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            if (token) {
+                const userID = getIdUser(token);
+                const rolesUser = await getRolesUser(userID);
+                setUserRoles(rolesUser);
+            }
+        };
+
+        fetchData();
+
+    }, [token]);
+
 
     const menuItems = [
         { icon: <DashboardIcon className={"icon"}/>, texte: "Tableau de bord", chemin: "/inscription", tokenNecessaire: true },

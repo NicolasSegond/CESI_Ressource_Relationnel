@@ -12,6 +12,7 @@ use ApiPlatform\Metadata\Put;
 use App\Entity\Utilisateur;
 use App\State\DtoToEntityStateProcessor;
 use App\State\EntityToDtoStateProvider;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ApiResource(
     shortName: 'Utilisateur',
@@ -21,6 +22,19 @@ use App\State\EntityToDtoStateProvider;
         new Post(),
         new Patch(security: "is_granted('ROLE_USER')"),
         new Put(security: "is_granted('ROLE_USER')")
+    ],
+    provider: EntityToDtoStateProvider::class, # GET, GET collection
+    processor: DtoToEntityStateProcessor::class, # POST, PUT, PATCH
+    stateOptions: new Options(entityClass: Utilisateur::class),
+)]
+#[ApiResource(
+    shortName: 'Utilisateur',
+    operations: [
+        new GetCollection(
+            uriTemplate: '/utilisateurs/{id}/roles',
+            normalizationContext: ['groups' => ['roles:read']],
+            security: "is_granted('ROLE_USER')"
+        ),
     ],
     provider: EntityToDtoStateProvider::class, # GET, GET collection
     processor: DtoToEntityStateProcessor::class, # POST, PUT, PATCH
@@ -36,6 +50,7 @@ class UtilisateurAPI
 
     public ?string $password = null;
 
+    #[Groups('roles:read')]
     public ?array $roles = [];
 
     public ?int $code = null;
