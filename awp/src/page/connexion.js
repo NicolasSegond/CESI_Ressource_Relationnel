@@ -83,6 +83,7 @@ const Connexion = () => {
                     <div className={"title"}>Se Connecter</div>
                     <MyForm
                         formData={formData}
+                        onChange={handleChange}
                         onSubmit={handleSubmit}
                         buttonText="Se connecter"
                         buttonDisabled={!isPasswordValid}
@@ -94,8 +95,8 @@ const Connexion = () => {
                 <img src={"./imageADroite.jpg"}/>
             </div>
         </div>
-)
-    ;
+    )
+        ;
 };
 
 export default Connexion;
