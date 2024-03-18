@@ -9,6 +9,7 @@ use ApiPlatform\Metadata\GetCollection;
 use App\Entity\TypeRelation;
 use App\State\DtoToEntityStateProcessor;
 use App\State\EntityToDtoStateProvider;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ApiResource(
     shortName: 'TypeRelation',
@@ -23,5 +24,7 @@ use App\State\EntityToDtoStateProvider;
 class TypeRelationAPI
 {
     public ?int $id = null;
+
+    #[Groups('ressource:read', 'ressource:write')]
     public ?string $libelle;
 }

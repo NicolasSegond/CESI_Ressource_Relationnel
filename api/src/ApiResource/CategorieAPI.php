@@ -12,6 +12,7 @@ use ApiPlatform\Metadata\Post;
 use App\Entity\Categorie;
 use App\State\DtoToEntityStateProcessor;
 use App\State\EntityToDtoStateProvider;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 
 #[ApiResource(
@@ -29,5 +30,7 @@ use App\State\EntityToDtoStateProvider;
 class CategorieAPI
 {
     public ?int $id = null;
+
+    #[Groups('ressource:read', 'ressource:write')]
     public ?string $nom = null;
 }

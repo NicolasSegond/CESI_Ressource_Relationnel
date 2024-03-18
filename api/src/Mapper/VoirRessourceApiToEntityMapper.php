@@ -15,7 +15,7 @@ use Symfonycasts\MicroMapper\MapperInterface;
 use Symfonycasts\MicroMapper\MicroMapperInterface;
 
 #[AsMapper(from: VoirRessourceAPI::class, to: VoirRessource::class)]
-class voirRessourceApiToEntityMapper implements MapperInterface
+class VoirRessourceApiToEntityMapper implements MapperInterface
 {
     public function __construct(
         private VoirRessourceRepository $voirRessourceRepository,

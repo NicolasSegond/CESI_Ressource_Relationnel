@@ -9,6 +9,7 @@ use ApiPlatform\Metadata\GetCollection;
 use App\Entity\Visibilite;
 use App\State\DtoToEntityStateProcessor;
 use App\State\EntityToDtoStateProvider;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ApiResource(
     shortName: 'Visibilite',
@@ -23,5 +24,7 @@ use App\State\EntityToDtoStateProvider;
 class VisibiliteAPI
 {
     public ?int $id = null;
+
+    #[Groups('ressource:read', 'ressource:write')]
     public ?string $libelle = null;
 }

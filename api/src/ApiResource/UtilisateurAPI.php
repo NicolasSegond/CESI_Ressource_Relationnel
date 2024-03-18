@@ -29,9 +29,10 @@ use Symfony\Component\Serializer\Attribute\Groups;
 )]
 class UtilisateurAPI
 {
+    #[Groups('ressource:read')]
     public ?int $id = null;
 
-    #[Groups('ressource:read')]
+    #[Groups('ressource:read', 'ressource:write')]
     public ?string $email = null;
 
     #[Groups('ressource:read')]
@@ -50,4 +51,7 @@ class UtilisateurAPI
 
     #[Groups('ressource:read')]
     public ?bool $verif = false;
+
+    #[Groups(['ressource:read'])]
+    public ?array $voirRessources = [];
 }
