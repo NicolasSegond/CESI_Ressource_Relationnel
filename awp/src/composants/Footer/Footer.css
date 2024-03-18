@@ -47,4 +47,8 @@
     .lien-partenaire > div a{
         margin-bottom: 5px;
     }
+
+    .info-site{
+        flex-direction: column;
+    }
 }

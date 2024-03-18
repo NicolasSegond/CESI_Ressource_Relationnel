@@ -4,13 +4,21 @@ import './App.css';
 import {createBrowserRouter, RouterProvider} from "react-router-dom";
 import Inscription from "./page/Inscription/inscription";
 import Root from "./page/Root/Root";
+import Deconnexion, {loader as deconnexionLoader} from "./page/Deconnexion/deconnexion";
+import AjoutRessource from "./page/Ressource/ajoutRessource";
 
 function App() {
     const router = createBrowserRouter([
         {
             path: '/',
             element: <Root/>,
-            children: [],
+            children: [
+                {
+                    path: '/ressource/ajout',
+                    element: <AjoutRessource />
+                }
+
+            ],
         },
         {
             path: '/inscription',
@@ -19,6 +27,11 @@ function App() {
         {
             path: '/connexion',
             element: <Connexion/>,
+        },
+        {
+            path: '/deconnexion',
+            element: <Deconnexion/>,
+            loader: deconnexionLoader,
         }
     ]);
     return (
