@@ -37,9 +37,6 @@ class UserController extends AbstractController
         }
         else
             return new JsonResponse(['error' => 'Code incorrect'], 400);
-
-        // Si le code est correct, continuez avec la logique de publication
-
-        return new JsonResponse(['message' => 'Livre publié avec succès']);
+        
     }
 }
