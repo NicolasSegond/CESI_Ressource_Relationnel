@@ -68,7 +68,7 @@ const Inscription = () => {
                 passwordControl: motDePasseControl,
                 roles: ["string"],  // You may adjust this as needed
                 code: 0,
-                verif: true
+                verif: false
             };
 
             const body = JSON.stringify(formDataObject);
