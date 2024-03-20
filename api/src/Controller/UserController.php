@@ -21,7 +21,6 @@ class UserController extends AbstractController
     public function __invoke(UtilisateurAPI $data, int $id, int $code): JsonResponse
     {
         // Recherchez l'utilisateur par ID
-
         $utilisateur = $this->utilisateurRepository->find($id);
 
         // Vérifiez si l'utilisateur existe
@@ -29,18 +28,19 @@ class UserController extends AbstractController
             return new JsonResponse(['error' => 'Utilisateur non trouvé'], 404);
         }
 
-        // Vérifiez si le code correspond
-        if (!$utilisateur->getVerif()) {
-            if ($utilisateur->getCode() == $code) {
-                // Mise à jour de verif à 0 si le code est incorrect
-                $utilisateur->setVerif(true);
-                $this->entityManager->flush();
-                return new JsonResponse(['check' => 'Compte Vérifier'], 200);
-            }
+        // Vérifiez si le compte est déjà vérifié
+        if ($utilisateur->getVerif()) {
+            return new JsonResponse(['check' => 'Compte déjà vérifié'], 406);
         }
-        else
-            return new JsonResponse(['check' => 'Compte déjà vérifier'], 406);
 
-        return new JsonResponse(['error' => 'Erreur interne'], 400);
+        // Vérifiez si le code correspond
+        if ($utilisateur->getCode() == $code) {
+            // Mise à jour de verif à true si le code est correct
+            $utilisateur->setVerif(true);
+            $this->entityManager->flush();
+            return new JsonResponse(['check' => 'Compte vérifié'], 200);
+        }
+
+        return new JsonResponse(['error' => 'Code incorrect'], 400);
     }
 }
