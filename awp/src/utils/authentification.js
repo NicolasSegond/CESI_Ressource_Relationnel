@@ -6,11 +6,28 @@ export function getToken() {
     const tokensString = sessionStorage.getItem('token');
 
     if (!tokensString) {
-        return null;
+        throw new Error('DECONNEXION NECCESSAIRE - tokens non trouvé');
     }
 
     try {
         const tokens = JSON.parse(tokensString);
+
+        if (tokens.token && tokens.refresh_token && typeof tokens.token === 'string' && typeof tokens.refresh_token === 'string') {
+            return tokens;
+        } else {
+            return null;
+        }
+    } catch (error) {
+        console.error("Erreur lors de l'analyse du token:", error);
+        return null; // La valeur n'est pas un JSON valide
+    }
+}
+
+export function getTokenDisconnected() {
+    const token = sessionStorage.getItem('token');
+
+    try {
+        const tokens = JSON.parse(token);
 
         if (tokens.token && tokens.refresh_token && typeof tokens.token === 'string' && typeof tokens.refresh_token === 'string') {
             return tokens;
@@ -29,7 +46,7 @@ export function getTokenExpiration(token) {
         const exp = jwtDecode(token).exp;
         return dayjs.unix(exp).diff(dayjs());
     } catch (e) {
-        throw new Error('LOGOUT NEEDED - Unable to extract token expiration');
+        throw new Error('DECONNEXION NECCESSAIRE - Unable to extract token expiration');
     }
 }
 
@@ -73,7 +90,7 @@ export function addBearerToTheHeader(token, requestConfigInit = {}) {
 export function getIdUser(token) {
     try {
         // Décoder le token
-        const decodedToken = jwtDecode(token);
+        const decodedToken = jwtDecode(token.token);
 
         // Récupérer l'id de l'utilisateur
         const user = decodedToken.user;

@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {Chip, FormControl, InputLabel, MenuItem, OutlinedInput, Select, TextField} from "@mui/material";
+import {Chip, FormControl, InputLabel, MenuItem, OutlinedInput, Select} from "@mui/material";
 import {Form} from 'react-router-dom';
 import 'react-quill/dist/quill.snow.css';
 import ReactQuill from "react-quill";
@@ -8,16 +8,7 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import CheckIcon from "@mui/icons-material/Check";
 
 const MyForm = ({formData, onChange, onSubmit, buttonText, buttonDisabled}) => {
-    const [visibilite, setVisibilite] = useState('');
     const [value, setContenu] = useState('');
-
-    const handleVisibiliteChange = (event) => {
-        setVisibilite(event.target.value);
-    };
-
-    const handleTagClick = (value) => {
-        setVisibilite(value);
-    };
 
     const modules = {
         toolbar: [
@@ -43,8 +34,7 @@ const MyForm = ({formData, onChange, onSubmit, buttonText, buttonDisabled}) => {
                             {field.select_type === 'text' && (
                                 <>
                                     <p className={"ajout-label"}>{field.label}</p>
-                                    <TextField type={"text"} name={field.name} label={field.label} value={field.value}
-                                               className={"textfield-ajout"}/>
+                                    <input required type={"text"} className={"textfield-ajout"} name={field.name}/>
                                 </>
                             )}
                             {field.select_type === 'textarea' && (
@@ -52,8 +42,8 @@ const MyForm = ({formData, onChange, onSubmit, buttonText, buttonDisabled}) => {
                                     <p className={"ajout-label"}>{field.label}</p>
                                     <ReactQuill
                                         theme="snow"
-                                        value={value}
-                                        onChange={setContenu}
+                                        value={field.value}
+                                        onChange={(event) =>  field.onChange(event)}
                                         placeholder={field.placeholder}
                                         modules={modules}
                                         className={"react-quill"}
@@ -74,10 +64,10 @@ const MyForm = ({formData, onChange, onSubmit, buttonText, buttonDisabled}) => {
                                         {field.options.map((option, index) => (
                                             <span
                                                 key={index}
-                                                className={visibilite === option ? `tag selected tag${index + 1}` : `tag tag${index + 1}`}
-                                                onClick={() => handleTagClick(option)}
+                                                className={field.value === option.name ? `tag selected tag${index + 1}` : `tag tag${index + 1}`}
+                                                onClick={() => field.onChange(option)}
                                             >
-                                              {option}
+                                              {option.name}
                                             </span>
                                         ))}
                                     </div>
@@ -92,24 +82,17 @@ const MyForm = ({formData, onChange, onSubmit, buttonText, buttonDisabled}) => {
                                                 <Select
                                                     labelId="demo-simple-select-helper-label"
                                                     id="demo-simple-select-helper"
+                                                    name={field.name}
                                                     label={field.label}
-                                                    value={visibilite}
-                                                    onChange={handleVisibiliteChange}
+                                                    value={field.value}
+                                                    onChange={(event) => field.onChange(event.target.value)}
                                                 >
                                                     {field.options.map((option, index) => (
-                                                        <MenuItem key={index} value={option}>{option}</MenuItem>
+                                                        <MenuItem key={index} value={option.id}>{option.name}</MenuItem>
                                                     ))}
                                                 </Select>
                                             </FormControl>
                                         </div>
-                                    </>
-                                )}
-                                {field.select_type === 'tags' && visibilite === "Partager" && (
-                                    <>
-                                        <p className={"select-label"}> Partager avec : </p>
-                                        <TextField type={"text"} name={"nom_partager"} value={""}
-                                                   placeholder={"Saissisez les adresses mail"}
-                                                   className={"textfield-ajout"}/>
                                     </>
                                 )}
                                 {field.select_type === 'multi-select' && (
@@ -120,14 +103,16 @@ const MyForm = ({formData, onChange, onSubmit, buttonText, buttonDisabled}) => {
                                             <Select
                                                 multiple
                                                 value={field.value}
+                                                name={field.name}
                                                 onChange={field.onChange}
                                                 input={<OutlinedInput label={field.label}/>}
+                                                sx={{height: '100%'}}
                                                 renderValue={(selected) => (
                                                     <Stack gap={1} direction="row" flexWrap="wrap">
                                                         {selected.map((value) => (
                                                             <Chip
                                                                 key={value}
-                                                                label={value}
+                                                                label={field.options.find(option => option.id === value).name}
                                                                 onDelete={() => field.onDelete(value)}
                                                                 deleteIcon={
                                                                     <CancelIcon
@@ -139,14 +124,14 @@ const MyForm = ({formData, onChange, onSubmit, buttonText, buttonDisabled}) => {
                                                     </Stack>
                                                 )}
                                             >
-                                                {field.name.map((name) => (
+                                                {field.options.map((type) => (
                                                     <MenuItem
-                                                        key={name}
-                                                        value={name}
+                                                        key={type.id}
+                                                        value={type.id}
                                                         sx={{justifyContent: "space-between"}}
                                                     >
-                                                        {name}
-                                                        {field.value.includes(name) ?
+                                                        {type.name}
+                                                        {field.value.includes(type.id) ?
                                                             <CheckIcon color="info"/> : null}
                                                     </MenuItem>
                                                 ))}
@@ -160,7 +145,7 @@ const MyForm = ({formData, onChange, onSubmit, buttonText, buttonDisabled}) => {
                                            style={{marginBlockStart: "10px"}}>{field.label}</p>
                                         <label htmlFor="images" className={field.className}>
                                             <input style={{marginTop: "10px", marginBottom: "10px"}} type="file"
-                                                   name="images" id="images" multiple={field.ismultiple} required/>
+                                                   name={field.name} id="images" multiple={field.ismultiple} required/>
                                         </label>
                                     </>
                                 )}

@@ -5,7 +5,7 @@ import {createBrowserRouter, RouterProvider} from "react-router-dom";
 import Inscription from "./page/Inscription/inscription";
 import Root from "./page/Root/Root";
 import Deconnexion, {loader as deconnexionLoader} from "./page/Deconnexion/deconnexion";
-import AjoutRessource from "./page/Ressource/ajoutRessource";
+import AjoutRessource, {loader as AjoutLoader} from "./page/Ressource/ajoutRessource";
 
 function App() {
     const router = createBrowserRouter([
@@ -15,8 +15,9 @@ function App() {
             children: [
                 {
                     path: '/ressource/ajout',
-                    element: <AjoutRessource />
-                }
+                    element: <AjoutRessource />,
+                    loader: AjoutLoader
+                },
 
             ],
         },

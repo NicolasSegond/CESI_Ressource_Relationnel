@@ -13,6 +13,7 @@ use App\ApiResource\VisibiliteAPI;
 use App\ApiResource\VoirRessourceAPI;
 use App\Entity\Commentaire;
 use App\Entity\Ressource;
+use App\Entity\TypeRelation;
 use App\Entity\VoirRessource;
 use Symfonycasts\MicroMapper\AsMapper;
 use Symfonycasts\MicroMapper\MapperInterface;
@@ -75,13 +76,11 @@ class RessourceEntityToApiMapper implements MapperInterface
             MicroMapperInterface::MAX_DEPTH => 1,
         ]);
 
-        $dto->typeRelation = $this->microMapper->map($entity->getTypeRelation(), TypeRelationAPI::class, [
-            MicroMapperInterface::MAX_DEPTH => 1,
-        ]);
-
-        $dto->typeRelation = $this->microMapper->map($entity->getTypeRelation(), TypeRelationAPI::class, [
-            MicroMapperInterface::MAX_DEPTH => 1,
-        ]);
+        $dto->typeRelations = array_map(function (TypeRelation $voirRessource) {
+            return $this->microMapper->map($voirRessource, TypeRelationAPI::class, [
+                MicroMapperInterface::MAX_DEPTH => 1,
+            ]);
+        }, $entity->getTypeRelations()->getValues());
 
         $dto->categorie = $this->microMapper->map($entity->getCategorie(), CategorieAPI::class, [
             MicroMapperInterface::MAX_DEPTH => 1,

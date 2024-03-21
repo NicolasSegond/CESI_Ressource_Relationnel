@@ -7,11 +7,11 @@ import "../../composants/Menu/MenuStyle.css";
 import * as React from "react";
 import "../../composants/Footer/Footer.css";
 import Footer from "../../composants/Footer/footer";
-import {getToken} from "../../utils/authentification";
+import {getTokenDisconnected} from "../../utils/authentification";
 
 const Root = () => {
     const [isOpen, setIsOpen] = React.useState(false);
-    const token = getToken();
+    const token = getTokenDisconnected();
 
     const toggleSidebar = () => {
         setIsOpen(!isOpen);

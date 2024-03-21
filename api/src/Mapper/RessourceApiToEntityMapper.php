@@ -2,20 +2,18 @@
 
 namespace App\Mapper;
 
-use App\ApiResource\CommentaireAPI;
 use App\ApiResource\RessourceAPI;
-use App\ApiResource\VoirRessourceAPI;
+use App\ApiResource\TypeRelationAPI;
 use App\Entity\Categorie;
-use App\Entity\Commentaire;
 use App\Entity\Ressource;
 use App\Entity\Statut;
 use App\Entity\TypeDeRessource;
 use App\Entity\TypeRelation;
 use App\Entity\Utilisateur;
 use App\Entity\Visibilite;
-use App\Entity\VoirRessource;
 use App\Repository\RessourceRepository;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfonycasts\MicroMapper\AsMapper;
@@ -63,8 +61,18 @@ class RessourceApiToEntityMapper implements MapperInterface
         $entity = $to;
         assert($entity instanceof Ressource);
 
-        $entity->setTitre($dto->titre);
-        $entity->setContenu($dto->contenu);
+        if($dto->titre === ""){
+            throw new HttpException(400, 'Le titre de la ressource ne peut pas être vide');
+        } else{
+            $entity->setTitre($dto->titre);
+        }
+
+        if($dto->contenu === ""){
+            throw new HttpException(400, 'Le contenu de la ressource ne peut pas être vide');
+        } else{
+            $entity->setContenu($dto->contenu);
+        }
+
         $entity->setDateCreation($dto->dateCreation);
         $entity->setDateModification($dto->dateModification);
         $entity->setNombreVue($dto->nombreVue);
@@ -77,33 +85,51 @@ class RessourceApiToEntityMapper implements MapperInterface
             $entity->setProprietaire($this->security->getUser());
         }
 
-        $entity->setStatut($this->microMapper->map($dto->statut, Statut::class, [
-            MicroMapperInterface::MAX_DEPTH => 1,
-        ]));
+        if($dto->statut === null){
+            throw new HttpException(400, 'Le statut de la ressource ne peut pas être vide');
+        } else{
+            $entity->setStatut($this->microMapper->map($dto->statut, Statut::class, [
+                MicroMapperInterface::MAX_DEPTH => 1,
+            ]));
+        }
 
-        $entity->setVisibilite($this->microMapper->map($dto->visibilite, Visibilite::class, [
-            MicroMapperInterface::MAX_DEPTH => 1,
-        ]));
+        if($dto->visibilite === null){
+            throw new HttpException(400, 'La visibilité de la ressource ne peut pas être vide');
+        } else{
+            $entity->setVisibilite($this->microMapper->map($dto->visibilite, Visibilite::class, [
+                MicroMapperInterface::MAX_DEPTH => 1,
+            ]));
+        }
 
-        $entity->setTypeDeRessource($this->microMapper->map($dto->typeDeRessource, TypeDeRessource::class, [
-            MicroMapperInterface::MAX_DEPTH => 1,
-        ]));
+        if($dto->typeDeRessource == ''){
+            throw new HttpException(400, 'Le type de ressource ne peut pas être vide');
+        } else{
+            $entity->setTypeDeRessource($this->microMapper->map($dto->typeDeRessource, TypeDeRessource::class, [
+                MicroMapperInterface::MAX_DEPTH => 1,
+            ]));
+        }
 
-        $entity->setTypeRelation($this->microMapper->map($dto->typeRelation, TypeRelation::class, [
-            MicroMapperInterface::MAX_DEPTH => 1,
-        ]));
+        if($dto->categorie == ''){
+            throw new HttpException(400, 'La catégorie de la ressource ne peut pas être vide');
+        } else{
+            $entity->setCategorie($this->microMapper->map($dto->categorie, Categorie::class, [
+                MicroMapperInterface::MAX_DEPTH => 1,
+            ]));
+        }
 
-        $entity->setCategorie($this->microMapper->map($dto->categorie, Categorie::class, [
-            MicroMapperInterface::MAX_DEPTH => 1,
-        ]));
+        if($dto->typeRelations == null){
+            throw new HttpException(400, 'Le type de relation de la ressource ne peut pas être vide');
+        } else {
+            $dragonTreasureEntities = [];
+            foreach ($dto->typeRelations as $dragonTreasureApi) {
+                $dragonTreasureApiObject = $this->serializer->deserialize(json_encode($dragonTreasureApi), TypeRelationAPI::class, 'json');
 
-        foreach ($dto->voirRessources as $voirRessource) {
-
-            $voirRessourceObject = $this->serializer->deserialize(json_encode($voirRessource), VoirRessourceAPI::class, 'json');
-
-            $voirRessourcesEntities = $this->microMapper->map($voirRessourceObject, VoirRessource::class);
-
-            $entity->addVoirRessource($voirRessourcesEntities);
+                // Now you can pass the object to the MicroMapper::map() method
+                $dragonTreasureEntities[] = $this->microMapper->map($dragonTreasureApiObject, TypeRelation::class, [
+                    MicroMapperInterface::MAX_DEPTH => 0,
+                ]);
+            }
+            $this->propertyAccessor->setValue($entity, 'typeRelations', $dragonTreasureEntities);
         }
 
         // Retourne l'entité Ressource mise à jour.

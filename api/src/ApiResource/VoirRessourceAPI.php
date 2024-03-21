@@ -4,6 +4,7 @@ namespace App\ApiResource;
 
 use ApiPlatform\Doctrine\Orm\State\Options;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
@@ -17,7 +18,8 @@ use Symfony\Component\Serializer\Attribute\Groups;
     operations: [
         new GetCollection(),
         new Get(),
-        new Post()
+        new Post(),
+        new Delete()
     ],
     provider: EntityToDtoStateProvider::class, #GET, GET Collection
     processor: DtoToEntityStateProcessor::class, #POST, PUT, DELETE

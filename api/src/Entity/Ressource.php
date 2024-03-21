@@ -44,26 +44,28 @@ class Ressource
     #[ORM\ManyToOne(inversedBy: 'Ressource')]
     private ?TypeDeRessource $typeDeRessource = null;
 
-    #[ORM\ManyToOne(inversedBy: 'Ressource')]
-    private ?TypeRelation $typeRelation = null;
+    #[ORM\ManyToMany(targetEntity: TypeRelation::class, mappedBy: 'Ressource', cascade: ['persist'], orphanRemoval: true)]
+    private Collection $typeRelations;
 
     #[ORM\ManyToOne(inversedBy: 'Ressource')]
     private ?Categorie $categorie = null;
 
-    #[ORM\OneToMany(mappedBy: 'Ressource', targetEntity: Commentaire::class)]
+    #[ORM\OneToMany(mappedBy: 'Ressource', targetEntity: Commentaire::class, cascade: ['persist'], orphanRemoval: true)]
     private Collection $commentaires;
 
-    #[ORM\OneToMany(mappedBy: 'Ressource', targetEntity: Progression::class)]
+    #[ORM\OneToMany(mappedBy: 'Ressource', targetEntity: Progression::class, cascade: ['persist'], orphanRemoval: true)]
     private Collection $progressions;
 
     #[ORM\OneToMany(mappedBy: 'Ressource', targetEntity: VoirRessource::class, cascade: ['persist'], orphanRemoval: true)]
     private Collection $voirRessources;
+
 
     public function __construct()
     {
         $this->voirRessources = new ArrayCollection();
         $this->commentaires = new ArrayCollection();
         $this->progressions = new ArrayCollection();
+        $this->typeRelations = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -180,14 +182,26 @@ class Ressource
         return $this;
     }
 
-    public function getTypeRelation(): ?TypeRelation
+    public function getTypeRelations(): Collection
     {
-        return $this->typeRelation;
+        return $this->typeRelations;
     }
 
-    public function setTypeRelation(?TypeRelation $typeRelation): static
+    public function addTypeRelation(TypeRelation $typeRelation): static
     {
-        $this->typeRelation = $typeRelation;
+        if (!$this->typeRelations->contains($typeRelation)) {
+            $this->typeRelations->add($typeRelation);
+            $typeRelation->addRessource($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTypeRelation(TypeRelation $typeRelation): static
+    {
+        if ($this->typeRelations->removeElement($typeRelation)) {
+            $typeRelation->removeRessource($this);
+        }
 
         return $this;
     }
@@ -276,6 +290,7 @@ class Ressource
     {
         if (!$this->voirRessources->contains($voirRessource)) {
             $this->voirRessources->add($voirRessource);
+            $voirRessource->setRessource($this);
         }
 
         return $this;

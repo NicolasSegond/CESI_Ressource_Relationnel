@@ -3,23 +3,14 @@
 namespace App\ApiResource;
 
 use ApiPlatform\Doctrine\Orm\State\Options;
-use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
-use App\Entity\Categorie;
-use App\Entity\Progression;
 use App\Entity\Ressource;
-use App\Entity\Statut;
-use App\Entity\TypeDeRessource;
-use App\Entity\TypeRelation;
-use App\Entity\Utilisateur;
-use App\Entity\Visibilite;
 use App\State\DtoToEntityStateProcessor;
 use App\State\EntityToDtoStateProvider;
-use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Serializer\Attribute\Groups;
 
 
@@ -29,7 +20,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
         new GetCollection(),
         new Get(),
         new Post(),
-        new Delete(security: "is_granted('ROLE_USER')")
+        new Delete()
     ],
     normalizationContext: [
         'groups' => ['ressource:read']
@@ -37,6 +28,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
     denormalizationContext: [
         'groups' => ['ressource:write']
     ],
+    paginationItemsPerPage: 2,
     provider: EntityToDtoStateProvider::class, # GET, GET collection
     processor: DtoToEntityStateProcessor::class, # POST, PUT, PATCH
     stateOptions: new Options(entityClass: Ressource::class),
@@ -74,15 +66,18 @@ class RessourceAPI
     public ?TypeDeRessourceAPI $typeDeRessource = null;
 
     #[Groups(['ressource:read', 'ressource:write'])]
-    public ?TypeRelationAPI $typeRelation = null;
+    public array $typeRelations = [];
 
     #[Groups(['ressource:read', 'ressource:write'])]
     public ?CategorieAPI $categorie = null;
 
-    #[Groups(['ressource:read', 'ressource:write'])]
+    /**
+     * @var array<int, VoirRessourceAPI>
+     */
+    #[Groups(['ressource:read'])]
     public array $voirRessources = [];
 
-    #[Groups(['ressource:read', 'ressource:write'])]
+    #[Groups(['ressource:read'])]
     public array $commentaires = [];
 
     #[Groups(['ressource:read'])]

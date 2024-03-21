@@ -18,7 +18,7 @@ class TypeRelation
     #[ORM\Column(length: 50)]
     private ?string $libelle = null;
 
-    #[ORM\OneToMany(mappedBy: 'typeRelation', targetEntity: Ressource::class)]
+    #[ORM\ManyToMany(targetEntity: Ressource::class, inversedBy: 'typeRelations')]
     private Collection $Ressource;
 
     public function __construct()
@@ -55,7 +55,6 @@ class TypeRelation
     {
         if (!$this->Ressource->contains($ressource)) {
             $this->Ressource->add($ressource);
-            $ressource->setTypeRelation($this);
         }
 
         return $this;
@@ -63,13 +62,16 @@ class TypeRelation
 
     public function removeRessource(Ressource $ressource): static
     {
-        if ($this->Ressource->removeElement($ressource)) {
-            // set the owning side to null (unless already changed)
-            if ($ressource->getTypeRelation() === $this) {
-                $ressource->setTypeRelation(null);
-            }
-        }
+        $this->Ressource->removeElement($ressource);
 
         return $this;
+    }
+
+    public function toArray()
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->libelle
+        ];
     }
 }
