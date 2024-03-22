@@ -9,6 +9,8 @@
     height: 100%;
     z-index: 999;
     max-width: 100vw !important;
+    overflow-y:scroll;
+    overflow-x: hidden;
 }
 
 .navbar-grid{
@@ -135,11 +137,13 @@
     color: white;
     height: 46px;
     width: 150px;
-    border: none;
     border-radius: 5px;
-    cursor: pointer;
     margin: 0 10px;
     font-size: 18px;
+    text-decoration:none;
+    display:flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .avatar{

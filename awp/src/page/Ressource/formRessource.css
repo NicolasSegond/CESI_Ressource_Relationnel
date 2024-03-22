@@ -1,0 +1,192 @@
+.ajout-form-container{
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+}
+
+.partie-gauche{
+    width: 70%;
+    padding: 20px;
+}
+
+.partie-droite{
+    width: 30%;
+    padding: 20px;
+}
+
+.ajout-label{
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.textfield-ajout{
+    width: 100%;
+    margin-bottom: 40px !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4), /* ombre principale */
+    2px 2px 4px rgba(0, 0, 0, 0.2), /* décalage à droite */
+    -2px 2px 4px rgba(0, 0, 0, 0.2); /* décalage à gauche */
+    border-radius: 4px;
+    border:none;
+    height: 40px;
+    font-size: 16px;
+    padding: 0 10px;
+}
+
+.react-quill{
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4), /* ombre principale */
+    2px 2px 4px rgba(0, 0, 0, 0.2), /* décalage à droite */
+    -2px 2px 4px rgba(0, 0, 0, 0.2); /* décalage à gauche */
+    border-radius: 4px;
+}
+
+.react-quill .ql-container{
+    height: 500px;
+    font-size: 16px;
+    border-radius: 4px;
+}
+
+#select-visibilite{
+    width: 100%;
+}
+
+.partie-options{
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    margin: 25px 0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4), /* ombre principale */
+    2px 2px 4px rgba(0, 0, 0, 0.2), /* décalage à droite */
+    -2px 2px 4px rgba(0, 0, 0, 0.2); /* décalage à gauche */
+    border-radius: 4px;
+}
+
+.partie-options-label{
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+.partie-options-select{
+    margin-bottom: 10px;
+}
+
+.partie-options-select .select-label, .categorie-label{
+    width: 100%;
+    font-size: 15px;
+    margin-bottom: 10px;
+}
+
+.ajout-form-container > .MuiMenu-paper {
+    height: 150px;
+    border-radius: 5px;
+}
+
+.miniature-container > input[type="file"]::file-selector-button{
+    background-color: var(--bleu);
+    padding: 10px;
+    color: var(--blanc);
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+}
+
+.drop-container {
+    position: relative;
+    display: flex;
+    gap: 10px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+    padding: 20px;
+    border-radius: 10px;
+    border: 2px dashed var(--noir);
+    color: #444;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.drop-container:hover {
+    background: var(--gris-blanc);
+    border-color: var(--noir);
+}
+
+.drop-title {
+    color: #444;
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    transition: color .2s ease-in-out;
+}
+
+.drop-container > input[type="file"]::file-selector-button {
+    background-color: var(--bleu);
+    padding: 10px;
+    color: var(--blanc);
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+}
+
+.button-submit{
+    width: 100%;
+    padding: 10px;
+    margin-top: 20px;
+    background-color: var(--bleu);
+    font-size: 18px;
+    color: var(--blanc);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.tags {
+    display: flex;
+    gap: 10px;
+    margin: 15px 0;
+    justify-content: center;
+}
+
+.tag {
+    padding: 5px 10px;
+    border-radius: 15px;
+    cursor: pointer;
+    opacity: 0.5; /* Opacité pour les tags non sélectionnés */
+    color: var(--blanc);
+}
+
+.tag1 {
+    background-color: #ff7f0e; /* Couleur pour Tag 1 */
+}
+
+.tag2 {
+    background-color: #2ca02c; /* Couleur pour Tag 2 */
+}
+
+.tag3 {
+    background-color: #1f77b4; /* Couleur pour Tag 3 */
+}
+
+.tag.selected {
+    opacity: 1; /* Opacité complète pour le tag sélectionné */
+}
+
+/* Style pour la sélection */
+.tag.selected::before {
+    content: '✔';
+    margin-right: 5px;
+}
+
+@media (max-width: 1380px) {
+    .ajout-form-container{
+        flex-direction: column;
+    }
+
+    .partie-gauche{
+        width: 100%;
+    }
+
+    .partie-droite{
+        width: 100%;
+    }
+}

@@ -7,7 +7,7 @@ import {
     Toolbar,
 } from "@mui/material";
 import { Box } from "@mui/system";
-import { useLocation } from "react-router-dom";
+import {Link, useLocation} from "react-router-dom";
 import PersonIcon from '@mui/icons-material/Person';
 import LogoMinistere from "../../assets/logoMinistere.png";
 
@@ -60,7 +60,7 @@ function ResponsiveAppBar({ toggleSidebar, token }) {
                 <Box sx={{ flexGrow: 1 }} />
                 {token && token.token && (
                     <>
-                        <button className={"btn_creer"}> + Créer</button>
+                        <Link to={"/ressource/ajout"} className={"btn_creer"}> + Créer</Link>
                         <Avatar className={"avatar"} onClick={handleClick}><PersonIcon /></Avatar>
                         <Menu
                             id="simple-menu"

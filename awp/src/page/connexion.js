@@ -46,7 +46,7 @@ const Connexion = () => {
             email: email,
             password: motDePasse,
         });
-        fetch('https://127.0.0.1:8000/api/login', {
+        fetch('http://127.0.0.1:8000/api/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -92,11 +92,11 @@ const Connexion = () => {
                 <p className={"pasDeCompte"}> <Link to="/connexion">Mot de passe Oublié ?</Link></p>
             </div>
             <div className={"right-div"}>
-                <img src={"./imageADroite.jpg"}/>
+                <img src={"./imageADroite.jpg"} alt={"image représentation"}/>
             </div>
         </div>
-)
-    ;
+    )
+        ;
 };
 
 export default Connexion;

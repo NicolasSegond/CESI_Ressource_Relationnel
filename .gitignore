@@ -6,5 +6,5 @@ awp/package-lock.json
 .idea/phpspec.xml
 .idea/php.xml
 .idea/codeception.xml
+.idea/CESI_Ressources_RE.iml
 .idea
-mobile/.idea

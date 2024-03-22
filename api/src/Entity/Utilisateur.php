@@ -2,12 +2,12 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Metadata\ApiResource;
 use App\Repository\UtilisateurRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: UtilisateurRepository::class)]
 class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
@@ -41,6 +41,27 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column]
     private ?bool $verif = false;
+
+    #[ORM\OneToMany(mappedBy: 'proprietaire', targetEntity: Ressource::class)]
+    private Collection $proprietaireRessource;
+
+    #[ORM\OneToMany(mappedBy: 'Utilisateur', targetEntity: Commentaire::class)]
+    private Collection $commentaires;
+
+    #[ORM\OneToMany(mappedBy: 'Utilisateur', targetEntity: Progression::class)]
+    private Collection $progressions;
+
+    #[ORM\OneToMany(mappedBy: 'Utilisateur', targetEntity: VoirRessource::class)]
+    private Collection $voirRessources;
+
+    public function __construct()
+    {
+        $this->proprietaireRessource = new ArrayCollection();
+        $this->voirRessources = new ArrayCollection();
+        $this->commentaires = new ArrayCollection();
+        $this->progressions = new ArrayCollection();
+        $this->Ressource = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -153,4 +174,125 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
     }
+
+    /**
+     * @return Collection<int, Ressource>
+     */
+    public function getProprietaireRessource(): Collection
+    {
+        return $this->proprietaireRessource;
+    }
+
+    public function addProprietaireRessource(Ressource $proprietaireRessource): static
+    {
+        if (!$this->proprietaireRessource->contains($proprietaireRessource)) {
+            $this->proprietaireRessource->add($proprietaireRessource);
+            $proprietaireRessource->setProprietaire($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProprietaireRessource(Ressource $proprietaireRessource): static
+    {
+        if ($this->proprietaireRessource->removeElement($proprietaireRessource)) {
+            // set the owning side to null (unless already changed)
+            if ($proprietaireRessource->getProprietaire() === $this) {
+                $proprietaireRessource->setProprietaire(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Commentaire>
+     */
+    public function getCommentaires(): Collection
+    {
+        return $this->commentaires;
+    }
+
+    public function addCommentaire(Commentaire $commentaire): static
+    {
+        if (!$this->commentaires->contains($commentaire)) {
+            $this->commentaires->add($commentaire);
+            $commentaire->setUtilisateur($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCommentaire(Commentaire $commentaire): static
+    {
+        if ($this->commentaires->removeElement($commentaire)) {
+            // set the owning side to null (unless already changed)
+            if ($commentaire->getUtilisateur() === $this) {
+                $commentaire->setUtilisateur(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Progression>
+     */
+    public function getProgressions(): Collection
+    {
+        return $this->progressions;
+    }
+
+    public function addProgression(Progression $progression): static
+    {
+        if (!$this->progressions->contains($progression)) {
+            $this->progressions->add($progression);
+            $progression->setUtilisateur($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProgression(Progression $progression): static
+    {
+        if ($this->progressions->removeElement($progression)) {
+            // set the owning side to null (unless already changed)
+            if ($progression->getUtilisateur() === $this) {
+                $progression->setUtilisateur(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, VoirRessource>
+     */
+    public function getVoirRessources(): Collection
+    {
+        return $this->voirRessources;
+    }
+
+    public function addVoirRessource(VoirRessource $voirRessource): static
+    {
+        if (!$this->voirRessources->contains($voirRessource)) {
+            $this->voirRessources->add($voirRessource);
+            $voirRessource->setUtilisateur($this);
+        }
+
+        return $this;
+    }
+
+    public function removeVoirRessource(VoirRessource $voirRessource): static
+    {
+        if ($this->voirRessources->removeElement($voirRessource)) {
+            // set the owning side to null (unless already changed)
+            if ($voirRessource->getUtilisateur() === $this) {
+                $voirRessource->setUtilisateur(null);
+            }
+        }
+
+        return $this;
+    }
+
 }

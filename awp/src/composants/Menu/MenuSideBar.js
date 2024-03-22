@@ -46,8 +46,8 @@ const SideBar = ({ isOpen, toggleSidebar, token }) => {
                 <img src={Logo} alt="logo" className="logo"/>
                 {menuItems.map((item, index) => (
                     (item.tokenNecessaire && !token) ||
-                    (item.estAdmin && !userRoles.includes("ROLE_ADMIN")) ||
-                    (item.userRole && !userRoles.includes(item.userRole)) ? null :
+                    (item.estAdmin && (!userRoles || !userRoles.includes("ROLE_ADMIN"))) ||
+                    (item.userRole && (!userRoles || !userRoles.includes(item.userRole))) ? null :
                         <Link key={index} to={item.chemin} className="lien-menuSideBar">
                             {item.icon}
                             {item.texte}
