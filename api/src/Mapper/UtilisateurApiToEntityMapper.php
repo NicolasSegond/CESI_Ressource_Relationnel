@@ -5,6 +5,7 @@ namespace App\Mapper;
 use App\ApiResource\UtilisateurAPI;
 use App\Entity\Utilisateur;
 use App\Repository\UtilisateurRepository;
+use App\Service\EmailService;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfonycasts\MicroMapper\AsMapper;
 use Symfonycasts\MicroMapper\MapperInterface;
@@ -15,6 +16,7 @@ class UtilisateurApiToEntityMapper implements MapperInterface
     public function __construct(
         private UtilisateurRepository $userRepository,
         private UserPasswordHasherInterface $passwordHasher,
+        //private EmailService $emailService
     )
     {
         // Initialise les dépendances nécessaires au fonctionnement du mapper.
@@ -50,8 +52,12 @@ class UtilisateurApiToEntityMapper implements MapperInterface
         // Remplit les propriétés de l'entité avec les valeurs du DTO.
         $entity->setEmail($dto->email);
 
-        if($dto->password){
-            $entity->setPassword($this->passwordHasher->hashPassword($entity, $dto->password));
+        if ($dto->password !== null) {
+            // Vérifier si le nouveau mot de passe est différent du mot de passe actuel
+            if ($dto->password != $entity->getPassword() ?? '') {
+                // Régénérer le hachage du mot de passe
+                $entity->setPassword($this->passwordHasher->hashPassword($entity, $dto->password));
+            }
         }
 
         $entity->setNom($dto->nom);
@@ -61,8 +67,12 @@ class UtilisateurApiToEntityMapper implements MapperInterface
         $entity->setCode($dto->code);
 
         $entity->setVerif($dto->verif);
-        
+
         $entity->setRoles($dto->roles);
+
+//        if($dto->id == null){
+//            $this->emailService->sendWelcomeEmail();
+//        }
 
         // Retourne l'entité utilisateur mise à jour.
         return $entity;

@@ -8,3 +8,12 @@ auth:
     methods: ['POST']
 api_refresh_token:
     path: /api/token/refresh
+
+# config/routes.yaml
+app_mailer_send:
+    path: /mailer/send
+    methods: [GET]
+    controller: 'App\EventSubscriber\UserMailSubscriber::sendMail'
+public_assets:
+    path: /public/{filename}
+    controller: App\Controller\PublicController::index

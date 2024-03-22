@@ -6,6 +6,7 @@ import Inscription from "./page/Inscription/inscription";
 import Root from "./page/Root/Root";
 import Deconnexion, {loader as deconnexionLoader} from "./page/Deconnexion/deconnexion";
 import AjoutRessource, {loader as AjoutLoader} from "./page/Ressource/ajoutRessource";
+import VerifCodeInscription from "./page/verifCodeInscription";
 
 function App() {
     const router = createBrowserRouter([
@@ -33,6 +34,10 @@ function App() {
             path: '/deconnexion',
             element: <Deconnexion/>,
             loader: deconnexionLoader,
+        },
+        {
+            path: '/verifCode/:id/:code',
+            element: <VerifCodeInscription/>,
         }
     ]);
     return (

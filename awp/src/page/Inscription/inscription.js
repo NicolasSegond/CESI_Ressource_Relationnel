@@ -3,7 +3,8 @@ import React, { useState } from "react";
 import MyForm from "../../composants/MyForm";
 import {Link} from 'react-router-dom';
 import "./inscriptionDesign.css";
-
+import {Alert} from "@mui/material";
+import CheckIcon from '@mui/icons-material/Check';
 const Inscription = () => {
     const [formData, setFormData] = useState([
         { type: "text", name: "nom", value: "", label: "Nom" },
@@ -12,6 +13,8 @@ const Inscription = () => {
         { type: "password", name: "motDePasse", value: "", label: "Mot de Passe" },
         { type: "password", name: "motDePasseControl", value: "", label: "Confirmer Mot de Passe" }
     ]);
+
+    const [alertType, setAlertType] = useState(null);
     const handleChange = (e) => {
         const { name, value } = e.target;
         const newFormData = formData.map((field) => {
@@ -35,25 +38,25 @@ const Inscription = () => {
         const regexPass = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{13,}$/;
         if (motDePasse !== motDePasseControl) {
             // Les mots de passe ne correspondent pas
-            alert("Les mots de passe ne correspondent pas.");
+            setAlertType(3)
             return;
         }
         if(!regexPass.test(motDePasse))
         {
-            alert("Le mot de passe doit contenir au moins 13 caractères, dont une majuscule, une minuscule, un chiffre et un caractère spécial.");
+            setAlertType(4)
             return;
         }
 
         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailPattern.test(email)) {
-            alert("Veuillez entrer une adresse e-mail valide.");
+            setAlertType(5)
             return;
         }
         if (nom === "" || prenom === "") {
-            alert("Veuillez remplir tous les champs!");
+            setAlertType(6)
             return;
         }
-
+        setAlertType(null)
         // Effectuer la soumission du formulaire
         try {
             // Create an object with the form data
@@ -65,7 +68,7 @@ const Inscription = () => {
                 passwordControl: motDePasseControl,
                 roles: ["string"],  // You may adjust this as needed
                 code: 0,
-                verif: true
+                verif: false
             };
 
             const body = JSON.stringify(formDataObject);
@@ -79,20 +82,19 @@ const Inscription = () => {
             })
                 .then(response => {
                     if (!response.ok) {
-                        alert("Connexion Invalide.");
-                        throw new Error('Connexion Invalide.');
+                        setAlertType(0)
+                        throw new Error('Inscription Invalide.');
                     }
                     return response.json();
                 })
                 .then(data => {
-                    console.log('Success:', data);
-                    // Gérer ici la réponse de succès
-                    // Par exemple, vous pouvez mettre à jour l'état de votre application ou rediriger l'utilisateur.
+                    setAlertType(1)
+
                 })
                 .catch((error) => {
                     console.error('Error:', error);
-                    // Gérer ici l'erreur
-                    // Par exemple, vous pouvez afficher un message d'erreur à l'utilisateur.
+                    setAlertType(2)
+
                 });
 
 
@@ -130,6 +132,41 @@ const Inscription = () => {
                     />
                 </div>
                 <p className={"pasDeCompte"}>Vous avez déjà un compte? <Link to="/connexion">Connectez-vous!</Link></p>
+                {alertType === 0 && (
+                    <Alert icon={<CheckIcon fontSize="inherit" />} severity="warning">
+                        Inscription invalide. Réessayez!
+                    </Alert>
+                )}
+                {alertType === 1 && (
+                    <Alert icon={<CheckIcon fontSize="inherit" />} severity="success">
+                        Inscription réussite! Confirmer votre mail. Puis connectez-vous!
+                    </Alert>
+                )}
+                {alertType === 2 && (
+                    <Alert icon={<CheckIcon fontSize="inherit" />} severity="error">
+                        Une erreur est survenue! Réessayez. Sinon contacter le support!
+                    </Alert>
+                )}
+                {alertType === 3 && (
+                    <Alert icon={<CheckIcon fontSize="inherit" />} severity="warning">
+                        Les mots de passe ne correspondent pas.
+                    </Alert>
+                )}
+                {alertType === 4 && (
+                    <Alert icon={<CheckIcon fontSize="inherit" />} severity="warning">
+                        Le mot de passe doit contenir au moins 13 caractères, dont une majuscule, <br/>une minuscule, un chiffre et un caractère spécial.
+                    </Alert>
+                )}
+                {alertType === 5 && (
+                    <Alert icon={<CheckIcon fontSize="inherit" />} severity="warning">
+                        Veuillez entrer une adresse e-mail valide.
+                    </Alert>
+                )}
+                {alertType === 6 && (
+                    <Alert icon={<CheckIcon fontSize="inherit" />} severity="warning">
+                        Veuillez remplir tous les champs!
+                    </Alert>
+                )}
             </div>
             <div className={"right-div"}>
                 <img src={"./imageADroite.jpg"} alt={"image représentation"}/>
