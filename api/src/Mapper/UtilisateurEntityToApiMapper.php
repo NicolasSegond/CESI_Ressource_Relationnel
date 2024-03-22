@@ -56,6 +56,7 @@ class UtilisateurEntityToApiMapper implements MapperInterface
         $dto->roles = $entity->getRoles();
         $dto->code = $entity->getCode();
         $dto->verif = $entity->getVerif();
+        $dto->tokenVerif = $entity->getTokenVerif();
 
         // Retourne l'API Utilisateur mise à jour.
         return $dto;

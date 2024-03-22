@@ -68,6 +68,9 @@ class UtilisateurAPI
     public ?int $code = null;
 
     #[Groups('ressource:read')]
+    public ?string $tokenVerif = null;
+
+    #[Groups('ressource:read')]
     public ?bool $verif = false;
 
     #[Groups(['ressource:read'])]

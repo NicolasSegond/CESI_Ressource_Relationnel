@@ -59,16 +59,12 @@ class UtilisateurApiToEntityMapper implements MapperInterface
                 $entity->setPassword($this->passwordHasher->hashPassword($entity, $dto->password));
             }
         }
-
         $entity->setNom($dto->nom);
-
         $entity->setPrenom($dto->prenom);
-
         $entity->setCode($dto->code);
-
         $entity->setVerif($dto->verif);
-
         $entity->setRoles($dto->roles);
+        $entity->setTokenVerif($dto->tokenVerif);
 
 //        if($dto->id == null){
 //            $this->emailService->sendWelcomeEmail();

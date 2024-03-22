@@ -43,6 +43,7 @@ final class UserListenerMailInscription implements EventSubscriberInterface
     }
     public function sendConfirmationEmail(UtilisateurAPI $user, $code)
     {
+        $user->
             $emailContent = '<!DOCTYPE html>
             <html lang="en">
 <head>
@@ -183,7 +184,7 @@ final class UserListenerMailInscription implements EventSubscriberInterface
                         <p>Bienvenue  ' . $user->nom .' '. $user->prenom . ' sur Ressources relationnelles, la plateforme pour améliorer vos relations!</p>
                         <p>Cliquez sur le bouton ci-dessous pour valider votre inscription.</p>
                         <p>
-                           <a href="http://localhost:3000/verifCode/' . $user->id . '/' . $code . '" style="background-color: #03989e; color: #ffffff; display: inline-block; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Confirmer l\'inscription</a>
+                            <a href="http://localhost:3000/verifCode/' . $user->getId() . '/' . $user->getCode() . '?token=' . $user->tokenVerif . '">Confirmer l\'inscription</a>
                         </p>
                         <p>En confirmant votre abonnement, vous rejoindrez une communauté de personnes partageant les mêmes idées et passionnées par les relations. Préparez-vous à rester informé et inspiré !</p>
                     </td>

@@ -96,10 +96,6 @@ const Inscription = () => {
                     setAlertType(2)
 
                 });
-
-
-
-
             // Reset the form fields
             setFormData([
                 { type: "text", name: "nom", value: "", label: "Nom" },
