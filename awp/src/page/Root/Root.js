@@ -15,22 +15,23 @@ const Root = () => {
 
     const toggleSidebar = () => {
         setIsOpen(!isOpen);
+        console.log("isOpen", isOpen)
     };
 
     return (
         <Grid container spacing={1} width={"100vw"} className={"grid-container"}>
             {/* Barre latérale à gauche */}
-            <Grid item xl={2} lg={3} md={4} className={`sidebar-grid  ${isOpen ? "opened" : "closed"}`}>
+            <Grid item xl={isOpen ? 2 : 0} lg={isOpen ? 3 : 0} md={isOpen ? 4 : 0} className={`sidebar-grid  ${isOpen ? "opened" : "closed"}`}>
                 <MenuSideBar isOpen={isOpen} toggleSidebar={toggleSidebar} token={token}/>
             </Grid>
 
             {/* Barre de navigation en haut */}
-            <Grid item xl={10} lg={9} md={8} sm={12} xs={12} className={"navbar-grid"}>
+            <Grid item xl={isOpen ? 10 : 12} lg={isOpen ? 9 : 12} md={isOpen ? 8 : 12} sm={12} xs={12} style={{marginLeft: isOpen ? '330px' : '0'}} className={"navbar-grid"}>
                 <MenuNavBar toggleSidebar={toggleSidebar} token={token}/>
             </Grid>
 
             {/* Contenu principal */}
-            <Grid item xl={10} lg={9} md={8} sm={12} xs={12} className={"main-grid"}>
+            <Grid item xl={isOpen ? 10 : 12} lg={isOpen ? 9 : 12} md={isOpen ? 8 : 12} sm={12} xs={12} style={{marginLeft: isOpen ? '330px' : '0'}} className={"main-grid"}>
 
                 <main style={{margin: 5}}>
                     <Outlet/>

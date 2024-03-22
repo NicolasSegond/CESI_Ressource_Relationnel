@@ -8,6 +8,7 @@
     width: 330px; /* Ajoutez une largeur fixe pour la barre latérale */
     height: 100%;
     z-index: 999;
+    transform: translateX(-100%);
     max-width: 100vw !important;
     overflow-y:scroll;
     overflow-x: hidden;
@@ -15,24 +16,22 @@
 
 .navbar-grid{
     position: fixed;
-    margin-left: 330px !important;
-    width: calc(100vw - 330px); /* Ajoutez une largeur fixe pour la barre latérale */
+    width: 100%; /* Ajoutez une largeur fixe pour la barre latérale */
     height: 150px;
     z-index: 998;
     background-color: #ffffff;
-    max-width: 100vw !important;
 }
 
 .main-grid{
-    margin-left: 330px !important;
     margin-top: 150px !important;
-    width: calc(100vw - 330px); /* Ajoutez une largeur fixe pour la barre latérale */
+    width: 100%;
     height: 100%;
     max-width: 100vw !important;
 }
 
 .sidebar-container {
     min-height: 100vh;
+    width: 100%;
     flex-direction: column;
     align-items: center;
     box-shadow: #555 -2px 4px 8px;
@@ -46,7 +45,7 @@
 
 @keyframes slideIn {
     from {
-        transform: translateX(100%); /* Commence décalé vers la gauche */
+        transform: translateX(-100%); /* Commence décalé vers la gauche */
     }
     to {
         transform: translateX(0); /* Glisse vers la droite */
@@ -184,6 +183,15 @@
         animation: slideOut 0.3s ease-in-out forwards; /* Utilisation d'une animation pour le glissement */
     }
 
+    @keyframes slideIn {
+        from {
+            transform: translateX(100%); /* Commence décalé vers la gauche */
+        }
+        to {
+            transform: translateX(0); /* Glisse vers la droite */
+        }
+    }
+
     @keyframes slideOut {
         from {
             transform: translateX(0%); /* Commence décalé vers la droite */
@@ -213,7 +221,6 @@
         height: 150px;
         z-index: 998;
         background-color: #ffffff;
-        max-width: 100vw !important;
     }
 
     .main-grid{
