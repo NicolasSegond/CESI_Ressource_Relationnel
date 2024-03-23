@@ -1,5 +1,5 @@
 import React, {useEffect, useMemo, useState} from 'react';
-import {Outlet, useParams} from 'react-router-dom';
+import {Outlet, useParams, useNavigate} from 'react-router-dom';
 import {Alert, Grid} from "@mui/material";
 import MenuSideBar from "../composants/Menu/MenuSideBar";
 import MenuNavBar from "../composants/Menu/MenuNavBar";
@@ -9,12 +9,13 @@ import CustomAlert from "../composants/CustomAlert";
 
 
 const VerifCodeInscription = () => {
-    const { id, code } = useParams();
+    const { id, code,tokenVerif } = useParams();
     const [alertType, setAlertType] = useState(null);
     const [message, setMessage] = useState(null);
     const [severity, setSeverity] = useState(null);
     const [data, setData] = useState(null);
     const [isOpen, setIsOpen] = React.useState(false);
+    const navigate = useNavigate()
 
 
     const toggleSidebar = () => {
@@ -22,28 +23,41 @@ const VerifCodeInscription = () => {
     };
     const fetchData = async () => {
         try {
-            const response = await fetch(`http://127.0.0.1:8000/api/verif/${id}/${code}`);
+            const response = await fetch(`http://127.0.0.1:8000/api/verif/${id}/${code}/${tokenVerif}`);
             if (response.status === 200)
             {
                 setAlertType(0);
                 setSeverity('success')
                 setMessage("Validation réussi! Redirection Connect!")
+                setTimeout(() => {
+                    navigate('/connexion')
+                }, 3000)
+
             }
             else if (response.status === 406) {
                 setAlertType(3);
                 setSeverity('info')
                 setMessage("Compte déjà vérifier!")
+                setTimeout(() => {
+                    navigate('/connexion')
+                }, 3000)
             }
             else{
                 setAlertType(1);
                 setSeverity('warning')
                 setMessage("Oups, Problème survenu Utilisateur introuvable")
+                setTimeout(() => {
+                    navigate('/inscription')
+                }, 3000)
             }
         } catch (error) {
             console.error('Erreur lors de la récupération des données:', error);
             setAlertType(2);
             setSeverity('error')
             setMessage("Inscription non vérifiée! En cas de souci contacter le support!")
+            setTimeout(() => {
+                navigate('/')
+            }, 3000)
         }
     };
 

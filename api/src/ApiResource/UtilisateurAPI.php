@@ -23,7 +23,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
         new Post(),
         new Get(
             name: 'verif',
-            uriTemplate: '/verif/{id}/{code}',
+            uriTemplate: '/verif/{id}/{code}/{tokenVerif}',
             controller: UserController::class
         ),
         new Patch(security: "is_granted('ROLE_USER')"),
