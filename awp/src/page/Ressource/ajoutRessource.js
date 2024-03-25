@@ -1,11 +1,11 @@
-
-import React from 'react';
+import React, {useRef} from 'react';
 import MonFormRessource from '../../composants/Ressource/MonFormRessource';
 import './formRessource.css';
 import apiConfig from "../../utils/config";
 import {customFetch} from "../../utils/customFetch";
 import {redirect, useLoaderData} from "react-router-dom";
 import {getIdUser, getToken} from "../../utils/authentification";
+import CustomAlert from "../../composants/CustomAlert";
 
 const options = [
     {id: 1, name: "Public"},
@@ -13,6 +13,11 @@ const options = [
 ]
 
 const AjoutRessource = () => {
+    const [openAlert, setOpenAlert] = React.useState(false);
+    const [alertSeverity, setAlertSeverity] = React.useState('');
+    const [alertMessage, setAlertMessage] = React.useState('');
+
+
     const [relation, setRelation] = React.useState([]);
     const [categorie, setCategorie] = React.useState('');
     const [typeRessource, setTypeRessource] = React.useState('');
@@ -22,7 +27,15 @@ const AjoutRessource = () => {
     const token = getToken();
     const idUser = getIdUser(token);
 
+    const titre = useRef();
+    const miniature = useRef();
+    const piece_jointes = useRef();
+
     const data = useLoaderData().data;
+
+    const handleCloseAlert = () => {
+        setOpenAlert(false);
+    }
 
     const handleRelationChange = (e) => {
         if (e.target.value.length <= 3) {
@@ -62,6 +75,7 @@ const AjoutRessource = () => {
             label: "Titre de la ressource :",
             value: "",
             alignment: "gauche",
+            ref: titre
         },
         {
             select_type: "textarea",
@@ -76,7 +90,8 @@ const AjoutRessource = () => {
             label: "Miniature de la ressource :",
             alignment: "droite",
             className: "miniature-container",
-            ismultiple: false
+            ismultiple: false,
+            ref: miniature
         },
         {
             select_type: "tags",
@@ -94,8 +109,8 @@ const AjoutRessource = () => {
             label_select: "Catégories de la ressource :",
             alignment: "droite",
             options: data.categories,
-            value : categorie,
-            onChange: handleCategorieChange
+            value: categorie,
+            onChange: handleCategorieChange,
         },
         {
             select_type: "multi-select",
@@ -107,7 +122,7 @@ const AjoutRessource = () => {
             nbElementMax: 3,
             value: relation,
             onChange: handleRelationChange,
-            onDelete: onDeleteRelation
+            onDelete: onDeleteRelation,
         },
         {
             select_type: "select",
@@ -117,7 +132,7 @@ const AjoutRessource = () => {
             options: data.resourceTypes,
             name: "typeRessource",
             value: typeRessource,
-            onChange: handleTypeChange
+            onChange: handleTypeChange,
         },
         {
             select_type: "telechargement",
@@ -125,14 +140,14 @@ const AjoutRessource = () => {
             alignment: "droite",
             name: "pieces_jointes",
             className: "drop-container",
-            ismultiple: true
+            ismultiple: true,
+            ref: piece_jointes
         }
     ];
 
     const handleSubmit = async (e) => {
-        const titre = e.target.titre.value || null;
-        const typeRessource = e.target.typeRessource.value || null;
         e.preventDefault();
+
         const typeRelationValue = e.target.relations.value;
 
         // Convertir la valeur en tableau en séparant par ","
@@ -149,26 +164,30 @@ const AjoutRessource = () => {
             formattedTypeRelations.push(url);
         }
 
-        console.log("Titre : " + titre)
-        console.log(tags);
-        console.log(editorContent);
-        console.log(formattedTypeRelations);
-        console.log("TypeRessource : " + e.target.typeRessource.value);
-        console.log("Categorie : " + e.target.categorie.value);
-
         const body = {
-            titre: titre,
+            titre: titre.current.value,
+            miniature: miniature.current.files[0].name,
             contenu: editorContent,
             dateCreation: new Date(),
             dateModification: new Date(),
             nombreVue: 0,
             proprietaire: `/api/utilisateurs/` + idUser,
             statut: '/api/statuts/2',
-            visibilite: '/api/visibilites/' + tagsID,
-            typeDeRessource: '/api/type_de_ressources/' + typeRessource,
+            visibilite: tagsID != null ? '/api/visibilites/' + tagsID : null,
+            typeDeRessource: typeRessource !== '' ? '/api/type_de_ressources/' + typeRessource : '',
             typeRelations: formattedTypeRelations,
-            categorie: '/api/categories/' + categorie
+            categorie: categorie !== "" ? '/api/categories/' + categorie : ""
         };
+
+        const formData = new FormData();
+
+        const files = piece_jointes.current.files;
+        for (let i = 0; i < files.length; i++) {
+            formData.append('fichiers[]', files[i]);
+        }
+
+        const miniatureFiles = miniature.current.files[0];
+        formData.append('miniature[]', miniatureFiles);
 
         let {data, error} = await customFetch({
                 url: apiConfig.apiUrl + '/api/ressources',
@@ -176,29 +195,51 @@ const AjoutRessource = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: body
+                body: JSON.stringify(body)
             },
             true
         );
 
-        if(error){
-            alert(error.message);
-        } else{
-            console.log(data);
-            alert("Ressource ajoutée avec succès");
+        const dataResp = data;
+
+        if (error) {
+            setOpenAlert(true);
+            setAlertSeverity('error');
+            setAlertMessage(error.message);
+        } else {
+            setOpenAlert(true);
+            setAlertSeverity('success');
+            setAlertMessage('Ressource ajoutée avec succès');
+
+            formData.append('idRessource', dataResp['id']);
+
+            let response = await fetch(apiConfig.apiUrl + '/api/uploads', {
+                method: 'POST',
+                body: formData, // Assurez-vous de transmettre le FormData ici
+            });
+
+            if (!response) {
+                setOpenAlert(true);
+                setAlertSeverity('error');
+                setAlertMessage('Erreur lors de l\'ajout des pièces jointes');
+            } else {
+                setOpenAlert(true);
+                setAlertSeverity('success');
+                setAlertMessage('Pièces jointes ajoutées avec succès');
+            }
         }
-
-
-
     }
 
     return (
-        <MonFormRessource
-            formData={formData}
-            onChange={handleChange}
-            onSubmit={handleSubmit}
-            buttonText={"Ajouter la ressource"}
-        />
+        <>
+            <MonFormRessource
+                formData={formData}
+                onChange={handleChange}
+                onSubmit={handleSubmit}
+                buttonText={"Ajouter la ressource"}
+            />
+            <CustomAlert open={openAlert} message={alertMessage} handleClose={handleCloseAlert} severity={alertSeverity}/>
+        </>
     );
 }
 
@@ -215,7 +256,7 @@ export async function loader({}) {
         true
     );
 
-    if(error && error.message && error.message.includes('DECONNEXION NECCESSAIRE')){
+    if (error && error.message && error.message.includes('DECONNEXION NECCESSAIRE')) {
         return redirect('/connexion');
     }
 

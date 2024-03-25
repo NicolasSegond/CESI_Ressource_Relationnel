@@ -67,7 +67,13 @@ class RessourceApiToEntityMapper implements MapperInterface
             $entity->setTitre($dto->titre);
         }
 
-        if($dto->contenu === ""){
+        if($dto->miniature == ""){
+            throw new HttpException(400, 'La miniature de la ressource ne peut pas être null');
+        } else{
+            $entity->setMiniature($dto->miniature);
+        }
+
+        if($dto->contenu === null){
             throw new HttpException(400, 'Le contenu de la ressource ne peut pas être vide');
         } else{
             $entity->setContenu($dto->contenu);
@@ -101,7 +107,7 @@ class RessourceApiToEntityMapper implements MapperInterface
             ]));
         }
 
-        if($dto->typeDeRessource == ''){
+        if($dto->typeDeRessource == ""){
             throw new HttpException(400, 'Le type de ressource ne peut pas être vide');
         } else{
             $entity->setTypeDeRessource($this->microMapper->map($dto->typeDeRessource, TypeDeRessource::class, [
@@ -109,7 +115,7 @@ class RessourceApiToEntityMapper implements MapperInterface
             ]));
         }
 
-        if($dto->categorie == ''){
+        if($dto->categorie == ""){
             throw new HttpException(400, 'La catégorie de la ressource ne peut pas être vide');
         } else{
             $entity->setCategorie($this->microMapper->map($dto->categorie, Categorie::class, [

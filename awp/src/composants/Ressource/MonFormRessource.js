@@ -8,8 +8,6 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import CheckIcon from "@mui/icons-material/Check";
 
 const MyForm = ({formData, onChange, onSubmit, buttonText, buttonDisabled}) => {
-    const [value, setContenu] = useState('');
-
     const modules = {
         toolbar: [
             [{'header': '1'}, {'header': '2'}],
@@ -34,7 +32,7 @@ const MyForm = ({formData, onChange, onSubmit, buttonText, buttonDisabled}) => {
                             {field.select_type === 'text' && (
                                 <>
                                     <p className={"ajout-label"}>{field.label}</p>
-                                    <input required type={"text"} className={"textfield-ajout"} name={field.name}/>
+                                    <input required type={"text"} className={"textfield-ajout"} name={field.name} ref={field.ref}/>
                                 </>
                             )}
                             {field.select_type === 'textarea' && (
@@ -104,6 +102,7 @@ const MyForm = ({formData, onChange, onSubmit, buttonText, buttonDisabled}) => {
                                                 multiple
                                                 value={field.value}
                                                 name={field.name}
+                                                ref={field.ref}
                                                 onChange={field.onChange}
                                                 input={<OutlinedInput label={field.label}/>}
                                                 sx={{height: '100%'}}
@@ -145,7 +144,7 @@ const MyForm = ({formData, onChange, onSubmit, buttonText, buttonDisabled}) => {
                                            style={{marginBlockStart: "10px"}}>{field.label}</p>
                                         <label htmlFor="images" className={field.className}>
                                             <input style={{marginTop: "10px", marginBottom: "10px"}} type="file"
-                                                   name={field.name} id="images" multiple={field.ismultiple} required/>
+                                                   name={field.name} id="images" multiple={field.ismultiple} ref={field.ref} required/>
                                         </label>
                                     </>
                                 )}

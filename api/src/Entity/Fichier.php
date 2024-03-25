@@ -15,16 +15,16 @@ class Fichier
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'fichiers')]
-    private ?Ressource $Ressource = null;
+    private ?Ressource $ressource = null;
 
     #[ORM\Column(length: 255)]
     private ?string $nom = null;
 
-    #[ORM\Column(length: 255)]
-    private ?int $taille = null;
+    #[ORM\Column]
+    private ?int $size = null;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
-    private ?\DateTimeImmutable $creation = null;
+    private ?\DateTimeImmutable $date = null;
 
     public function getId(): ?int
     {
@@ -33,12 +33,12 @@ class Fichier
 
     public function getRessource(): ?Ressource
     {
-        return $this->Ressource;
+        return $this->ressource;
     }
 
-    public function setRessource(?Ressource $Ressource): static
+    public function setRessource(?Ressource $ressource): static
     {
-        $this->Ressource = $Ressource;
+        $this->ressource = $ressource;
 
         return $this;
     }
@@ -55,26 +55,26 @@ class Fichier
         return $this;
     }
 
-    public function getTaille(): ?int
+    public function getSize(): ?int
     {
-        return $this->taille;
+        return $this->size;
     }
 
-    public function setTaille(int $taille): static
+    public function setSize(int $size): static
     {
-        $this->taille = $taille;
+        $this->size = $size;
 
         return $this;
     }
 
-    public function getCreation(): ?\DateTimeImmutable
+    public function getDate(): ?\DateTimeImmutable
     {
-        return $this->creation;
+        return $this->date;
     }
 
-    public function setCreation(\DateTimeImmutable $creation): static
+    public function setDate(\DateTimeImmutable $date): static
     {
-        $this->creation = $creation;
+        $this->date = $date;
 
         return $this;
     }

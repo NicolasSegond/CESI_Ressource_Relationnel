@@ -19,7 +19,10 @@ function App() {
                     element: <AjoutRessource />,
                     loader: AjoutLoader
                 },
-
+                {
+                    path: '/verifCode/:id/:code',
+                    element: <VerifCodeInscription/>,
+                }
             ],
         },
         {
@@ -34,10 +37,6 @@ function App() {
             path: '/deconnexion',
             element: <Deconnexion/>,
             loader: deconnexionLoader,
-        },
-        {
-            path: '/verifCode/:id/:code',
-            element: <VerifCodeInscription/>,
         }
     ]);
     return (

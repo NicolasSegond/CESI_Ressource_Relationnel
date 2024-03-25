@@ -53,6 +53,7 @@ class RessourceEntityToApiMapper implements MapperInterface
         // Remplit les propriétés de l'API Utilisateur avec les valeurs de l'entité Utilisateur.
         $dto->id = $entity->getId();
         $dto->titre = $entity->getTitre();
+        $dto->miniature = $entity->getMiniature();
         $dto->contenu = $entity->getContenu();
         $dto->dateCreation = $entity->getDateCreation();
         $dto->dateModification = $entity->getDateModification();

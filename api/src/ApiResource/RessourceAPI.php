@@ -11,6 +11,7 @@ use ApiPlatform\Metadata\Post;
 use App\Entity\Ressource;
 use App\State\DtoToEntityStateProcessor;
 use App\State\EntityToDtoStateProvider;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Serializer\Attribute\Groups;
 
 
@@ -42,6 +43,9 @@ class RessourceAPI
     public ?string $titre = null;
 
     #[Groups(['ressource:read', 'ressource:write'])]
+    public ?string $miniature = null;
+
+    #[Groups(['ressource:read', 'ressource:write'])]
     public ?string $contenu = null;
 
     #[Groups(['ressource:read', 'ressource:write'])]
@@ -70,7 +74,6 @@ class RessourceAPI
 
     #[Groups(['ressource:read', 'ressource:write'])]
     public ?CategorieAPI $categorie = null;
-
     /**
      * @var array<int, VoirRessourceAPI>
      */

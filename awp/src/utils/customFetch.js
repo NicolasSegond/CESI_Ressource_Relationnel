@@ -9,7 +9,7 @@ export async function customFetch(parametres, connecter = true) {
     let requeteConfig = {
         method: parametres.method ? parametres.method : 'GET',
         headers: parametres.headers ? parametres.headers : {},
-        body: parametres.body ? JSON.stringify(parametres.body) : null
+        body: parametres.body ? parametres.body : null
     };
 
     try {

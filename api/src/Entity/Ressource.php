@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 #[ORM\Entity(repositoryClass: RessourceRepository::class)]
 class Ressource
@@ -18,6 +19,9 @@ class Ressource
 
     #[ORM\Column(length: 255)]
     private ?string $titre = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $miniature = null;
 
     #[ORM\Column(length: 1000)]
     private ?string $contenu = null;
@@ -59,6 +63,9 @@ class Ressource
     #[ORM\OneToMany(mappedBy: 'Ressource', targetEntity: VoirRessource::class, cascade: ['persist'], orphanRemoval: true)]
     private Collection $voirRessources;
 
+    #[ORM\OneToMany(mappedBy: 'ressource', targetEntity: Fichier::class, cascade: ['persist'], orphanRemoval: true)]
+    private Collection $fichiers;
+
 
     public function __construct()
     {
@@ -66,6 +73,7 @@ class Ressource
         $this->commentaires = new ArrayCollection();
         $this->progressions = new ArrayCollection();
         $this->typeRelations = new ArrayCollection();
+        $this->fichiers = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -306,5 +314,45 @@ class Ressource
         }
 
         return $this;
+    }
+
+    /**
+     * @return Collection<int, Fichier>
+     */
+    public function getFichiers(): Collection
+    {
+        return $this->fichiers;
+    }
+
+    public function addFichier(Fichier $fichier): static
+    {
+        if (!$this->fichiers->contains($fichier)) {
+            $this->fichiers->add($fichier);
+            $fichier->setRessource($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFichier(Fichier $fichier): static
+    {
+        if ($this->fichiers->removeElement($fichier)) {
+            // set the owning side to null (unless already changed)
+            if ($fichier->getRessource() === $this) {
+                $fichier->setRessource(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getMiniature(): ?string
+    {
+        return $this->miniature;
+    }
+
+    public function setMiniature(?string $miniature): void
+    {
+        $this->miniature = $miniature;
     }
 }
