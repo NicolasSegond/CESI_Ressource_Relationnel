@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React from "react";
 import {Chip, FormControl, InputLabel, MenuItem, OutlinedInput, Select} from "@mui/material";
 import {Form} from 'react-router-dom';
 import 'react-quill/dist/quill.snow.css';
@@ -142,9 +142,9 @@ const MyForm = ({formData, onChange, onSubmit, buttonText, buttonDisabled}) => {
                                     <>
                                         <p className={"select-label"}
                                            style={{marginBlockStart: "10px"}}>{field.label}</p>
-                                        <label htmlFor="images" className={field.className}>
+                                        <label htmlFor={field.name} className={field.className}>
                                             <input style={{marginTop: "10px", marginBottom: "10px"}} type="file"
-                                                   name={field.name} id="images" multiple={field.ismultiple} ref={field.ref} required/>
+                                                   name={field.name} id={field.name} multiple={field.ismultiple} ref={field.ref} required={field.required}/>
                                         </label>
                                     </>
                                 )}

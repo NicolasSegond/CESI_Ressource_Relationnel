@@ -107,7 +107,7 @@ class RessourceApiToEntityMapper implements MapperInterface
             ]));
         }
 
-        if($dto->typeDeRessource == ""){
+        if($dto->typeDeRessource == null){
             throw new HttpException(400, 'Le type de ressource ne peut pas être vide');
         } else{
             $entity->setTypeDeRessource($this->microMapper->map($dto->typeDeRessource, TypeDeRessource::class, [

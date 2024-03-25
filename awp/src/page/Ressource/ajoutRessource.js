@@ -13,14 +13,11 @@ const options = [
 ]
 
 const AjoutRessource = () => {
-    const [openAlert, setOpenAlert] = React.useState(false);
-    const [alertSeverity, setAlertSeverity] = React.useState('');
-    const [alertMessage, setAlertMessage] = React.useState('');
-
+    const [alerts, setAlerts] = React.useState([]);
 
     const [relation, setRelation] = React.useState([]);
-    const [categorie, setCategorie] = React.useState('');
-    const [typeRessource, setTypeRessource] = React.useState('');
+    const [categorie, setCategorie] = React.useState(null);
+    const [typeRessource, setTypeRessource] = React.useState(null);
     const [tags, setTags] = React.useState(null);
     const [tagsID, setTagsID] = React.useState(null);
     const [editorContent, setEditorContent] = React.useState(null);
@@ -33,9 +30,13 @@ const AjoutRessource = () => {
 
     const data = useLoaderData().data;
 
-    const handleCloseAlert = () => {
-        setOpenAlert(false);
-    }
+    const addAlert = (severity, message) => {
+        setAlerts(prevAlerts => [...prevAlerts, { severity, message }]);
+    };
+
+    const handleCloseAlert = (index) => {
+        setAlerts(prevAlerts => prevAlerts.filter((_, i) => i !== index));
+    };
 
     const handleRelationChange = (e) => {
         if (e.target.value.length <= 3) {
@@ -89,9 +90,11 @@ const AjoutRessource = () => {
             select_type: "telechargement",
             label: "Miniature de la ressource :",
             alignment: "droite",
+            name: "miniature",
             className: "miniature-container",
             ismultiple: false,
-            ref: miniature
+            ref: miniature,
+            required: true
         },
         {
             select_type: "tags",
@@ -141,7 +144,8 @@ const AjoutRessource = () => {
             name: "pieces_jointes",
             className: "drop-container",
             ismultiple: true,
-            ref: piece_jointes
+            ref: piece_jointes,
+            required: false
         }
     ];
 
@@ -166,7 +170,7 @@ const AjoutRessource = () => {
 
         const body = {
             titre: titre.current.value,
-            miniature: miniature.current.files[0].name,
+            miniature: miniature.current.files && miniature.current.files[0] ? miniature.current.files[0].name : null,
             contenu: editorContent,
             dateCreation: new Date(),
             dateModification: new Date(),
@@ -174,9 +178,9 @@ const AjoutRessource = () => {
             proprietaire: `/api/utilisateurs/` + idUser,
             statut: '/api/statuts/2',
             visibilite: tagsID != null ? '/api/visibilites/' + tagsID : null,
-            typeDeRessource: typeRessource !== '' ? '/api/type_de_ressources/' + typeRessource : '',
+            typeDeRessource: typeRessource !== null ? '/api/type_de_ressources/' + typeRessource : null,
             typeRelations: formattedTypeRelations,
-            categorie: categorie !== "" ? '/api/categories/' + categorie : ""
+            categorie: categorie !== null ? '/api/categories/' + categorie : null
         };
 
         const formData = new FormData();
@@ -203,13 +207,9 @@ const AjoutRessource = () => {
         const dataResp = data;
 
         if (error) {
-            setOpenAlert(true);
-            setAlertSeverity('error');
-            setAlertMessage(error.message);
+            addAlert('error', error.message)
         } else {
-            setOpenAlert(true);
-            setAlertSeverity('success');
-            setAlertMessage('Ressource ajoutée avec succès');
+            addAlert('success', 'Ressource ajoutée avec succès')
 
             formData.append('idRessource', dataResp['id']);
 
@@ -219,13 +219,9 @@ const AjoutRessource = () => {
             });
 
             if (!response) {
-                setOpenAlert(true);
-                setAlertSeverity('error');
-                setAlertMessage('Erreur lors de l\'ajout des pièces jointes');
+                addAlert('error', 'Erreur lors de l\'ajout des pièces jointes')
             } else {
-                setOpenAlert(true);
-                setAlertSeverity('success');
-                setAlertMessage('Pièces jointes ajoutées avec succès');
+                addAlert('success', 'Pièces jointes ajoutées avec succès')
             }
         }
     }
@@ -238,7 +234,15 @@ const AjoutRessource = () => {
                 onSubmit={handleSubmit}
                 buttonText={"Ajouter la ressource"}
             />
-            <CustomAlert open={openAlert} message={alertMessage} handleClose={handleCloseAlert} severity={alertSeverity}/>
+            {alerts.map((alert, index) => (
+                <CustomAlert
+                    key={index}
+                    open={true}
+                    message={alert.message}
+                    handleClose={() => handleCloseAlert(index)}
+                    severity={alert.severity}
+                />
+            ))}
         </>
     );
 }

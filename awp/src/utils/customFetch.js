@@ -64,6 +64,7 @@ export async function customFetch(parametres, connecter = true) {
             }
         }
     } catch (err) {
+        console.log(err);
         if (err.message && err.message.includes('JWT token non trouvé')) {
             err.message = 'DECONNEXION NECESSAIRE - JWT Token non trouvé';
         }
@@ -77,18 +78,16 @@ export async function customFetch(parametres, connecter = true) {
 
 
 export function expirationErrorTestAndThrower(connecter, data, res, avantDeuxiemeEssai = false) {
-    if (data.message && typeof data.message === 'string') {
-        if (connecter && data.message === 'Expired JWT Token') {
+    if (data.detail && typeof data.detail === 'string') {
+        if (connecter && data.detail === 'Expired JWT Token') {
             if (avantDeuxiemeEssai) {
                 return true;
             } else {
                 throw new Error('DECONNEXION NECESSAIRE - Token expiré même après rafraîchissement. ');
             }
         } else {
-            if (data.code) {
-                throw new Error(data.message);
-            }
-            throw new Error(data.message);        }
+            throw new Error(data.detail);
+        }
     } else {
         throw new Error('Mauvaise réponse du serveur');
     }
