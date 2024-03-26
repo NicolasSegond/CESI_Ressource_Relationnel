@@ -6,7 +6,7 @@ const CustomAlert = ({ open, handleClose, message,severity }) => {
     return (
         <>
             {open && ( // Afficher l'alerte uniquement si open est true
-                <Alert sx={{position: 'absolute', top: '20px', zIndex: 999, left: '50%', transform: 'translate(-50%)'}} icon={<CheckIcon fontSize="inherit" />} onClose={handleClose} severity={severity}>
+                <Alert sx={{position: 'fixed', top: '20px', zIndex: 999, left: '50%', transform: 'translate(-50%)'}} icon={<CheckIcon fontSize="inherit" />} onClose={handleClose} severity={severity}>
                     {message}
                 </Alert>
             )}

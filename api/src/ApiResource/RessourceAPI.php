@@ -7,7 +7,9 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\Entity\Ressource;
 use App\State\DtoToEntityStateProcessor;
 use App\State\EntityToDtoStateProvider;
@@ -21,7 +23,8 @@ use Symfony\Component\Serializer\Attribute\Groups;
         new GetCollection(),
         new Get(),
         new Post(),
-        new Delete()
+        new Delete(),
+        new Patch()
     ],
     normalizationContext: [
         'groups' => ['ressource:read']

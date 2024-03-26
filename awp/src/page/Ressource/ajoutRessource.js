@@ -16,8 +16,8 @@ const AjoutRessource = () => {
     const [alerts, setAlerts] = React.useState([]);
 
     const [relation, setRelation] = React.useState([]);
-    const [categorie, setCategorie] = React.useState(null);
-    const [typeRessource, setTypeRessource] = React.useState(null);
+    const [categorie, setCategorie] = React.useState('');
+    const [typeRessource, setTypeRessource] = React.useState('');
     const [tags, setTags] = React.useState(null);
     const [tagsID, setTagsID] = React.useState(null);
     const [editorContent, setEditorContent] = React.useState(null);
@@ -168,6 +168,15 @@ const AjoutRessource = () => {
             formattedTypeRelations.push(url);
         }
 
+        const fileName = miniature.current.files[0].name;
+        const fileParts = fileName.split('.');
+        const fileExtension = fileParts[fileParts.length - 1];
+
+        if(fileExtension !== 'jpg' && fileExtension !== 'jpeg' && fileExtension !== 'png') {
+            addAlert('error', 'Le format de la miniature doit être jpg, jpeg ou png');
+            return;
+        }
+
         const body = {
             titre: titre.current.value,
             miniature: miniature.current.files && miniature.current.files[0] ? miniature.current.files[0].name : null,
@@ -178,15 +187,25 @@ const AjoutRessource = () => {
             proprietaire: `/api/utilisateurs/` + idUser,
             statut: '/api/statuts/2',
             visibilite: tagsID != null ? '/api/visibilites/' + tagsID : null,
-            typeDeRessource: typeRessource !== null ? '/api/type_de_ressources/' + typeRessource : null,
+            typeDeRessource: typeRessource !== '' ? '/api/type_de_ressources/' + typeRessource : null,
             typeRelations: formattedTypeRelations,
-            categorie: categorie !== null ? '/api/categories/' + categorie : null
+            categorie: categorie !== '' ? '/api/categories/' + categorie : null
         };
 
         const formData = new FormData();
 
         const files = piece_jointes.current.files;
+
         for (let i = 0; i < files.length; i++) {
+            const fileName = files[i].name;
+            const fileParts = fileName.split('.');
+            const fileExtension = fileParts[fileParts.length - 1];
+
+            if(fileExtension !== 'pdf' && fileExtension !== 'doc' && fileExtension !== 'docx' && fileExtension !== 'ppt' && fileExtension !== 'pptx' && fileExtension !== 'xls' && fileExtension !== 'xlsx' && fileExtension !== 'png' && fileExtension !== 'jpg' && fileExtension !== 'jpeg') {
+                addAlert('error', 'Le format des pièces jointes doit être pdf, doc, docx, ppt, pptx, xls, xlsx, png, jpg ou jpeg');
+                return;
+            }
+
             formData.append('fichiers[]', files[i]);
         }
 
