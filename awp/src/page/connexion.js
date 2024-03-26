@@ -1,47 +1,45 @@
 // Connexion.js
-import React, { useState } from "react";
+import React, {useRef, useState} from "react";
 import MyForm from "../composants/MyForm";
 import {Link,useNavigate} from "react-router-dom";
 import "./Inscription/inscriptionDesign.css";
 
 
 const Connexion = () => {
+    const emailRef = useRef();
+    const passwordRef = useRef()
     const [formData, setFormData] = useState([
-        { label: "Email", type: "email", name: "email", value: "" },
-        { label: "Mot de passe", type: "password", name: "motDePasse", value: "" },
+        { label: "Email", type: "email", name: "email", ref: emailRef },
+        { label: "Mot de passe", type: "password", name: "motDePasse", ref: passwordRef },
     ]);
     const [isPasswordValid, setIsPasswordValid] = useState(false);
     const navigate = useNavigate();
-
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        const newFormData = formData.map((field) => {
-            if (field.name === name) {
-                if (name === "motDePasse") {
-                    setIsPasswordValid(isValidPassword(value));
-                }
-                return { ...field, value };
-            }
-            return field;
-        });
-        setFormData(newFormData);
-    };
 
     const isValidPassword = (password) => {
         const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{13,}$/;
         return regex.test(password);
     };
 
+    const isValidEmail = (email) => {
+        const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        return regex.test(email);
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
-        const motDePasse = formData.find(field => field.name === "motDePasse").value;
+        const motDePasse = passwordRef.current.value;
 
         if (!isValidPassword(motDePasse)) {
             alert("Le mot de passe doit contenir au moins 13 caractères, dont une majuscule, une minuscule, un chiffre et un caractère spécial.");
             return;
         }
 
-        const email = formData.find(field => field.name === "email").value;
+        const email = emailRef.current.value;
+
+        if (!isValidEmail(email)) {
+            alert("L'adresse e-mail doit suivre le format standard avec une partie locale, un '@', suivi d'un nom de domaine. Exemple : utilisateur@domaine.com");
+            return;
+        }
         const body = JSON.stringify({
             email: email,
             password: motDePasse,
@@ -83,13 +81,14 @@ const Connexion = () => {
                     <div className={"title"}>Se Connecter</div>
                     <MyForm
                         formData={formData}
-                        onChange={handleChange}
                         onSubmit={handleSubmit}
                         buttonText="Se connecter"
-                        buttonDisabled={!isPasswordValid}
                     />
                 </div>
-                <p className={"pasDeCompte"}> <Link to="/connexion">Mot de passe Oublié ?</Link></p>
+                <br/>
+                <p className={"pasDeCompte"}> <Link to="/passwordReset">Mot de passe Oublié ?</Link></p>
+                <br/>
+                <p className={"pasDeCompte"}>Vous n’avez pas de compte ? <Link to="/inscription">Inscrivez-vous</Link></p>
             </div>
             <div className={"right-div"}>
                 <img src={"./imageADroite.jpg"} alt={"image représentation"}/>

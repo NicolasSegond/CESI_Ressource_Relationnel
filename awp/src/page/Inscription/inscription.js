@@ -1,39 +1,34 @@
 // Inscription.js
-import React, { useState } from "react";
+import React, {useRef, useState} from "react";
 import MyForm from "../../composants/MyForm";
 import {Link} from 'react-router-dom';
 import "./inscriptionDesign.css";
 import {Alert} from "@mui/material";
 import CheckIcon from '@mui/icons-material/Check';
 const Inscription = () => {
+    const nomRef = useRef();
+    const prenomRef = useRef();
+    const emailRef = useRef();
+    const motDePasseRef = useRef();
+    const motDePasseControlRef = useRef();
     const [formData, setFormData] = useState([
-        { type: "text", name: "nom", value: "", label: "Nom" },
-        { type: "text", name: "prenom", value: "", label: "Prénom" },
-        { type: "email", name: "email", value: "", label: "Email" },
-        { type: "password", name: "motDePasse", value: "", label: "Mot de Passe" },
-        { type: "password", name: "motDePasseControl", value: "", label: "Confirmer Mot de Passe" }
+        { type: "text", name: "nom", label: "Nom" , ref:nomRef},
+        { type: "text", name: "prenom", label: "Prénom" , ref:prenomRef},
+        { type: "email", name: "email", label: "Email" , ref:emailRef},
+        { type: "password", name: "motDePasse",  label: "Mot de Passe" , ref:motDePasseRef},
+        { type: "password", name: "motDePasseControl", label: "Confirmer Mot de Passe", ref: motDePasseControlRef}
     ]);
 
     const [alertType, setAlertType] = useState(null);
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        const newFormData = formData.map((field) => {
-            if (field.name === name) {
-                return { ...field, value };
-            }
-            return field;
-        });
-        setFormData(newFormData);
-    };
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         // Contrôles de saisie côté front-end
-        const nom = formData.find(field => field.name === "nom").value;
-        const prenom = formData.find(field => field.name === "prenom").value;
-        const email = formData.find(field => field.name === "email").value;
-        const motDePasse = formData.find(field => field.name === "motDePasse").value;
-        const motDePasseControl = formData.find(field => field.name === "motDePasseControl").value;
+        const nom = nomRef.current.value;
+        const prenom = prenomRef.current.value;
+        const email = emailRef.current.value;
+        const motDePasse = motDePasseRef.current.value;
+        const motDePasseControl = motDePasseControlRef.current.value;
 
         const regexPass = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{13,}$/;
         if (motDePasse !== motDePasseControl) {
@@ -98,15 +93,19 @@ const Inscription = () => {
                 });
 
 
-
+            nomRef.current.value = "";
+            prenomRef.current.value = "";
+            emailRef.current.value = "";
+            motDePasseRef.current.value = "";
+            motDePasseControlRef.current.value = "";
 
             // Reset the form fields
             setFormData([
-                { type: "text", name: "nom", value: "", label: "Nom" },
-                { type: "text", name: "prenom", value: "", label: "Prénom" },
-                { type: "email", name: "email", value: "", label: "Email" },
-                { type: "password", name: "motDePasse", value: "", label: "Mot de Passe" },
-                { type: "password", name: "motDePasseControl", value: "", label: "Confirmer Mot de Passe" }
+                { type: "text", name: "nom", label: "Nom" , ref:nomRef},
+                { type: "text", name: "prenom", label: "Prénom" , ref:prenomRef},
+                { type: "email", name: "email", label: "Email" , ref:emailRef},
+                { type: "password", name: "motDePasse",  label: "Mot de Passe" , ref:motDePasseRef},
+                { type: "password", name: "motDePasseControl", label: "Confirmer Mot de Passe", ref: motDePasseControlRef}
             ]);
         } catch (error) {
             alert("API ERROR : contactez un administrateur!");
@@ -125,7 +124,6 @@ const Inscription = () => {
                     <div className={"title"}>S'inscrire</div>
                     <MyForm
                         formData={formData}
-                        onChange={handleChange}
                         onSubmit={handleSubmit}
                         buttonText="S'inscrire"
                         buttonDisabled={false}
