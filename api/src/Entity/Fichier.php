@@ -21,10 +21,10 @@ class Fichier
     private ?string $nom = null;
 
     #[ORM\Column]
-    private ?int $size = null;
+    private ?int $taille = null;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
-    private ?\DateTimeImmutable $date = null;
+    private ?\DateTimeImmutable $creation = null;
 
     public function getId(): ?int
     {
@@ -55,27 +55,38 @@ class Fichier
         return $this;
     }
 
-    public function getSize(): ?int
+    public function getTaille(): ?int
     {
-        return $this->size;
+        return $this->taille;
     }
 
-    public function setSize(int $size): static
+    public function setTaille(int $taille): static
     {
-        $this->size = $size;
+        $this->taille = $taille;
 
         return $this;
     }
 
-    public function getDate(): ?\DateTimeImmutable
+    public function getCreation(): ?\DateTimeImmutable
     {
-        return $this->date;
+        return $this->creation;
     }
 
-    public function setDate(\DateTimeImmutable $date): static
+    public function setCreation(\DateTimeImmutable $creation): static
     {
-        $this->date = $date;
+        $this->creation = $creation;
 
         return $this;
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'ressource' => $this->ressource->getId(),
+            'nom' => $this->nom,
+            'taille' => $this->taille,
+            'creation' => $this->creation->format('Y-m-d H:i:s'),
+        ];
     }
 }

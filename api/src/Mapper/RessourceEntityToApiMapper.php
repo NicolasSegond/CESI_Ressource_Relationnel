@@ -10,11 +10,10 @@ use App\ApiResource\TypeDeRessourceAPI;
 use App\ApiResource\TypeRelationAPI;
 use App\ApiResource\UtilisateurAPI;
 use App\ApiResource\VisibiliteAPI;
-use App\ApiResource\VoirRessourceAPI;
 use App\Entity\Commentaire;
 use App\Entity\Ressource;
 use App\Entity\TypeRelation;
-use App\Entity\VoirRessource;
+use App\Entity\Utilisateur;
 use Symfonycasts\MicroMapper\AsMapper;
 use Symfonycasts\MicroMapper\MapperInterface;
 use Symfonycasts\MicroMapper\MicroMapperInterface;
@@ -77,8 +76,8 @@ class RessourceEntityToApiMapper implements MapperInterface
             MicroMapperInterface::MAX_DEPTH => 1,
         ]);
 
-        $dto->typeRelations = array_map(function (TypeRelation $voirRessource) {
-            return $this->microMapper->map($voirRessource, TypeRelationAPI::class, [
+        $dto->typeRelations = array_map(function (TypeRelation $typeRelation) {
+            return $this->microMapper->map($typeRelation, TypeRelationAPI::class, [
                 MicroMapperInterface::MAX_DEPTH => 1,
             ]);
         }, $entity->getTypeRelations()->getValues());
@@ -87,17 +86,17 @@ class RessourceEntityToApiMapper implements MapperInterface
             MicroMapperInterface::MAX_DEPTH => 1,
         ]);
 
-        $dto->voirRessources = array_map(function (VoirRessource $voirRessource) {
-            return $this->microMapper->map($voirRessource, VoirRessourceAPI::class, [
-                MicroMapperInterface::MAX_DEPTH => 1,
-            ]);
-        }, $entity->getVoirRessources()->getValues());
-
         $dto->commentaires = array_map(function (Commentaire $commentaire) {
             return $this->microMapper->map($commentaire, CommentaireAPI::class, [
-                MicroMapperInterface::MAX_DEPTH => 1,
+                MicroMapperInterface::MAX_DEPTH => 3,
             ]);
         }, $entity->getCommentaires()->getValues());
+
+        $dto->voirRessource = array_map(function (Utilisateur $utilisateur) {
+            return $this->microMapper->map($utilisateur, UtilisateurAPI::class, [
+                MicroMapperInterface::MAX_DEPTH => 1,
+            ]);
+        } , $entity->getVoirRessource()->getValues());
 
         // Retourne l'API Utilisateur mise à jour.
         return $dto;

@@ -49,16 +49,15 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'Utilisateur', targetEntity: Progression::class)]
     private Collection $progressions;
 
-    #[ORM\OneToMany(mappedBy: 'Utilisateur', targetEntity: VoirRessource::class)]
-    private Collection $voirRessources;
+    #[ORM\ManyToMany(targetEntity: Ressource::class, mappedBy: 'voirRessource')]
+    private Collection $ressources;
 
     public function __construct()
     {
         $this->proprietaireRessource = new ArrayCollection();
-        $this->voirRessources = new ArrayCollection();
         $this->commentaires = new ArrayCollection();
         $this->progressions = new ArrayCollection();
-        $this->Ressource = new ArrayCollection();
+        $this->ressources = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -260,31 +259,41 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @return Collection<int, VoirRessource>
-     */
-    public function getVoirRessources(): Collection
+    public function toArray(): array
     {
-        return $this->voirRessources;
+        return [
+            'id' => $this->id,
+            'email' => $this->email,
+            'nom' => $this->nom,
+            'prenom' => $this->prenom,
+            'roles' => $this->roles,
+            'code' => $this->code,
+            'verif' => $this->verif,
+        ];
     }
 
-    public function addVoirRessource(VoirRessource $voirRessource): static
+    /**
+     * @return Collection<int, Ressource>
+     */
+    public function getRessources(): Collection
     {
-        if (!$this->voirRessources->contains($voirRessource)) {
-            $this->voirRessources->add($voirRessource);
-            $voirRessource->setUtilisateur($this);
+        return $this->ressources;
+    }
+
+    public function addRessource(Ressource $ressource): static
+    {
+        if (!$this->ressources->contains($ressource)) {
+            $this->ressources->add($ressource);
+            $ressource->addVoirRessource($this);
         }
 
         return $this;
     }
 
-    public function removeVoirRessource(VoirRessource $voirRessource): static
+    public function removeRessource(Ressource $ressource): static
     {
-        if ($this->voirRessources->removeElement($voirRessource)) {
-            // set the owning side to null (unless already changed)
-            if ($voirRessource->getUtilisateur() === $this) {
-                $voirRessource->setUtilisateur(null);
-            }
+        if ($this->ressources->removeElement($ressource)) {
+            $ressource->removeVoirRessource($this);
         }
 
         return $this;

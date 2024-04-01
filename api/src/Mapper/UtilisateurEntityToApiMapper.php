@@ -2,13 +2,10 @@
 
 namespace App\Mapper;
 
-use App\ApiResource\FilesAPI;
-use App\ApiResource\UserAPI;
+use App\ApiResource\RessourceAPI;
 use App\ApiResource\UtilisateurAPI;
-use App\Entity\Files;
-use App\Entity\User;
+use App\Entity\Ressource;
 use App\Entity\Utilisateur;
-use Doctrine\Common\Collections\Collection;
 use Symfonycasts\MicroMapper\AsMapper;
 use Symfonycasts\MicroMapper\MapperInterface;
 use Symfonycasts\MicroMapper\MicroMapperInterface;
@@ -56,6 +53,12 @@ class UtilisateurEntityToApiMapper implements MapperInterface
         $dto->roles = $entity->getRoles();
         $dto->code = $entity->getCode();
         $dto->verif = $entity->getVerif();
+
+        $dto->ressources = array_map(function (Ressource $ressource) {
+            return $this->microMapper->map($ressource, RessourceAPI::class, [
+                MicroMapperInterface::MAX_DEPTH => 1,
+            ]);
+        } , $entity->getRessources()->getValues());
 
         // Retourne l'API Utilisateur mise à jour.
         return $dto;

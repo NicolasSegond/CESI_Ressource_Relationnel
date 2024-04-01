@@ -70,6 +70,6 @@ class UtilisateurAPI
     #[Groups('ressource:read')]
     public ?bool $verif = false;
 
-    #[Groups(['ressource:read'])]
-    public ?array $voirRessources = [];
+    #[Groups('ressource:read')]
+    public array $ressources = [];
 }

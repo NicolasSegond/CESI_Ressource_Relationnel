@@ -23,7 +23,7 @@ class Ressource
     #[ORM\Column(length: 255)]
     private ?string $miniature = null;
 
-    #[ORM\Column(length: 1000)]
+    #[ORM\Column(length: 10000)]
     private ?string $contenu = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
@@ -60,20 +60,20 @@ class Ressource
     #[ORM\OneToMany(mappedBy: 'Ressource', targetEntity: Progression::class, cascade: ['persist'], orphanRemoval: true)]
     private Collection $progressions;
 
-    #[ORM\OneToMany(mappedBy: 'Ressource', targetEntity: VoirRessource::class, cascade: ['persist'], orphanRemoval: true)]
-    private Collection $voirRessources;
-
     #[ORM\OneToMany(mappedBy: 'ressource', targetEntity: Fichier::class, cascade: ['persist'], orphanRemoval: true)]
     private Collection $fichiers;
 
+    #[ORM\ManyToMany(targetEntity: Utilisateur::class, inversedBy: 'ressources')]
+    #[ORM\JoinTable(name: 'voirRessource')]
+    private Collection $voirRessource;
 
     public function __construct()
     {
-        $this->voirRessources = new ArrayCollection();
         $this->commentaires = new ArrayCollection();
         $this->progressions = new ArrayCollection();
         $this->typeRelations = new ArrayCollection();
         $this->fichiers = new ArrayCollection();
+        $this->voirRessource = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -287,36 +287,6 @@ class Ressource
     }
 
     /**
-     * @return Collection<int, VoirRessource>
-     */
-    public function getVoirRessources(): Collection
-    {
-        return $this->voirRessources;
-    }
-
-    public function addVoirRessource(VoirRessource $voirRessource): static
-    {
-        if (!$this->voirRessources->contains($voirRessource)) {
-            $this->voirRessources->add($voirRessource);
-            $voirRessource->setRessource($this);
-        }
-
-        return $this;
-    }
-
-    public function removeVoirRessource(VoirRessource $voirRessource): static
-    {
-        if ($this->voirRessources->removeElement($voirRessource)) {
-            // set the owning side to null (unless already changed)
-            if ($voirRessource->getRessource() === $this) {
-                $voirRessource->setRessource(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
      * @return Collection<int, Fichier>
      */
     public function getFichiers(): Collection
@@ -355,4 +325,71 @@ class Ressource
     {
         $this->miniature = $miniature;
     }
+
+    public function toArray(): array
+    {
+        $commentaires = [];
+        foreach ($this->commentaires as $commentaire) {
+            $commentaires[] = $commentaire->toArray();
+        }
+
+        $progressions = [];
+        foreach ($this->progressions as $progression) {
+            $progressions[] = $progression->toArray();
+        }
+
+        $typeRelations = [];
+        foreach ($this->typeRelations as $typeRelation) {
+            $typeRelations[] = $typeRelation->toArray();
+        }
+
+        $fichiers = [];
+        foreach ($this->fichiers as $fichier) {
+            $fichiers[] = $fichier->toArray();
+        }
+
+        return [
+            'id' => $this->id,
+            'titre' => $this->titre,
+            'miniature' => $this->miniature,
+            'contenu' => $this->contenu,
+            'dateCreation' => $this->dateCreation,
+            'dateModification' => $this->dateModification,
+            'nombreVue' => $this->nombreVue,
+            'proprietaire' => ($this->proprietaire) ? $this->proprietaire->toArray() : null,
+            'statut' => ($this->statut) ? $this->statut->toArray() : null,
+            'visibilite' => ($this->visibilite) ? $this->visibilite->toArray() : null,
+            'typeDeRessource' => ($this->typeDeRessource) ? $this->typeDeRessource->toArray() : null,
+            'typeRelations' => $typeRelations,
+            'categorie' => ($this->categorie) ? $this->categorie->toArray() : null,
+            'commentaires' => $commentaires,
+            'progressions' => $progressions,
+            'fichier' => $fichiers,
+        ];
+    }
+
+    /**
+     * @return Collection<int, Utilisateur>
+     */
+    public function getVoirRessource(): Collection
+    {
+        return $this->voirRessource;
+    }
+
+    public function addVoirRessource(Utilisateur $voirRessource): static
+    {
+        if (!$this->voirRessource->contains($voirRessource)) {
+            $this->voirRessource->add($voirRessource);
+        }
+
+        return $this;
+    }
+
+    public function removeVoirRessource(Utilisateur $voirRessource): static
+    {
+        $this->voirRessource->removeElement($voirRessource);
+
+        return $this;
+    }
+
 }

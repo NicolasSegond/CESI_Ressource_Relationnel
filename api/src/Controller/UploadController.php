@@ -63,13 +63,13 @@ class UploadController extends AbstractController
 
                     // Vérifier si le fichier existe avant de récupérer sa taille
                     if (file_exists('images/book/' . $fileName)) {
-                        $image->setSize($size);
+                        $image->setTaille($size);
                     } else {
                         // Handle the case where file doesn't exist
                         // You can set a default size or handle it as per your application's requirements
-                        $image->setSize(0);
+                        $image->setTaille(0);
                     }
-                    $image->setDate(new \DateTimeImmutable());
+                    $image->setCreation(new \DateTimeImmutable());
 
                     // Ajouter l'image à la collection d'images du livre
                     $Ressource->addFichier($image);
@@ -102,13 +102,13 @@ class UploadController extends AbstractController
 
                 // Vérifier si le fichier existe avant de récupérer sa taille
                 if (file_exists('images/book/' . $fileName)) {
-                    $image->setSize($size);
+                    $image->setTaille($size);
                 } else {
                     // Handle the case where file doesn't exist
                     // You can set a default size or handle it as per your application's requirements
-                    $image->setSize(0);
+                    $image->setTaille(0);
                 }
-                $image->setDate(new \DateTimeImmutable());
+                $image->setCreation(new \DateTimeImmutable());
 
                 // Ajouter l'image à la collection d'images du livre
                 $Ressource->addFichier($image);

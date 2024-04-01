@@ -4,10 +4,7 @@ namespace App\Mapper;
 
 use App\ApiResource\FichierAPI;
 use App\ApiResource\RessourceAPI;
-use App\ApiResource\UtilisateurAPI;
-use App\ApiResource\VoirRessourceAPI;
 use App\Entity\Fichier;
-use App\Entity\VoirRessource;
 use Symfonycasts\MicroMapper\AsMapper;
 use Symfonycasts\MicroMapper\MapperInterface;
 use Symfonycasts\MicroMapper\MicroMapperInterface;
