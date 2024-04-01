@@ -11,10 +11,7 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
-use ApiPlatform\Serializer\Filter\PropertyFilter;
-use App\Controller\OptionsController;
 use App\Controller\RessourceController;
-use App\Entity\Categorie;
 use App\Entity\Ressource;
 use App\State\DtoToEntityStateProcessor;
 use App\State\EntityToDtoStateProvider;
@@ -44,10 +41,6 @@ use Symfony\Component\Serializer\Attribute\Groups;
 #[ApiResource(
     shortName: 'Ressource',
     operations: [
-        new GetCollection(
-            uriTemplate: '/visibilite/ressources',
-            controller: RessourceController::class,
-        ),
         new Post(uriTemplate: '/ressources/{id}/voir', controller: RessourceController::class . '::voir'),
         new Delete(uriTemplate: '/ressources/{id}/voir', controller: RessourceController::class . '::nePlusVoir'),
     ],
