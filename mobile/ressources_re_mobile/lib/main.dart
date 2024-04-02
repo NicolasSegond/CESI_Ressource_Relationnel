@@ -32,6 +32,7 @@ class _MyAppState extends State<MyApp> {
       home: Scaffold(
         appBar: AppBar(
             title: [
+          Text("Inscription"),
           Text("Connexion"),
           Text("Login"),
           Text("Catalogue"),

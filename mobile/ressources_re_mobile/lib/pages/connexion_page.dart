@@ -1,6 +1,9 @@
 ///File download from FlutterViz- Drag and drop a tools. For more details visit https://flutterviz.io/
 
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:ressources_re_mobile/services/connect.dart';
+
 
 class login extends StatelessWidget {
   @override
@@ -16,7 +19,7 @@ class login extends StatelessWidget {
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height * 0.35000000000000003,
             decoration: BoxDecoration(
-              color: Color(0xff3a57e8),
+              color: Color.fromRGBO(3,152,158, 1),
               shape: BoxShape.rectangle,
               borderRadius: BorderRadius.zero,
               border: Border.all(color: Color(0x4d9e9e9e), width: 1),
@@ -43,10 +46,9 @@ class login extends StatelessWidget {
                   children: [
                     ///***If you have exported images you must have to copy those images in assets/images directory.
                     Image(
-                      image: NetworkImage(
-                          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRoSL4WHG5Ypv4e4W58d5Gt4PnBEM_kZQDDhAKjZAOYLBy6V1karPn2SMil6DFkjUUeX7M&usqp=CAU"),
-                      height: 100,
-                      width: 100,
+                       image: AssetImage("assets/img/logo.png"),
+                      height: 200,
+                      width: 200,
                       fit: BoxFit.cover,
                     ),
                     Padding(
@@ -96,7 +98,7 @@ class login extends StatelessWidget {
                             borderSide:
                                 BorderSide(color: Color(0xff000000), width: 1),
                           ),
-                          hintText: "Enter Email",
+                          hintText: "Mail",
                           hintStyle: TextStyle(
                             fontWeight: FontWeight.w400,
                             fontStyle: FontStyle.normal,
@@ -137,7 +139,7 @@ class login extends StatelessWidget {
                           borderSide:
                               BorderSide(color: Color(0xff000000), width: 1),
                         ),
-                        hintText: "Enter Password",
+                        hintText: "Mot De Passe",
                         hintStyle: TextStyle(
                           fontWeight: FontWeight.w400,
                           fontStyle: FontStyle.normal,
@@ -155,7 +157,7 @@ class login extends StatelessWidget {
                       child: Align(
                         alignment: Alignment.centerRight,
                         child: Text(
-                          "Forgot Password?",
+                          "Mot de passe oublié?",
                           textAlign: TextAlign.start,
                           overflow: TextOverflow.clip,
                           style: TextStyle(
@@ -168,8 +170,8 @@ class login extends StatelessWidget {
                       ),
                     ),
                     MaterialButton(
-                      onPressed: () {},
-                      color: Color(0xff3a57e8),
+                      onPressed: () { Connect.login("toto","toto");},
+                      color: Color.fromRGBO(3,152,158, 1),
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16.0),
