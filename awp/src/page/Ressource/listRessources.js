@@ -18,7 +18,7 @@ function ListRessources() {
             {ressources.map(ressource => (
                 <CardRessource
                     key={ressource['@id']}
-                    imageUrl={ressource.miniature} // Utilisez la propriété miniature pour l'URL de l'image
+                    imageUrl={"http://127.0.0.1:8000/images/book/"+ressource.miniature} // Utilisez la propriété miniature pour l'URL de l'image
                     title={ressource.titre}
                     description={ressource.contenu} // Utilisez la propriété contenu pour la description
                 />
