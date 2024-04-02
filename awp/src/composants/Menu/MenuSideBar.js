@@ -31,7 +31,7 @@ const SideBar = ({ isOpen, toggleSidebar, token }) => {
 
     const menuItems = [
         { icon: <DashboardIcon className={"icon"}/>, texte: "Tableau de bord", chemin: "/inscription", tokenNecessaire: true },
-        { icon: <LibraryBooksIcon className={"icon"} />, texte: "Catalogue des ressources", chemin: "/inscription" },
+        { icon: <LibraryBooksIcon className={"icon"} />, texte: "Catalogue des ressources", chemin: "/ressource/lists" },
         { icon: <IosShareIcon className={"icon"} />, texte: "Fichiers partagés", chemin: "/inscription", tokenNecessaire: true },
         { icon: <StarIcon className={"icon"} />, texte: "Favoris", chemin: "/inscription", tokenNecessaire: true },
         { icon: <IosShareIcon className={"icon"} />, texte: "Administration", chemin: "/inscription", tokenNecessaire: true, estAdmin: true },

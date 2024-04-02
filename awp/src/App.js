@@ -7,6 +7,7 @@ import Root from "./page/Root/Root";
 import Deconnexion, {loader as deconnexionLoader} from "./page/Deconnexion/deconnexion";
 import AjoutRessource, {loader as AjoutLoader} from "./page/Ressource/ajoutRessource";
 import VerifCodeInscription from "./page/verifCodeInscription";
+import ListRessources from "./page/Ressource/listRessources";
 
 function App() {
     const router = createBrowserRouter([
@@ -18,6 +19,11 @@ function App() {
                     path: '/ressource/ajout',
                     element: <AjoutRessource />,
                     loader: AjoutLoader
+                },
+                {
+                    path: '/ressource/lists',
+                    element: <ListRessources/>,
+                   // loader: deconnexionLoader,
                 },
                 {
                     path: '/verifCode/:id/:code',

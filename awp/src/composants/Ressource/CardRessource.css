@@ -1,0 +1,28 @@
+.card {
+    margin-top: 1%;
+    border-radius: 40px;
+    background: #ffffff;
+    box-shadow: 5px 5px 14px #8a8a8a, -5px -5px 14px #ffffff;
+    display: flex; /* Utilisation de flexbox pour aligner verticalement l'image et le contenu */
+}
+
+.card-image {
+    width: 15%; /* Largeur fixe de l'image */
+    height: 15%; /* Hauteur fixe de l'image */
+    object-fit: cover; /* L'image est redimensionnée pour remplir le cadre tout en préservant ses proportions, elle sera rognée si nécessaire */
+    border-radius: 30px; /* Pour correspondre au coin arrondi de la carte */
+    padding: 1%;
+}
+
+.card-content {
+    flex-grow: 1; /* Pour que le contenu occupe tout l'espace disponible */
+}
+
+.card-title {
+    font-size: 1.2em;
+    margin-bottom: 8px;
+}
+
+.card-description {
+    font-size: 1em;
+}
