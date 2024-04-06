@@ -39,10 +39,10 @@ use Symfony\Component\Serializer\Attribute\Groups;
     stateOptions: new Options(entityClass: Ressource::class),
 )]
 #[ApiResource(
-    shortName: 'Ressource',
+    shortName: 'VoirRessource',
     operations: [
-        new Post(uriTemplate: '/ressources/{id}/voir', controller: RessourceController::class . '::voir'),
-        new Delete(uriTemplate: '/ressources/{id}/voir', controller: RessourceController::class . '::nePlusVoir'),
+        new Post(uriTemplate: '/voir_ressources/{id}/voir', controller: RessourceController::class . '::voir'),
+        new Delete(uriTemplate: '/voir_ressources/{id}/voir', controller: RessourceController::class . '::nePlusVoir'),
     ],
     denormalizationContext: [
         'groups' => ['voirressource:write']
