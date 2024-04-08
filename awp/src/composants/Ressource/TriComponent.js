@@ -8,7 +8,9 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 const TriComponent = ({ label, onChangeTri, categories }) => {
     const handleTriChange = (e) => {
         const { value } = e.target;
-        onChangeTri(label, value);
+        if (value !== undefined) {
+            onChangeTri(value); // Envoyer seulement l'ID sélectionné
+        }
     };
 
     const getLabelProperty = (category) => {
@@ -17,7 +19,7 @@ const TriComponent = ({ label, onChangeTri, categories }) => {
     };
 
     return (
-        <Box sx={{ minWidth: 120 }}>
+            <Box sx={{ width: '100%', maxWidth: 200}}>
             <FormControl fullWidth>
                 <InputLabel id="demo-simple-select-label">{label}</InputLabel>
                 <Select
@@ -25,8 +27,12 @@ const TriComponent = ({ label, onChangeTri, categories }) => {
                     id="demo-simple-select"
                     label={label}
                     onChange={handleTriChange}
+                    defaultValue=""
                 >
-                    {categories.map((category, index) => (
+                    {/* Ajoutez une option vide */}
+                    <MenuItem value="">Aucun</MenuItem>
+                    {/* Mappez les autres options */}
+                    {categories && categories.map((category, index) => (
                         <MenuItem key={index} value={category.id}>{getLabelProperty(category)}</MenuItem>
                     ))}
                 </Select>

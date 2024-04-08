@@ -4,6 +4,9 @@
     background: #ffffff;
     box-shadow: 5px 5px 14px #8a8a8a, -5px -5px 14px #ffffff;
     display: flex; /* Utilisation de flexbox pour aligner verticalement l'image et le contenu */
+    max-width: 70%; /* Limite la largeur de la carte à 300 pixels */
+    max-height: 200px; /* Limite la hauteur de la carte à 300 pixels */
+    overflow: hidden; /* Cache le contenu qui dépasse des dimensions spécifiées */
 }
 
 .card-image {
