@@ -8,6 +8,7 @@ import 'package:ressources_re_mobile/classes/TypeRelation.dart';
 import 'package:ressources_re_mobile/classes/Utilisateur.dart';
 import 'package:ressources_re_mobile/classes/Visibilite.dart';
 import 'package:ressources_re_mobile/classes/VoirRessource.dart';
+import 'package:intl/intl.dart';
 
 class Ressource {
   int? id;
@@ -50,8 +51,21 @@ class Ressource {
     this.contenu = contenu;
   }
 
-  DateTime? getDateCreation() {
-    return dateCreation;
+  String? getDateCreation() {
+    if (dateCreation != null) {
+      Duration difference = DateTime.now().difference(dateCreation!);
+      if (difference.inDays == 0) {
+        return 'Créé aujourd\'hui';
+      } else if (difference.inDays == 1) {
+        return 'Créé hier';
+      } else if (difference.inDays < 30) {
+        return 'Créé il y a ${difference.inDays} jours';
+      } else {
+        return 'Créé le ' + DateFormat('dd-MM-yyyy').format(dateCreation!);
+      }
+    } else {
+      return null;
+    }
   }
 
   void setDateCreation(DateTime dateCreation) {

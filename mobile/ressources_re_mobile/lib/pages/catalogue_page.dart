@@ -5,6 +5,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:ressources_re_mobile/classes/Ressource.dart';
+import 'package:ressources_re_mobile/classes/HydraView.dart';
 
 class Catalogue extends StatefulWidget {
   const Catalogue({Key? key}) : super(key: key);
@@ -15,6 +16,8 @@ class Catalogue extends StatefulWidget {
 
 class _CatalogueState extends State<Catalogue> {
   late List<Ressource> albums;
+  int currentPage = 1; // Variable pour suivre le numéro de la page actuelle
+  HydraView hydraView = HydraView(id: '', first: '', last: '');
 
   List<dynamic> visibilites = [
     {"id": 1, "name": "Public"},
@@ -42,7 +45,7 @@ class _CatalogueState extends State<Catalogue> {
 
   String buildUrlWithFilters(Map<String, List<int>> filters) {
     Map<String, List<String>> params = {
-      'page': ['1'],
+      'page': [currentPage.toString()],
       'visibilite': filters.containsKey('visibilite') ? filters['visibilite']!.map((v) => v.toString()).toList() : [],
       'categorie[]': filters.containsKey('categorie') ? filters['categorie']!.map((v) => v.toString()).toList() : [],
       'typeDeRessource[]': filters.containsKey('typeDeRessource') ? filters['typeDeRessource']!.map((v) => v.toString()).toList() : [],
@@ -71,9 +74,7 @@ class _CatalogueState extends State<Catalogue> {
       final dynamic result = json.decode(response.body);
       final List<dynamic> members = result['hydra:member'];
 
-      for(var member in members) {
-        print(member['id']);
-      }
+      hydraView = HydraView.fromJson(result['hydra:view']);
 
       return members.map((e) => Ressource.fromJson(e)).toList();
     } else {
@@ -96,9 +97,6 @@ class _CatalogueState extends State<Catalogue> {
         resourceTypes = data['resourceTypes'];
         isLoading = false;
       });
-
-      // Appel à fetchAlbum() lors de l'initialisation des données
-      fetchAlbum();
     } else {
       throw Exception('Failed to load data');
     }
@@ -126,6 +124,7 @@ class _CatalogueState extends State<Catalogue> {
                       ElevatedButton(
                         onPressed: () {
                           Navigator.pop(context);
+                          currentPage = 1;
                           fetchAlbum();
                         },
                         child: Text('Appliquer les filtres'),
@@ -178,14 +177,20 @@ class _CatalogueState extends State<Catalogue> {
                 );
               } else if (snapshot.hasError) {
                 return Center(
-                  child: Text('Erreur de chargement des données'),
+                  child: Text(snapshot.error.toString()),
                 );
               } else {
                 albums = snapshot.data;
+
                 return Expanded(
                   child: ListView.builder(
-                    itemCount: albums.length,
+                    itemCount: albums.length + 1,
                     itemBuilder: (context, index) {
+                    if (index == albums.length) {
+                      if(hydraView.id != hydraView.last){
+                        return _buildLoadMoreButton();
+                      }
+                    }else{
                       final album = albums[index];
                       return GestureDetector(
                         onTap: () {
@@ -234,7 +239,7 @@ class _CatalogueState extends State<Catalogue> {
                                           topRight: Radius.circular(15.0),
                                         ),
                                         child: Image(
-                                          image: NetworkImage("http://127.0.0.1:8000/images/book/${album.getMiniature()}"),
+                                          image: NetworkImage("http://127.0.0.1:8000/images/book/" + album.getMiniature()!),
                                           height: 100,
                                           width: MediaQuery.of(context).size.width,
                                           fit: BoxFit.cover,
@@ -254,10 +259,11 @@ class _CatalogueState extends State<Catalogue> {
                                               padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
                                               child: ClipRRect(
                                                 borderRadius: BorderRadius.circular(15.0),
-                                                child: Image.network(
-                                                  "http://127.0.0.1:8000/images/book/valorisation-engagement-png-220-6602ffd2787b5.png",
-                                                  height: 100,
-                                                  width: MediaQuery.of(context).size.width,
+                                                child: Image(
+                                                  image: const NetworkImage(
+                                                      "https://picsum.photos/250?image=9"),
+                                                  height: 40,
+                                                  width: 40,
                                                   fit: BoxFit.cover,
                                                 ),
                                               ),
@@ -268,14 +274,14 @@ class _CatalogueState extends State<Catalogue> {
                                             child: Align(
                                               alignment: Alignment(0.0, 0.6),
                                               child: Text(
-                                                album.getProprietaire()!.getNom()!,
+                                                album.getProprietaire()!.getNom()! + ' ' + album.getProprietaire()!.getPrenom()!,
                                                 textAlign: TextAlign.start,
                                                 overflow: TextOverflow.clip,
                                                 style: TextStyle(
-                                                  fontWeight: FontWeight.w400,
+                                                  fontWeight: FontWeight.w600,
                                                   fontStyle: FontStyle.normal,
                                                   fontSize: 14,
-                                                  color: const Color(0xffffffff),
+                                                  color: const Color(0xff000000),
                                                 ),
                                               ),
                                             ),
@@ -372,60 +378,77 @@ class _CatalogueState extends State<Catalogue> {
                                           flex: 1,
                                           child: Align(
                                             alignment: const Alignment(0.0, -0.5),
-                                            child: Row(
-                                              mainAxisAlignment: MainAxisAlignment.start,
-                                              crossAxisAlignment: CrossAxisAlignment.center,
-                                              mainAxisSize: MainAxisSize.max,
-                                              children: [
-                                                Chip(
-                                                  labelPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 4),
-                                                  label: const Text("Chip View"),
-                                                  labelStyle: const TextStyle(
-                                                    fontSize: 14,
-                                                    fontWeight: FontWeight.w400,
-                                                    fontStyle: FontStyle.normal,
-                                                    color: const Color(0xffffffff),
+                                            child: SingleChildScrollView(
+                                              scrollDirection: Axis.horizontal,
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.start,
+                                                crossAxisAlignment: CrossAxisAlignment.center,
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  // Type de relation
+                                                  ...album.getTypeRelations()!.map((chip) {
+                                                    return Padding(
+                                                      padding: const EdgeInsets.only(right: 5.0),
+                                                      child: Chip(
+                                                        labelPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 4),
+                                                        label: Text(chip.getLibelle()!),
+                                                        labelStyle: const TextStyle(
+                                                          fontSize: 14,
+                                                          fontWeight: FontWeight.w400,
+                                                          fontStyle: FontStyle.normal,
+                                                          color: const Color(0xffffffff),
+                                                        ),
+                                                        backgroundColor: const Color(0xff3a57e8),
+                                                        elevation: 0,
+                                                        shadowColor: const Color(0xff808080),
+                                                        shape: RoundedRectangleBorder(
+                                                          borderRadius: BorderRadius.circular(16.0),
+                                                        ),
+                                                      ),
+                                                    );
+                                                  }),
+                                                  // Catégorie
+                                                  Padding(
+                                                    padding: const EdgeInsets.only(right: 5.0),
+                                                    child: Chip(
+                                                      labelPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 4),
+                                                      label: Text(album.getCategorie()!.getNom()!), // Supposant que `getLibelle()` est la méthode pour récupérer le libellé de la catégorie
+                                                      labelStyle: const TextStyle(
+                                                        fontSize: 14,
+                                                        fontWeight: FontWeight.w400,
+                                                        fontStyle: FontStyle.normal,
+                                                        color: const Color(0xff000000),
+                                                      ),
+                                                      backgroundColor: Color(0xFFFFFFF),
+                                                      elevation: 0,
+                                                      shadowColor: const Color(0xff808080),
+                                                      shape: RoundedRectangleBorder(
+                                                        borderRadius: BorderRadius.circular(16.0),
+                                                      ),
+                                                    ),
                                                   ),
-                                                  backgroundColor: const Color(0xff3a57e8),
-                                                  elevation: 0,
-                                                  shadowColor: const Color(0xff808080),
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius: BorderRadius.circular(16.0),
+                                                  // Type de ressource
+                                                  Padding(
+                                                    padding: const EdgeInsets.only(right: 5.0),
+                                                    child: Chip(
+                                                      labelPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 4),
+                                                      label: Text(album.getTypeDeRessource()!.getLibelle()!), // Supposant que `getLibelle()` est la méthode pour récupérer le libellé du type de ressource
+                                                      labelStyle: const TextStyle(
+                                                        fontSize: 14,
+                                                        fontWeight: FontWeight.w400,
+                                                        fontStyle: FontStyle.normal,
+                                                        color: const Color(0xffffffff),
+                                                      ),
+                                                      backgroundColor: Colors.red[600],
+                                                      elevation: 0,
+                                                      shadowColor: const Color(0xff808080),
+                                                      shape: RoundedRectangleBorder(
+                                                        borderRadius: BorderRadius.circular(16.0),
+                                                      ),
+                                                    ),
                                                   ),
-                                                ),
-                                                Chip(
-                                                  labelPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 4),
-                                                  label: const Text("Chip View"),
-                                                  labelStyle: const TextStyle(
-                                                    fontSize: 14,
-                                                    fontWeight: FontWeight.w400,
-                                                    fontStyle: FontStyle.normal,
-                                                    color: const Color(0xffffffff),
-                                                  ),
-                                                  backgroundColor: const Color(0xff3a57e8),
-                                                  elevation: 0,
-                                                  shadowColor: const Color(0xff808080),
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius: BorderRadius.circular(16.0),
-                                                  ),
-                                                ),
-                                                Chip(
-                                                  labelPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 4),
-                                                  label: const Text("Chip View"),
-                                                  labelStyle: const TextStyle(
-                                                    fontSize: 14,
-                                                    fontWeight: FontWeight.w400,
-                                                    fontStyle: FontStyle.normal,
-                                                    color: const Color(0xffffffff),
-                                                  ),
-                                                  backgroundColor: const Color(0xff3a57e8),
-                                                  elevation: 0,
-                                                  shadowColor: const Color(0xff808080),
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius: BorderRadius.circular(16.0),
-                                                  ),
-                                                ),
-                                              ],
+                                                ],
+                                              ),
                                             ),
                                           ),
                                         ),
@@ -438,13 +461,40 @@ class _CatalogueState extends State<Catalogue> {
                           ),
                         ),
                       );
+                      };
                     },
                   ),
                 );
               }
             },
-          )
+          ), 
         ],
+      ),
+    );
+  }
+
+  Widget _buildLoadMoreButton() {
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
+        child: ElevatedButton(
+          onPressed: () {
+            setState(() {
+              currentPage++; // Augmenter le numéro de page
+            });
+            fetchAlbum(); // Appeler fetchAlbum avec la nouvelle page
+          },
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all<Color>(
+              Color(0xFF03989e), // Couleur #03989e
+            ),
+          ),
+          child: Text(
+            'Charger plus',
+            style: TextStyle(color: Colors.white),
+          ),
+        ),
       ),
     );
   }
