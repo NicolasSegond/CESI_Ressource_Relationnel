@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'dart:convert';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:ressources_re_mobile/utilities/authentification.dart';
+import 'package:ressources_re_mobile/utilities/apiConfig.dart';
+import 'package:ressources_re_mobile/utilities/customFetch.dart';
 
 void main() {
   runApp(MyApp());
@@ -21,140 +26,53 @@ class FilterPage extends StatefulWidget {
 }
 
 class _FilterPageState extends State<FilterPage> {
-  List<dynamic> visibilites = [
-    {"id": 1, "name": "Public"},
-    {"id": 2, "name": "Privé"},
-    {"id": 3, "name": "Partage"},
-  ];
-  List<dynamic> categories = [];
-  List<dynamic> relationTypes = [];
-  List<dynamic> resourceTypes = [];
-
-  Map<String, List<int>> selectedFilters = {
-    'Visibilité': [],
-    'Category': [],
-    'Relation Type': [],
-    'Resource Type': [],
-  };
-
-  bool isLoading = false;
+  final storage = FlutterSecureStorage();
+  Map<String, dynamic>? _token;
 
   @override
   void initState() {
     super.initState();
-    fetchData();
+    // Charger le token lors de l'initialisation de la page
+    _loadToken();
   }
 
-  Future<void> fetchData() async {
+  // Fonction pour charger le token depuis Flutter Secure Storage
+  void _loadToken() async {
+    Map<String, dynamic>? token = await getTokenDisconnected();
+
+    //String refresh = await refreshToken(token!['refresh_token']);
+    //print('ICI : ' + refresh);
+
+    Map<String, dynamic> response = await customFetch({
+      'url': ApiConfig.apiUrl + '/api/ressources',
+      'method': 'GET',
+      'headers': {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      }
+    }, connecter: false);
+    
+    print(response);
+
     setState(() {
-      isLoading = true;
+      _token = token;
     });
-
-    final response =
-        await http.get(Uri.parse('http://127.0.0.1:8000/api/options'));
-    if (response.statusCode == 200) {
-      Map<String, dynamic> data = json.decode(response.body);
-      setState(() {
-        categories = data['categories'];
-        relationTypes = data['relationTypes'];
-        resourceTypes = data['resourceTypes'];
-        isLoading = false;
-      });
-    } else {
-      throw Exception('Failed to load data');
-    }
   }
 
-  void _openFilterModal(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (BuildContext context, StateSetter setState) {
-            return Padding(
-              padding: EdgeInsets.only(left: 20),
-              child: Container(
-                height: MediaQuery.of(context).size.height * 0.7,
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      _buildFilter('Visibilité', visibilites, setState),
-                      _buildFilter('Category', categories, setState),
-                      _buildFilter('Relation Type', relationTypes, setState),
-                      _buildFilter(
-                          'Resource Type', resourceTypes, setState),
-                      SizedBox(height: 20),
-                      ElevatedButton(
-                        onPressed: () {
-                          // Apply selected filters
-                          Navigator.pop(context);
-                        },
-                        child: Text('Apply Filters'),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          },
-        );
-      },
-    );
+  // Fonction pour enregistrer le token
+  void _saveToken(Map<String, dynamic>? token) async {
+    await storage.write(key: 'token', value: json.encode(token));
+    setState(() {
+      _token = token;
+    });
   }
 
-  Widget _buildFilter(
-      String filterName, List<dynamic> items, StateSetter setState) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            filterName,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
-            ),
-          ),
-          SizedBox(height: 10),
-          Wrap(
-            spacing: 10,
-            runSpacing: 10,
-            children: items.map<Widget>((item) {
-              bool isSelected =
-                  selectedFilters[filterName]!.contains(item['id']);
-              return ChoiceChip(
-                label: Text(item['name']),
-                selected: isSelected,
-                onSelected: (selected) {
-                  setState(() {
-                    if (selected) {
-                      selectedFilters[filterName]!.add(item['id']);
-                    } else {
-                      selectedFilters[filterName]!.remove(item['id']);
-                    }
-                  });
-                  // Update main page state
-                  updateMainPage();
-                },
-                selectedColor: Colors.blue,
-                labelStyle:
-                    TextStyle(color: isSelected ? Colors.white : Colors.black),
-                backgroundColor: Colors.grey[300],
-                elevation: isSelected ? 4 : 0,
-                pressElevation: isSelected ? 8 : 0,
-                shadowColor: isSelected ? Colors.blue : Colors.transparent,
-              );
-            }).toList(),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void updateMainPage() {
-    setState(() {});
+  // Fonction pour supprimer le token
+  void _deleteToken() async {
+    await storage.delete(key: 'token');
+    setState(() {
+      _token = null;
+    });
   }
 
   @override
@@ -163,35 +81,31 @@ class _FilterPageState extends State<FilterPage> {
       appBar: AppBar(
         title: Text('Filters Demo'),
       ),
-      body: isLoading
-          ? Center(
-              child: CircularProgressIndicator(),
-            )
-          : Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      _openFilterModal(context);
-                    },
-                    child: Text('Open Filters'),
-                  ),
-                  SizedBox(height: 20),
-                  Text('Selected Filters:'),
-                  SizedBox(height: 10),
-                  Text('Visibilité: ${selectedFilters['Visibilité']}'),
-                  Text('Category: ${selectedFilters['Category']}'),
-                  Text(
-                      'Relation Type: ${selectedFilters['Relation Type']}'),
-                  Text(
-                      'Resource Type: ${selectedFilters['Resource Type']}'),
-                ],
-              ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(_token != null ? 'Token: ${_token!["token"]}' : 'No token stored'),
+            ElevatedButton(
+              onPressed: () {
+                // Simuler la sauvegarde d'un token
+                _saveToken({
+                  "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE3MTI2Nzk2NTQsImV4cCI6MTcxMjY4MTQ1NCwicm9sZXMiOiIiLCJ1c2VybmFtZSI6Im5pY29sYXNzZWdvbmQwQGdtYWlsLmNvbSIsInVzZXIiOnsidXJpX3V0aWxpc2F0ZXVyIjoiL2FwaS91c2Vycy8yMTQiLCJpZCI6MjE0fX0.rLLQ0aoeeiWky_puXIEeTe8ZeqzfLu3YrTUVNlT5NyGZfutIuXuzEVvQogTHaQ-2qQhc41OuRnpR8jXpP3N3lOSwykvvnZH0DDuawVUwMY9oI-6eUd4QGqDZDU7XNPmcKCDE5-E_iU--vCxX6pFhZWA0XdYcbYilXdZvFDPRL3dIk0aDmcxWtgHNqCrsEFaEOVVo5uxEzOBOzBTWm0VVQ8MXcrjjk_DFQxEwkg8kyO4-eVGPWeXZ3QOzQ9MFrDcMbL9PYvJ5GtBPfu95nZ-ux6NW2ReDcnZ8JqsFv7J6hkcqS_UtfCNVpRY357kuyZFR3zCYrTtkq_JKqnKVX6RCnA",
+                  "refresh_token": "549bb7df74c219feaebb8250bacb55340459b1550655582a6996edc5ff33b76527956c3c9b354d8beae5c67c714ebdf4484a22327c0149830d47b20758fbfb8d"
+                });
+              },
+              child: Text('Save Token'),
             ),
+            ElevatedButton(
+              onPressed: () {
+                // Supprimer le token
+                _deleteToken();
+              },
+              child: Text('Delete Token'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
-
-
