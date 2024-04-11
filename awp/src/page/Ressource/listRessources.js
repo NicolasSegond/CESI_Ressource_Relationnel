@@ -4,70 +4,49 @@ import CardRessource from "../../composants/Ressource/CardRessource";
 import { customFetch } from "../../utils/customFetch";
 import { useLoaderData } from "react-router-dom";
 import TriComponent from "../../composants/Ressource/TriComponent";
+import * as authentification from "../../utils/authentification";
+import { getIdUser, getTokenDisconnected } from "../../utils/authentification";
 
 function ListRessources({}) {
 
     const [data, setData] = useState([]);
     const [tri, setTri] = useState({});
-    const [categories, setCategories] = useState([]);
-    const [typeRessources, setTypeRessources] = useState([]);
-    const [typeRelations, setTypeRelations] = useState([]);
+    const { options } = useLoaderData(); // Utiliser les options récupérées du loader
     const [loading, setLoading] = useState(true);
     const [totalPages, setTotalPages] = useState(1); // Initialisation du nombre total de pages à 1
     const [currentPage, setCurrentPage] = useState(1);
+    const token = getTokenDisconnected();
+    const connectUser = token ? getIdUser(token) : null;
 
+    const visibilite = [
+        { libelle: 'Public', id: 1 },
+        { libelle: 'Privé', id: 2 },
+        { libelle: 'Partage', id: 3 },
+        { libelle: 'Mes Ressources', id: 4 }
+    ];
+
+    const [selectedVisibilite, setSelectedVisibilite] = useState(null);
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [selectedTypeRelation, setSelectedTypeRelation] = useState(null);
     const [selectedTypeRessource, setSelectedTypeRessource] = useState(null);
 
-
     useEffect(() => {
-        const fetchCategories = async () => {
-            try {
-                const responsecat = await fetch('http://127.0.0.1:8000/api/categories');
-                const responseDatacat = await responsecat.json();
-                setCategories(responseDatacat['hydra:member']);
-            } catch (error) {
-                console.error('Error fetching categories:', error);
-            }
-        };
-
-        const fetchTypeRelations = async () => {
-            try {
-                const responsetrel = await fetch('http://127.0.0.1:8000/api/type_relations');
-                const responseDatarel = await responsetrel.json();
-                setTypeRelations(responseDatarel['hydra:member']);
-            } catch (error) {
-                console.error('Error fetching type relations:', error);
-            }
-        };
-
-        const fetchTypeRessources = async () => {
-            try {
-                const responsetres = await fetch('http://127.0.0.1:8000/api/type_de_ressources');
-                const responseDatares = await responsetres.json();
-                setTypeRessources(responseDatares['hydra:member']);
-            } catch (error) {
-                console.error('Error fetching type ressources:', error);
-            }
-        };
-
         const fetchData = async () => {
             setLoading(true);
-            await fetchCategories();
-            await fetchTypeRelations();
-            await fetchTypeRessources();
+
             setLoading(false);
         };
 
         fetchData();
     }, []);
+
     const handleChangeTri = (field, value) => {
         if (value !== undefined) {
             setTri({ ...tri, [field]: value });
             // Effectuez ici l'action appropriée en fonction des nouveaux critères de tri
         }
     };
+
     const fetchData = async () => {
         setLoading(true);
         try {
@@ -81,6 +60,24 @@ function ListRessources({}) {
             if (selectedTypeRessource) {
                 url += `&typeDeRessource=${selectedTypeRessource}`;
             }
+            if (selectedVisibilite !== null) { // Vérifiez si la visibilité est sélectionnée
+                if(selectedVisibilite == 2)
+                    url += `&proprietaire=${connectUser}`;
+                else if (selectedVisibilite == 3)
+                    url += `&voirRessource=${connectUser}`;
+
+                else if (selectedVisibilite == 4) {
+                    url += `&proprietaire=${connectUser}`;
+                }
+                if (selectedVisibilite !== 4) {
+                    url += `&visibilite=${selectedVisibilite}`;
+                }
+            }
+            else {
+                url += `&visibilite=1`;
+            }
+
+            console.log(url)
             const { data, error } = await customFetch({
                 url: url,
                 method: 'GET',
@@ -105,15 +102,14 @@ function ListRessources({}) {
         setLoading(false);
     };
 
-// Ajoutez une fonction pour gérer le changement de page
+    // Ajoutez une fonction pour gérer le changement de page
     const handlePageChange = (page) => {
         setCurrentPage(page);
     };
 
     useEffect(() => {
         fetchData();
-    }, [selectedCategory, selectedTypeRelation, selectedTypeRessource, currentPage]);
-
+    }, [selectedCategory, selectedTypeRelation, selectedTypeRessource, selectedVisibilite, currentPage]); // Ajoutez selectedVisibilite à la liste des dépendances
 
     const handleCategoryChange = (category) => {
         setSelectedCategory(category);
@@ -126,6 +122,13 @@ function ListRessources({}) {
     const handleTypeRessourceChange = (typeRessource) => {
         setSelectedTypeRessource(typeRessource);
     };
+    const handleVisibiliteChange = (visibilite) => {
+        const selectedValue = visibilite !== null ? visibilite : ''; // Gérer le cas où la valeur est null
+        setSelectedVisibilite(selectedValue);
+        const selectedValueIndex = visibilite !== null ? visibilite : ''; // Gérer le cas où la valeur est null
+        console.log('Index de la visibilité sélectionnée :', visibilite !== null ? visibilite : ''); // Afficher l'index de la visibilité sélectionnée
+    };
+
 
     // Fonction pour extraire le nombre total de pages à partir de l'URL
     const extractTotalPages = (url) => {
@@ -143,19 +146,29 @@ function ListRessources({}) {
             <div style={{ display: 'flex', gap: '20px' }}>
                 <TriComponent
                     label="Catégories"
-                    categories={categories || []}
+                    categories={options.categories || []}
                     onChangeTri={handleCategoryChange}
+                    aucunActif={true}
                 />
                 <TriComponent
                     label="Type de relations"
-                    categories={typeRelations || []}
+                    categories={options.relationTypes || []}
                     onChangeTri={handleTypeRelationChange}
+                    aucunActif={true}
                 />
                 <TriComponent
                     label="Type de ressources"
-                    categories={typeRessources || []}
+                    categories={options.resourceTypes || []}
                     onChangeTri={handleTypeRessourceChange}
+                    aucunActif={true}
                 />
+                {connectUser && <TriComponent
+                    label="Visibilité"
+                    categories={visibilite}
+                    onChangeTri={handleVisibiliteChange}
+                    aucunActif={false}
+                    defautSelect={1}
+                /> }
             </div>
             <br /><br />
             {loading ? (
@@ -168,6 +181,13 @@ function ListRessources({}) {
                             imageUrl={`http://127.0.0.1:8000/images/book/${ressource.miniature}`}
                             title={ressource.titre}
                             description={ressource.contenu}
+                            vue = {ressource.nombreVue}
+                            auteur = {ressource.proprietaire.nom}
+                            visibilite = {ressource.visibilite.libelle}
+                            typeRessource = {ressource.typeDeRessource.libelle}
+                            typeRelations ={ressource.typeRelations}
+                            categorie = {ressource.categorie.nom}
+                            nbCommentaire = {ressource.commentaires.length}
                         />
                     ))}
                     <br /><br />
@@ -179,31 +199,25 @@ function ListRessources({}) {
 }
 
 export default ListRessources;
-
 export async function loader() {
     try {
-        const { data, error } = await customFetch({
-            url: `http://127.0.0.1:8000/api/ressources`,
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            }
-        }, false);
+        const response = await fetch('http://127.0.0.1:8000/api/options');
+        const responseData = await response.json();
 
-        if (error) {
-            console.error('Erreur lors de la récupération des ressources:', error);
+        if (response.ok) {
             return {
-                data: [] // Retourner une liste vide en cas d'erreur
+                options: responseData // Retourner les options récupérées
+            };
+        } else {
+            console.error('Erreur lors de la récupération des options:', responseData.error);
+            return {
+                options: {} // Retourner un objet vide en cas d'erreur
             };
         }
-        console.info(data['hydra:member']);
-        return {
-            data: data['hydra:member']  // Vérifier si data et data['hydra:member'] sont définis
-        };
     } catch (error) {
-        console.error('Erreur lors de la récupération des ressources:', error);
+        console.error('Erreur lors de la récupération des options:', error);
         return {
-            data: [] // Retourner une liste vide en cas d'erreur
+            options: {} // Retourner un objet vide en cas d'erreur
         };
     }
 }

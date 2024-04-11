@@ -28,6 +28,11 @@ export function getToken() {
 export function getTokenDisconnected() {
     const token = sessionStorage.getItem('token');
 
+    if (token === null) {
+        // Le token est null, donc retournez directement null
+        return null;
+    }
+
     try {
         const tokens = JSON.parse(token);
 
@@ -41,7 +46,6 @@ export function getTokenDisconnected() {
         return null; // La valeur n'est pas un JSON valide
     }
 }
-
 
 export function getTokenExpiration(token) {
     try {
@@ -93,10 +97,8 @@ export function getIdUser(token) {
     try {
         // Décoder le token
         const decodedToken = jwtDecode(token.token);
-
         // Récupérer l'id de l'utilisateur
         const user = decodedToken.user;
-
         return user.id;
     } catch (e) {
         throw new Error('LOGOUT NEEDED - Unable to extract user id');

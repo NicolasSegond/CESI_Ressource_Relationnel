@@ -5,21 +5,16 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 
-const TriComponent = ({ label, onChangeTri, categories }) => {
+const TriComponent = ({ label, onChangeTri, categories, aucunActif,defautSelect }) => {
     const handleTriChange = (e) => {
         const { value } = e.target;
-        if (value !== undefined) {
-            onChangeTri(value); // Envoyer seulement l'ID sélectionné
-        }
+        onChangeTri(value); // Envoyer la valeur sélectionnée
     };
 
-    const getLabelProperty = (category) => {
-        // Déterminez quelle propriété utiliser pour le libellé en fonction de la source des données
-        return category.nom !== undefined ? category.nom : category.libelle;
-    };
+    const isObjectArray = categories.length > 0 && typeof categories[0] === 'object';
 
     return (
-            <Box sx={{ width: '100%', maxWidth: 200}}>
+        <Box sx={{ width: '100%', maxWidth: 200 }}>
             <FormControl fullWidth>
                 <InputLabel id="demo-simple-select-label">{label}</InputLabel>
                 <Select
@@ -27,13 +22,14 @@ const TriComponent = ({ label, onChangeTri, categories }) => {
                     id="demo-simple-select"
                     label={label}
                     onChange={handleTriChange}
-                    defaultValue=""
+                    defaultValue={defautSelect ? defautSelect : ''}
+                    //value={categories.includes('') ? '' : categories[0]} // Assurez-vous qu'une valeur par défaut valide est fournie
                 >
-                    {/* Ajoutez une option vide */}
-                    <MenuItem value="">Aucun</MenuItem>
-                    {/* Mappez les autres options */}
+                    {aucunActif && <MenuItem value="">Aucun</MenuItem>}
                     {categories && categories.map((category, index) => (
-                        <MenuItem key={index} value={category.id}>{getLabelProperty(category)}</MenuItem>
+                        <MenuItem key={index} value={isObjectArray ? category.id : category}>
+                            {isObjectArray ? category.nom || category.libelle || category.name : category}
+                        </MenuItem>
                     ))}
                 </Select>
             </FormControl>
