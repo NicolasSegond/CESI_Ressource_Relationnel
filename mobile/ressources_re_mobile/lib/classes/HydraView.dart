@@ -11,7 +11,7 @@ class HydraView {
 
   HydraView.fromJson(Map<String, dynamic> json) {
     id = json['@id'];
-    first = json['hydra:first'];
-    last = json['hydra:last'];
+    first = json['hydra:first'] ?? json['@id'];
+    last = json['hydra:last'] ?? json['@id'];
   }
 }

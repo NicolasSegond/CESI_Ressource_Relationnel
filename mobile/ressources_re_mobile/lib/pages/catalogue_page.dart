@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:ressources_re_mobile/classes/Ressource.dart';
 import 'package:ressources_re_mobile/classes/HydraView.dart';
+import 'package:ressources_re_mobile/components/Catalogue/ModalOptions.dart';
+import 'package:ressources_re_mobile/components/Catalogue/MoreButton.dart';
 
 class Catalogue extends StatefulWidget {
   const Catalogue({Key? key}) : super(key: key);
@@ -22,7 +24,8 @@ class _CatalogueState extends State<Catalogue> {
   List<dynamic> visibilites = [
     {"id": 1, "name": "Public"},
     {"id": 2, "name": "Privé"},
-    {"id": 3, "name": "Partagé"}
+    {"id": 3, "name": "Partagé"},
+    {"id": 4, "name": "Mes ressources"}
   ];
   List<dynamic> categories = [];
   List<dynamic> relationTypes = [];
@@ -43,6 +46,12 @@ class _CatalogueState extends State<Catalogue> {
     fetchData();
   }
 
+  void updatePage(int newPage) {
+  setState(() {
+    currentPage = newPage;
+  });
+}
+
   String buildUrlWithFilters(Map<String, List<int>> filters) {
     Map<String, List<String>> params = {
       'page': [currentPage.toString()],
@@ -58,6 +67,11 @@ class _CatalogueState extends State<Catalogue> {
 
     if (params.containsKey('visibilite') && params['visibilite']!.contains('3')) {
       params['voirRessource'] = ['9'];
+    }
+
+    if (params.containsKey('visibilite') && params['visibilite']!.contains('4')) {
+      params['proprietaire'] = ['9'];
+      params['visibilite'] = ['1', '2', '3'];
     }
 
     return Uri.http('127.0.0.1:8000', '/api/ressources', params).toString();
@@ -187,8 +201,8 @@ class _CatalogueState extends State<Catalogue> {
                     itemCount: albums.length + 1,
                     itemBuilder: (context, index) {
                     if (index == albums.length) {
-                      if(hydraView.id != hydraView.last){
-                        return _buildLoadMoreButton();
+                      if(hydraView.id != hydraView.last || hydraView.id == ''){
+                        return MoreButton(currentPage: currentPage, fetchAlbum: fetchAlbum, updatePage: updatePage);
                       }
                     }else{
                       final album = albums[index];
@@ -293,19 +307,10 @@ class _CatalogueState extends State<Catalogue> {
                                               crossAxisAlignment: CrossAxisAlignment.end,
                                               children: [
                                                 Padding(
-                                                  padding: const EdgeInsets.fromLTRB(0, 10, 10, 0),
+                                                  padding: const EdgeInsets.fromLTRB(0, 5, 5, 0),
                                                   child: Align(
                                                     alignment: const Alignment(0.8, -0.8),
-                                                    child: IconButton(
-                                                      icon: const Icon(
-                                                        Icons.more_vert,
-                                                        color: Color(0xff000000),
-                                                        size: 24,
-                                                      ),
-                                                      onPressed: () {
-                                                        print('More button tapped');
-                                                      },
-                                                    ),
+                                                    child: ModalOptions(currentUser: '8', ressourceProprietaire: album.getProprietaire()!.getId()!.toString()),
                                                   ),
                                                 ),
                                               ],
@@ -469,32 +474,6 @@ class _CatalogueState extends State<Catalogue> {
             },
           ), 
         ],
-      ),
-    );
-  }
-
-  Widget _buildLoadMoreButton() {
-    return Align(
-      alignment: Alignment.bottomCenter,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
-        child: ElevatedButton(
-          onPressed: () {
-            setState(() {
-              currentPage++; // Augmenter le numéro de page
-            });
-            fetchAlbum(); // Appeler fetchAlbum avec la nouvelle page
-          },
-          style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all<Color>(
-              Color(0xFF03989e), // Couleur #03989e
-            ),
-          ),
-          child: Text(
-            'Charger plus',
-            style: TextStyle(color: Colors.white),
-          ),
-        ),
       ),
     );
   }
