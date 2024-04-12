@@ -168,9 +168,14 @@ const AjoutRessource = () => {
             formattedTypeRelations.push(url);
         }
 
-        const fileName = miniature.current.files[0].name;
+        const fileName = miniature.current.files.length ? miniature.current.files[0].name : '';
         const fileParts = fileName.split('.');
         const fileExtension = fileParts[fileParts.length - 1];
+
+        if(miniature.current.files.length === 0) {
+            addAlert('error', 'Veuillez ajouter une miniature');
+            return;
+        }
 
         if(fileExtension !== 'jpg' && fileExtension !== 'jpeg' && fileExtension !== 'png') {
             addAlert('error', 'Le format de la miniature doit être jpg, jpeg ou png');
@@ -189,7 +194,8 @@ const AjoutRessource = () => {
             visibilite: tagsID != null ? '/api/visibilites/' + tagsID : null,
             typeDeRessource: typeRessource !== '' ? '/api/type_de_ressources/' + typeRessource : null,
             typeRelations: formattedTypeRelations,
-            categorie: categorie !== '' ? '/api/categories/' + categorie : null
+            categorie: categorie !== '' ? '/api/categories/' + categorie : null,
+            valide: 0
         };
 
         const formData = new FormData();

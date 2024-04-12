@@ -2,6 +2,7 @@
 
 namespace App\ApiResource;
 
+use ApiPlatform\Doctrine\Orm\Filter\BooleanFilter;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Doctrine\Orm\State\Options;
 use ApiPlatform\Metadata\ApiFilter;
@@ -97,6 +98,10 @@ class RessourceAPI
     #[Groups(['ressource:read', 'ressource:write'])]
     #[ApiFilter(SearchFilter::class, strategy: 'exact')]
     public ?CategorieAPI $categorie = null;
+
+    #[Groups(['ressource:read', 'ressource:write'])]
+    #[ApiFilter(BooleanFilter::class, strategy: 'exact')]
+    public ?bool $valide = null;
 
     #[Groups(['ressource:read', 'voirressource:write'])]
     #[ApiFilter(SearchFilter::class, strategy: 'exact')]

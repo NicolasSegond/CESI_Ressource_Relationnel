@@ -55,10 +55,11 @@ class _CatalogueState extends State<Catalogue> {
   String buildUrlWithFilters(Map<String, List<int>> filters) {
     Map<String, List<String>> params = {
       'page': [currentPage.toString()],
-      'visibilite': filters.containsKey('visibilite') ? filters['visibilite']!.map((v) => v.toString()).toList() : [],
+      'visibilite': filters.containsKey('visibilite') || filters['visibilite'] != '4' ? filters['visibilite']!.map((v) => v.toString()).toList() : [],
       'categorie[]': filters.containsKey('categorie') ? filters['categorie']!.map((v) => v.toString()).toList() : [],
       'typeDeRessource[]': filters.containsKey('typeDeRessource') ? filters['typeDeRessource']!.map((v) => v.toString()).toList() : [],
       'typeRelations[]': filters.containsKey('typeRelations') ? filters['typeRelations']!.map((v) => v.toString()).toList() : [],
+      'valide': ['true']
     };
 
     if (params.containsKey('visibilite') && params['visibilite']!.contains('2')) {
@@ -71,7 +72,7 @@ class _CatalogueState extends State<Catalogue> {
 
     if (params.containsKey('visibilite') && params['visibilite']!.contains('4')) {
       params['proprietaire'] = ['9'];
-      params['visibilite'] = ['1', '2', '3'];
+      params['visibilite'] = [];
     }
 
     return Uri.http('127.0.0.1:8000', '/api/ressources', params).toString();

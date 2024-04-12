@@ -29,8 +29,7 @@ class RessourceApiToEntityMapper implements MapperInterface
         private Security $security,
         private PropertyAccessorInterface $propertyAccessor,
         private SerializerInterface $serializer
-    )
-    {
+    ) {
         // Initialise les dépendances nécessaires au fonctionnement du mapper.
     }
 
@@ -43,7 +42,7 @@ class RessourceApiToEntityMapper implements MapperInterface
         // Charge l'entité ressource existante ou crée une nouvelle instance.
         $ressourceEntity = $dto->id ? $this->ressourceRepository->find($dto->id) : new Ressource();
         // Si l'entité ressource n'existe pas, lance une exception.
-        if(!$ressourceEntity){
+        if (!$ressourceEntity) {
             throw new \Exception('Ressource non trouvé');
         }
 
@@ -61,27 +60,28 @@ class RessourceApiToEntityMapper implements MapperInterface
         $entity = $to;
         assert($entity instanceof Ressource);
 
-        if($dto->titre === ""){
+        if ($dto->titre === "") {
             throw new HttpException(400, 'Le titre de la ressource ne peut pas être vide');
-        } else{
+        } else {
             $entity->setTitre($dto->titre);
         }
 
-        if($dto->miniature == ""){
+        if ($dto->miniature == "") {
             throw new HttpException(400, 'La miniature de la ressource ne peut pas être null');
-        } else{
+        } else {
             $entity->setMiniature($dto->miniature);
         }
 
-        if($dto->contenu === null){
+        if ($dto->contenu === null) {
             throw new HttpException(400, 'Le contenu de la ressource ne peut pas être vide');
-        } else{
+        } else {
             $entity->setContenu($dto->contenu);
         }
 
         $entity->setDateCreation($dto->dateCreation);
         $entity->setDateModification($dto->dateModification);
         $entity->setNombreVue($dto->nombreVue);
+        $entity->setValide($dto->valide);
 
         if ($dto->proprietaire) {
             $entity->setProprietaire($this->microMapper->map($dto->proprietaire, Utilisateur::class, [
@@ -91,39 +91,39 @@ class RessourceApiToEntityMapper implements MapperInterface
             $entity->setProprietaire($this->security->getUser());
         }
 
-        if($dto->statut === null){
+        if ($dto->statut === null) {
             throw new HttpException(400, 'Le statut de la ressource ne peut pas être vide');
-        } else{
+        } else {
             $entity->setStatut($this->microMapper->map($dto->statut, Statut::class, [
                 MicroMapperInterface::MAX_DEPTH => 1,
             ]));
         }
 
-        if($dto->visibilite === null){
+        if ($dto->visibilite === null) {
             throw new HttpException(400, 'La visibilité de la ressource ne peut pas être vide');
-        } else{
+        } else {
             $entity->setVisibilite($this->microMapper->map($dto->visibilite, Visibilite::class, [
                 MicroMapperInterface::MAX_DEPTH => 1,
             ]));
         }
 
-        if($dto->typeDeRessource == null){
+        if ($dto->typeDeRessource == null) {
             throw new HttpException(400, 'Le type de ressource ne peut pas être vide');
-        } else{
+        } else {
             $entity->setTypeDeRessource($this->microMapper->map($dto->typeDeRessource, TypeDeRessource::class, [
                 MicroMapperInterface::MAX_DEPTH => 1,
             ]));
         }
 
-        if($dto->categorie == ""){
+        if ($dto->categorie == "") {
             throw new HttpException(400, 'La catégorie de la ressource ne peut pas être vide');
-        } else{
+        } else {
             $entity->setCategorie($this->microMapper->map($dto->categorie, Categorie::class, [
                 MicroMapperInterface::MAX_DEPTH => 1,
             ]));
         }
 
-        if($dto->typeRelations == null){
+        if ($dto->typeRelations == null) {
             throw new HttpException(400, 'Le type de relation de la ressource ne peut pas être vide');
         } else {
             $dragonTreasureEntities = [];
