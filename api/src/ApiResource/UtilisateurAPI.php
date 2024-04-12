@@ -50,7 +50,7 @@ class UtilisateurAPI
     #[Groups('ressource:read')]
     public ?int $id = null;
 
-    #[Groups('ressource:read', 'ressource:write')]
+    #[Groups(['ressource:read', 'ressource:write'])]
     public ?string $email = null;
 
     #[Groups('ressource:read')]
@@ -60,8 +60,7 @@ class UtilisateurAPI
     public ?string $prenom = null;
 
     public ?string $password = null;
-
-    #[Groups('ressource:read', 'roles:read')]
+    #[Groups(['roles:read', 'ressource:read'])]
     public ?array $roles = [];
 
     #[Groups('ressource:read')]

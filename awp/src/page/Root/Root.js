@@ -9,7 +9,7 @@ import "../../composants/Footer/Footer.css";
 import Footer from "../../composants/Footer/footer";
 import {getTokenDisconnected} from "../../utils/authentification";
 
-const Root = () => {
+const Root = (roles) => {
     const [isOpen, setIsOpen] = React.useState(false);
     const token = getTokenDisconnected();
 
@@ -18,11 +18,13 @@ const Root = () => {
         console.log("isOpen", isOpen)
     };
 
+    console.log("roles", roles);
+
     return (
         <Grid container spacing={1} width={"100vw"} className={"grid-container"}>
             {/* Barre latérale à gauche */}
             <Grid item xl={isOpen ? 2 : 0} lg={isOpen ? 3 : 0} md={isOpen ? 4 : 0} className={`sidebar-grid  ${isOpen ? "opened" : "closed"}`}>
-                <MenuSideBar isOpen={isOpen} toggleSidebar={toggleSidebar} token={token}/>
+                <MenuSideBar isOpen={isOpen} toggleSidebar={toggleSidebar} token={token} rolesUser={roles}/>
             </Grid>
 
             {/* Barre de navigation en haut */}
