@@ -81,6 +81,7 @@ class RessourceAPI
     public ?UtilisateurAPI $proprietaire = null;
 
     #[Groups(['ressource:read', 'ressource:write'])]
+    #[ApiFilter(SearchFilter::class, strategy: 'exact')]
     public ?StatutAPI $statut = null;
 
     #[Groups(['ressource:read', 'ressource:write'])]
