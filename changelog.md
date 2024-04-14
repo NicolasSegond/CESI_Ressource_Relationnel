@@ -1,3 +1,12 @@
+Version 1.0.1 - 14 avril 2024
+
+- Création du formulaire pour l'ajout d'une ressource
+- Création du composant
+- Mise en place de l'envoi d'email à l'inscription 
+- Création projet Flutter
+- Finalisation des mappers
+
+
 Version 1.0.0 - 22 mars 2024
 
 - Création du projet
