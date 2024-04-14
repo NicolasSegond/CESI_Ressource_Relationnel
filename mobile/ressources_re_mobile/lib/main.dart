@@ -34,7 +34,7 @@ class _MyAppState extends State<MyApp> {
           Text("Login"),
         ][_currentIndex]),
         body: [
-          registrer(),
+          SignUp(),
           login(),
         ][_currentIndex],
         bottomNavigationBar: BottomNavigationBar(
