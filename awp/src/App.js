@@ -8,6 +8,7 @@ import Deconnexion, {loader as deconnexionLoader} from "./page/Deconnexion/decon
 import AjoutRessource, {loader as AjoutLoader} from "./page/Ressource/ajoutRessource";
 import VerifCodeInscription from "./page/verifCodeInscription";
 import Forgottenpassword from "./page/forgottenpassword";
+import ListRessources, {loader as GetDefaultList} from "./page/Ressource/listRessources";
 
 function App() {
     const router = createBrowserRouter([
@@ -23,6 +24,11 @@ function App() {
                 {
                     path: '/verifCode/:id/:code/:tokenVerif',
                     element: <VerifCodeInscription/>,
+                },
+                {
+                    path: '/ressource/lists',
+                    element: <ListRessources/>,
+                    loader: GetDefaultList
                 }
             ],
         },
