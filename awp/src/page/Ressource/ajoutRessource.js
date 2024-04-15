@@ -195,7 +195,7 @@ const AjoutRessource = () => {
             typeDeRessource: typeRessource !== '' ? '/api/type_de_ressources/' + typeRessource : null,
             typeRelations: formattedTypeRelations,
             categorie: categorie !== '' ? '/api/categories/' + categorie : null,
-            valide: 0
+            valide: false
         };
 
         const formData = new FormData();
