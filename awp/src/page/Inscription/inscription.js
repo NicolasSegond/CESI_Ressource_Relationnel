@@ -68,6 +68,7 @@ const Inscription = () => {
                 passwordControl: motDePasseControl,
                 roles: ["string"],  // You may adjust this as needed
                 code: 0,
+                tokenVerif: "",
                 verif: false
             };
 
@@ -96,10 +97,6 @@ const Inscription = () => {
                     setAlertType(2)
 
                 });
-
-
-
-
             // Reset the form fields
             setFormData([
                 { type: "text", name: "nom", value: "", label: "Nom" },

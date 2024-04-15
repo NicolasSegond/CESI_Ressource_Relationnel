@@ -20,7 +20,7 @@ function App() {
                     loader: AjoutLoader
                 },
                 {
-                    path: '/verifCode/:id/:code',
+                    path: '/verifCode/:id/:code/:tokenVerif',
                     element: <VerifCodeInscription/>,
                 }
             ],

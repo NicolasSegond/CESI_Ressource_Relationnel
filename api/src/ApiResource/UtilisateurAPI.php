@@ -23,7 +23,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
         new Post(),
         new Get(
             name: 'verif',
-            uriTemplate: '/verif/{id}/{code}',
+            uriTemplate: '/verif/{id}/{code}/{tokenVerif}',
             controller: UserController::class
         ),
         new Patch(security: "is_granted('ROLE_USER')"),
@@ -66,6 +66,9 @@ class UtilisateurAPI
 
     #[Groups('ressource:read')]
     public ?int $code = null;
+
+    #[Groups('ressource:read')]
+    public ?string $tokenVerif = null;
 
     #[Groups('ressource:read')]
     public ?bool $verif = false;
