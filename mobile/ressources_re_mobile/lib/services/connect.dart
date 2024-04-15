@@ -1,31 +1,52 @@
+import 'dart:convert';
+
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:ressources_re_mobile/pages/catalogue_page.dart';
+import 'dart:convert';
+import 'package:ressources_re_mobile/utilities/apiConfig.dart';
+import 'package:ressources_re_mobile/utilities/authentification.dart'; // Importer pour utiliser getToken
 
 class Connect {
-  static Future<void> login(String email, String password) async {
-    // URL de votre API de connexion
-    String url = 'http://127.0.0.1:8000/api/login';
-
-    // Corps de la requête contenant le courrier électronique et le mot de passe
+  static Future<void> login(BuildContext context, String email, String password, Function(bool) onLoginSuccess) async {
+    String url = ApiConfig.apiUrl + "/api/login";
     Map<String, String> body = {
       'email': email,
       'password': password,
     };
 
-    // Envoi de la requête POST
     var response = await http.post(
       Uri.parse(url),
-      body: body,
+      body: json.encode(body),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
     );
 
-    // Vérification du code de statut de la réponse
     if (response.statusCode == 200) {
       // Connexion réussie
       print('Connexion réussie');
-      // Vous pouvez effectuer des actions supplémentaires ici, comme naviguer vers une nouvelle page
+
+      // Extraire le token et le refresh de la réponse JSON
+      var jsonResponse = json.decode(response.body);
+      // Stocker le token et le refresh localement
+      await saveTokens(jsonEncode(jsonResponse)); // Stockez directement la réponse JSON encodée
+      
+      // Appeler la fonction de rappel pour indiquer que la connexion a réussi
+      onLoginSuccess(true);
     } else {
       // Erreur lors de la connexion
       print('Erreur lors de la connexion');
-      // Vous pouvez afficher un message d'erreur à l'utilisateur ou effectuer d'autres actions en fonction de la réponse de votre API
+      // Afficher un message d'erreur à l'utilisateur
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erreur lors de la connexion : $email $password $url'),
+        ),
+      );
+
+      // Appeler la fonction de rappel pour indiquer que la connexion a échoué
+      onLoginSuccess(false);
     }
   }
 }
+

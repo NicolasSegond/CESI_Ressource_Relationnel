@@ -2,10 +2,15 @@
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:ressources_re_mobile/pages/catalogue_page.dart';
+import 'package:ressources_re_mobile/pages/inscription_page.dart';
 import 'package:ressources_re_mobile/services/connect.dart';
 
 
 class login extends StatelessWidget {
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -72,7 +77,7 @@ class login extends StatelessWidget {
                       padding:
                           EdgeInsets.symmetric(vertical: 16, horizontal: 0),
                       child: TextField(
-                        controller: TextEditingController(),
+                        controller: _emailController,
                         obscureText: false,
                         textAlign: TextAlign.left,
                         maxLines: 1,
@@ -113,7 +118,7 @@ class login extends StatelessWidget {
                       ),
                     ),
                     TextField(
-                      controller: TextEditingController(),
+                      controller: _passwordController,
                       obscureText: false,
                       textAlign: TextAlign.start,
                       maxLines: 1,
@@ -169,26 +174,40 @@ class login extends StatelessWidget {
                         ),
                       ),
                     ),
-                    MaterialButton(
-                      onPressed: () { Connect.login("toto","toto");},
-                      color: Color.fromRGBO(3,152,158, 1),
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16.0),
-                      ),
-                      padding: EdgeInsets.all(16),
-                      child: Text(
-                        "Login",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          fontStyle: FontStyle.normal,
-                        ),
-                      ),
-                      textColor: Color(0xffffffff),
-                      height: 40,
-                      minWidth: MediaQuery.of(context).size.width,
-                    ),
+             MaterialButton(
+                onPressed: () {
+                  String email = _emailController.text;
+                  String password = _passwordController.text;
+                  
+                  // Appeler la méthode de connexion avec la contexte actuel
+                  Connect.login(context, email, password, (success) {
+                    if (success) {
+                      // Si la connexion réussit, naviguer vers la page du catalogue
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => Catalogue()),
+                      );
+                    }
+                  });
+                },
+                color: Color.fromRGBO(3,152,158, 1),
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16.0),
+                ),
+                padding: EdgeInsets.all(16),
+                child: Text(
+                  "Login",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    fontStyle: FontStyle.normal,
+                  ),
+                ),
+                textColor: Color(0xffffffff),
+                height: 40,
+                minWidth: MediaQuery.of(context).size.width,
+              ),
                     Padding(
                       padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
                       child: Row(

@@ -10,7 +10,7 @@ void main() {
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -31,19 +31,23 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
-            title: [
-          Text("Inscription"),
-          Text("Connexion"),
-          Text("Login"),
-          Text("Catalogue"),
-          Text("Test"),
-        ][_currentIndex]),
-        body: [
-          SignUp(),
-          login(),
-          Catalogue(),
-          FilterPage(),
-        ][_currentIndex],
+          title: Text([
+            "Inscription",
+            "Connexion",
+            "Login",
+            "Catalogue",
+            "Test",
+          ][_currentIndex]),
+        ),
+        body: IndexedStack(
+          index: _currentIndex,
+          children: [
+            SignUp(),
+            login(), // Utilisation de la page de connexion ici
+            Catalogue(),
+            FilterPage(),
+          ],
+        ),
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _currentIndex,
           onTap: (index) => setCurrentIndex(index),
@@ -53,8 +57,8 @@ class _MyAppState extends State<MyApp> {
           iconSize: 32,
           elevation: 10,
           items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.login), label: 'Login / Logout'),
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Acceuil'),
+            BottomNavigationBarItem(icon: Icon(Icons.login), label: 'Connexion'),
+            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Inscription'),
             BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Catalogue'),
             BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Test'),
           ],

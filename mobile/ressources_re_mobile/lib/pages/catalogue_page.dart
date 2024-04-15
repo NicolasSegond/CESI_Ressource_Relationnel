@@ -8,6 +8,9 @@ import 'package:ressources_re_mobile/classes/Ressource.dart';
 import 'package:ressources_re_mobile/classes/HydraView.dart';
 import 'package:ressources_re_mobile/components/Catalogue/ModalOptions.dart';
 import 'package:ressources_re_mobile/components/Catalogue/MoreButton.dart';
+import 'package:ressources_re_mobile/services/connect.dart'; // Importez vos fichiers et fonctions nécessaires
+import 'package:ressources_re_mobile/utilities/authentification.dart'; // Importez vos fichiers et fonctions nécessaires
+
 
 class Catalogue extends StatefulWidget {
   const Catalogue({Key? key}) : super(key: key);
@@ -19,6 +22,7 @@ class Catalogue extends StatefulWidget {
 class _CatalogueState extends State<Catalogue> {
   late List<Ressource> albums;
   int currentPage = 1; // Variable pour suivre le numéro de la page actuelle
+  int? userId; // Variable pour stocker l'ID de l'utilisateur
   HydraView hydraView = HydraView(id: '', first: '', last: '');
 
   List<dynamic> visibilites = [
@@ -44,6 +48,7 @@ class _CatalogueState extends State<Catalogue> {
   void initState() {
     super.initState();
     fetchData();
+    fetchUserId();
   }
 
   void updatePage(int newPage) {
@@ -51,6 +56,7 @@ class _CatalogueState extends State<Catalogue> {
       currentPage = newPage;
     });
   }
+  
 
   String buildUrlWithFilters(Map<String, List<int>> filters) {
     Map<String, List<String>> params = {
@@ -129,6 +135,22 @@ class _CatalogueState extends State<Catalogue> {
       throw Exception('Failed to load data');
     }
   }
+   // Fonction pour récupérer l'ID de l'utilisateur
+  Future<void> fetchUserId() async {
+    try {
+      // Récupérer les tokens de l'utilisateur
+      final tokens = await getToken();
+      // Appeler la fonction pour extraire l'ID de l'utilisateur
+      final id = await getIdUser(tokens!);
+      // Mettre à jour l'ID de l'utilisateur dans l'état de la page
+      setState(() {
+        userId = id;
+      });
+    } catch (e) {
+      print('Une erreur s\'est produite lors de la récupération de l\'ID de l\'utilisateur : $e');
+      // Gérer l'erreur, par exemple rediriger vers la page de connexion
+    }
+  }
 
   void _openFilterModal(BuildContext context) {
     showModalBottomSheet(
@@ -179,6 +201,17 @@ class _CatalogueState extends State<Catalogue> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
+           userId != null ? // Vérifiez d'abord si l'ID de l'utilisateur est disponible
+          Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Text(
+              'ID utilisateur : $userId',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ) : Container(), // Si l'ID de l'utilisateur n'est pas disponible, affichez un conteneur vide
           Align(
             alignment: Alignment.centerLeft,
             child: Padding(
