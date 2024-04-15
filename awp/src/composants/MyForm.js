@@ -1,8 +1,8 @@
 // MyForm.js
 import React from "react";
 import {Button, TextField} from "@mui/material";
-import {Form, Link} from 'react-router-dom';
-const MyForm = ({ formData, onChange, onSubmit, buttonText, buttonDisabled }) => {
+import {Form} from 'react-router-dom';
+const MyForm = ({ formData, onSubmit, buttonText, buttonDisabled }) => {
     return (
         <Form onSubmit={onSubmit}>
             {formData.map((field, index) => (
@@ -11,9 +11,8 @@ const MyForm = ({ formData, onChange, onSubmit, buttonText, buttonDisabled }) =>
                         type={field.type}
                         name={field.name}
                         label={field.label}
-                        value={field.value}
-                        onChange={onChange}
                         className={"textfield"}
+                        inputRef={field.ref}
                     />
                     <br/><br/>
                 </div>
