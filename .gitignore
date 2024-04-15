@@ -9,3 +9,4 @@ awp/package-lock.json
 .idea/CESI_Ressources_RE.iml
 .idea
 .idea/inspectionProfiles/Project_Default.xml
+api/composer.lock

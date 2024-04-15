@@ -38,7 +38,7 @@ class _MyAppState extends State<MyApp> {
           Text("Test"),
         ][_currentIndex]),
         body: [
-          registrer(),
+          SignUp(),
           login(),
           Catalogue(),
           FilterPage(),
