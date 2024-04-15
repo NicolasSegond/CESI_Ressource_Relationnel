@@ -75,8 +75,8 @@ function ResponsiveAppBar({toggleSidebar, token}) {
                             open={Boolean(anchorEl)}
                             onClose={handleClose}
                         >
-                            <a href={"/"} className={"menu_item"} onClick={handleClose}>Profil</a>
-                            <a href={"/"} className={"menu_item"} onClick={handleClose}>Paramètres</a>
+                            <Link to={"/"} className={"menu_item"} onClick={handleClose}>Profil</Link>
+                            <Link to={"/"} className={"menu_item"} onClick={handleClose}>Paramètres</Link>
                         </Menu>
                     </>
                 )}

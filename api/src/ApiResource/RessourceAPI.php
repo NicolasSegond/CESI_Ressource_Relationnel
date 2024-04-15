@@ -2,6 +2,7 @@
 
 namespace App\ApiResource;
 
+use ApiPlatform\Doctrine\Orm\Filter\BooleanFilter;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Doctrine\Orm\State\Options;
 use ApiPlatform\Metadata\ApiFilter;
@@ -39,10 +40,10 @@ use Symfony\Component\Serializer\Attribute\Groups;
     stateOptions: new Options(entityClass: Ressource::class),
 )]
 #[ApiResource(
-    shortName: 'Ressource',
+    shortName: 'VoirRessource',
     operations: [
-        new Post(uriTemplate: '/ressources/{id}/voir', controller: RessourceController::class . '::voir'),
-        new Delete(uriTemplate: '/ressources/{id}/voir', controller: RessourceController::class . '::nePlusVoir'),
+        new Post(uriTemplate: '/voir_ressources/{id}/voir', controller: RessourceController::class . '::voir'),
+        new Delete(uriTemplate: '/voir_ressources/{id}/voir', controller: RessourceController::class . '::nePlusVoir'),
     ],
     denormalizationContext: [
         'groups' => ['voirressource:write']
@@ -80,6 +81,7 @@ class RessourceAPI
     public ?UtilisateurAPI $proprietaire = null;
 
     #[Groups(['ressource:read', 'ressource:write'])]
+    #[ApiFilter(SearchFilter::class, strategy: 'exact')]
     public ?StatutAPI $statut = null;
 
     #[Groups(['ressource:read', 'ressource:write'])]
@@ -97,6 +99,10 @@ class RessourceAPI
     #[Groups(['ressource:read', 'ressource:write'])]
     #[ApiFilter(SearchFilter::class, strategy: 'exact')]
     public ?CategorieAPI $categorie = null;
+
+    #[Groups(['ressource:read', 'ressource:write'])]
+    #[ApiFilter(BooleanFilter::class, strategy: 'exact')]
+    public ?bool $valide = null;
 
     #[Groups(['ressource:read', 'voirressource:write'])]
     #[ApiFilter(SearchFilter::class, strategy: 'exact')]

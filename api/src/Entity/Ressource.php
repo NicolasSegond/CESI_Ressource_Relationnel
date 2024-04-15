@@ -67,6 +67,9 @@ class Ressource
     #[ORM\JoinTable(name: 'voirRessource')]
     private Collection $voirRessource;
 
+    #[ORM\Column]
+    private ?bool $valide = false;
+
     public function __construct()
     {
         $this->commentaires = new ArrayCollection();
@@ -357,8 +360,6 @@ class Ressource
             'dateModification' => $this->dateModification,
             'nombreVue' => $this->nombreVue,
             'proprietaire' => ($this->proprietaire) ? $this->proprietaire->toArray() : null,
-            'statut' => ($this->statut) ? $this->statut->toArray() : null,
-            'visibilite' => ($this->visibilite) ? $this->visibilite->toArray() : null,
             'typeDeRessource' => ($this->typeDeRessource) ? $this->typeDeRessource->toArray() : null,
             'typeRelations' => $typeRelations,
             'categorie' => ($this->categorie) ? $this->categorie->toArray() : null,
@@ -392,4 +393,15 @@ class Ressource
         return $this;
     }
 
+    public function getValide(): ?int
+    {
+        return $this->valide;
+    }
+
+    public function setValide(int $valide): static
+    {
+        $this->valide = $valide;
+
+        return $this;
+    }
 }
