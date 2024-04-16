@@ -4,8 +4,8 @@ import CardRessource from "../../composants/Ressource/CardRessource";
 import { customFetch } from "../../utils/customFetch";
 import { useLoaderData } from "react-router-dom";
 import TriComponent from "../../composants/Ressource/TriComponent";
-import * as authentification from "../../utils/authentification";
 import { getIdUser, getTokenDisconnected } from "../../utils/authentification";
+import styles from './listRessources.module.css';
 
 function ListRessources({}) {
 
@@ -77,7 +77,6 @@ function ListRessources({}) {
                 url += `&visibilite=1`;
             }
 
-            console.log(url)
             const { data, error } = await customFetch({
                 url: url,
                 method: 'GET',
@@ -140,10 +139,10 @@ function ListRessources({}) {
     };
 
     return (
-        <div>
+        <div className={styles['container']}>
             <h1>Ressources:</h1>
             <br />
-            <div style={{ display: 'flex', gap: '20px' }}>
+            <div className={styles['container-filtre']}>
                 <TriComponent
                     label="Catégories"
                     categories={options.categories || []}
@@ -176,13 +175,16 @@ function ListRessources({}) {
             ) : (
                 <div>
                     {data.map(ressource => (
+
                         <CardRessource
                             key={ressource['@id']}
                             imageUrl={`http://127.0.0.1:8000/images/book/${ressource.miniature}`}
                             title={ressource.titre}
                             description={ressource.contenu}
                             vue = {ressource.nombreVue}
-                            auteur = {ressource.proprietaire.nom}
+                            nom = {ressource.proprietaire.nom}
+                            prenom = {ressource.proprietaire.prenom}
+                            date_creation = {ressource.dateCreation}
                             visibilite = {ressource.visibilite.libelle}
                             typeRessource = {ressource.typeDeRessource.libelle}
                             typeRelations ={ressource.typeRelations}
