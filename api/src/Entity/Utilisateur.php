@@ -52,6 +52,9 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\ManyToMany(targetEntity: Ressource::class, mappedBy: 'voirRessource')]
     private Collection $ressources;
 
+    #[ORM\Column(length: 255)]
+    private ?string $tokenVerif = null;
+
     public function __construct()
     {
         $this->proprietaireRessource = new ArrayCollection();
@@ -295,6 +298,18 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         if ($this->ressources->removeElement($ressource)) {
             $ressource->removeVoirRessource($this);
         }
+
+        return $this;
+    }
+
+    public function getTokenVerif(): ?string
+    {
+        return $this->tokenVerif;
+    }
+
+    public function setTokenVerif(string $tokenVerif): static
+    {
+        $this->tokenVerif = $tokenVerif;
 
         return $this;
     }

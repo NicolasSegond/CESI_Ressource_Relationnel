@@ -18,7 +18,7 @@ class UserController extends AbstractController
         $this->utilisateurRepository = $utilisateurRepository;
         $this->entityManager = $entityManager;
     }
-    public function __invoke(UtilisateurAPI $data, int $id, int $code): JsonResponse
+    public function __invoke(UtilisateurAPI $data, int $id, int $code, string $tokenVerif): JsonResponse
     {
         // Recherchez l'utilisateur par ID
         $utilisateur = $this->utilisateurRepository->find($id);
@@ -34,7 +34,7 @@ class UserController extends AbstractController
         }
 
         // Vérifiez si le code correspond
-        if ($utilisateur->getCode() == $code) {
+        if ($utilisateur->getCode() == $code && $utilisateur->getTokenVerif() == $tokenVerif) {
             // Mise à jour de verif à true si le code est correct
             $utilisateur->setVerif(true);
             $this->entityManager->flush();

@@ -1,0 +1,225 @@
+.card {
+    position: relative; /* Ajout de position relative */
+    margin-top: 1%;
+    border-radius: 10px;
+    background: #ffffff;
+    box-shadow: 5px 5px 14px #8a8a8a, -5px -5px 14px #ffffff;
+    display: flex;
+    max-width: 90%;
+    height: auto;
+    cursor: pointer;
+}
+
+.card-image {
+    width: 20%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 20px;
+    margin: 10px;
+}
+
+.card-content {
+    flex-grow: 1;
+    padding: 1rem;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.modal-container > img {
+    width: 40px;
+    height: auto;
+    margin-right: 10px;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    border-radius: 50px;
+}
+
+.modal-container > img:hover {
+    width: 40px;
+    height: auto;
+    margin-right: 10px;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
+    border-radius: 50px;
+}
+
+.card-title {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    margin-left: 3px;
+}
+
+.modal-container {
+    position: relative; /* Position relative pour permettre le positionnement absolu de la modal */
+}
+
+.modal {
+    position: absolute;
+    top: calc(100% + 10px); /* Positionner la modal juste en dessous de l'icône de menu */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    background: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    width: 210px;
+}
+
+.modal > a {
+    display: block;
+    width: 100%;
+    height: auto;
+    padding: 10px;
+    text-align: center;
+}
+
+.modal > a:hover {
+    background-color: #f5f5f5;
+}
+
+.modal.show {
+    display: block; /* Afficher la modal lorsque la classe .show est présente */
+}
+
+.modal p {
+    margin-bottom: 10px;
+}
+
+.modal button {
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.modal button:hover {
+    background-color: #0056b3;
+}
+
+.cat,
+.typeRelation,
+.categorie {
+    display: inline-block;
+    border-radius: 30px;
+    padding: 0.5rem 1rem;
+    margin-right: 10px;
+    color: white;
+}
+
+.cat {
+    background: #ab3f69;
+}
+
+.categorie {
+    background: #03989e;
+}
+
+.typeRelation {
+    background: #008eb3;
+}
+
+.info-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centrer le contenu horizontalement */
+    align-items: flex-start; /* Aligner les éléments tout en haut */
+}
+
+.info {
+    display: flex;
+    flex-basis: 100%; /* Force le conteneur à occuper 100% de la largeur disponible, donc il passe à la ligne */
+}
+
+.info > div {
+    margin-right: 10px;
+}
+
+.pdp-utilisateur {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 10px;
+    color: white;
+    font-size: 18px;
+}
+
+.info-utilisateur {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    width: 100%;
+}
+
+.description {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    align-self: center;
+    margin-top: 50px;
+}
+
+.card-logo {
+    width: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 10px;
+}
+
+.card-logo > img {
+    width: 30px;
+    height: auto;
+    margin-right: 10px;
+}
+
+.categories-container {
+    display: flex;
+    align-items: center; /* Aligne les éléments verticalement au centre */
+    margin-bottom: 10px; /* Ajouter de l'espace en bas des catégories */
+}
+
+.categories-container > * {
+    margin-right: 10px; /* Ajoute un espace entre les éléments */
+}
+
+.categories-container > *:last-child {
+    margin-right: 0; /* Supprime la marge à droite du dernier élément */
+}
+
+/* Media query pour les écrans de petite taille (mobile) */
+@media screen and (max-width: 1100px) {
+    .card {
+        flex-direction: column; /* Change la direction de flexbox en colonne */
+        max-width: 100%;
+    }
+
+    .card-image {
+        width: 100%; /* Largeur de l'image à 100% de la largeur de la carte */
+        max-height: 200px; /* Aucune limite de hauteur */
+        border-radius: 8px 8px 0 0; /* Bord arrondi seulement en haut */
+        object-fit: cover;
+        margin: 0;
+    }
+
+    .modal{
+        width: 120px;
+        left: 0;
+    }
+}

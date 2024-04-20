@@ -26,24 +26,24 @@ final class UserListenerMailInscription implements EventSubscriberInterface
         $this->userListenerRandomCode = $userListenerRandomCode;
     }
 
-    public function postPersist(ViewEvent $event)
+    public function postPersist(ViewEvent $event): void
     {
         $user = $event->getControllerResult();
         $method = $event->getRequest()->getMethod();
 
         if ($user instanceof UtilisateurAPI && Request::METHOD_POST === $method) {
             $code = $this->userListenerRandomCode->getGeneratedCode();
-
-            if ($code) {
-                $this->sendConfirmationEmail($user, $code);
+            $token = $this->userListenerRandomCode->getGeneratedToken();
+            if ($code && $token) {
+                $this->sendConfirmationEmail($user,$code,$token);
             } else {
                 // Gérer le cas où le code n'a pas été généré
             }
         }
     }
-    public function sendConfirmationEmail(UtilisateurAPI $user, $code)
+    public function sendConfirmationEmail(UtilisateurAPI $user,$code,$token): void
     {
-            $emailContent = '<!DOCTYPE html>
+        $emailContent = '<!DOCTYPE html>
             <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -183,7 +183,9 @@ final class UserListenerMailInscription implements EventSubscriberInterface
                         <p>Bienvenue  ' . $user->nom .' '. $user->prenom . ' sur Ressources relationnelles, la plateforme pour améliorer vos relations!</p>
                         <p>Cliquez sur le bouton ci-dessous pour valider votre inscription.</p>
                         <p>
-                           <a href="http://localhost:3000/verifCode/' . $user->id . '/' . $code . '" style="background-color: #03989e; color: #ffffff; display: inline-block; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Confirmer l\'inscription</a>
+                            <a href="http://localhost:3000/verifCode/' . $user->id . '/' . $code . '/' . $token . '"style="background-color: #03989e; color: #ffffff; display: inline-block; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Confirmer l\'inscription</a>
+                        
+                        
                         </p>
                         <p>En confirmant votre abonnement, vous rejoindrez une communauté de personnes partageant les mêmes idées et passionnées par les relations. Préparez-vous à rester informé et inspiré !</p>
                     </td>

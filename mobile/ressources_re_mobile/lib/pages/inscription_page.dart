@@ -1,273 +1,191 @@
-///File download from FlutterViz- Drag and drop a tools. For more details visit https://flutterviz.io/
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
-class registrer extends StatelessWidget {
+class SignUp extends StatefulWidget {
+  @override
+  _SignUpState createState() => _SignUpState();
+}
+
+class _SignUpState extends State<SignUp> {
+  final TextEditingController _nomController = TextEditingController();
+  final TextEditingController _prenomController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xfff1f1f1),
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            Container(
-              alignment: Alignment.center,
-              margin: EdgeInsets.all(0),
-              padding: EdgeInsets.all(0),
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height * 0.4,
-              decoration: BoxDecoration(
-                color: Color(0xff3a57e8),
-                shape: BoxShape.rectangle,
-                borderRadius:
-                    BorderRadius.only(bottomLeft: Radius.circular(60.0)),
-                border: Border.all(color: Color(0x4d9e9e9e), width: 1),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    height: 70,
-                    width: 70,
-                    clipBehavior: Clip.antiAlias,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                    ),
-                    child: Image.network(
-                        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRviAGWGV45QGRAHOv3Hh35VxwyNU_Qiy8ZK_8PytS-eTrEMY4RgaNgInAQie6VgqvSA24&usqp=CAU",
-                        fit: BoxFit.cover),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(0, 16, 0, 0),
-                    child: Text(
-                      "Register",
-                      textAlign: TextAlign.start,
-                      overflow: TextOverflow.clip,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w400,
-                        fontStyle: FontStyle.normal,
-                        fontSize: 20,
-                        color: Color(0xffffffff),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+      backgroundColor: Color(0xffe6e6e6),
+      body: Stack(
+        children: [
+          Container(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height * 0.35,
+            decoration: BoxDecoration(
+              color: Color.fromRGBO(3, 152, 158, 1),
             ),
-            Padding(
-              padding: EdgeInsets.fromLTRB(16, 30, 16, 16),
-              child: SingleChildScrollView(
+          ),
+          Container(
+            margin: EdgeInsets.fromLTRB(20, 100, 20, 20),
+            padding: EdgeInsets.all(16),
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16.0),
+              border: Border.all(color: Color(0x4d9e9e9e), width: 1),
+            ),
+            child: SingleChildScrollView(
+              child: Form(
+                key: _formKey,
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    TextField(
-                      controller: TextEditingController(),
-                      obscureText: false,
-                      textAlign: TextAlign.start,
-                      maxLines: 1,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w400,
-                        fontStyle: FontStyle.normal,
-                        fontSize: 14,
-                        color: Color(0xff000000),
-                      ),
-                      decoration: InputDecoration(
-                        disabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(22.0),
-                          borderSide:
-                              BorderSide(color: Color(0xffffffff), width: 1),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(22.0),
-                          borderSide:
-                              BorderSide(color: Color(0xffffffff), width: 1),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(22.0),
-                          borderSide:
-                              BorderSide(color: Color(0xffffffff), width: 1),
-                        ),
-                        hintText: "Full Name",
-                        hintStyle: TextStyle(
-                          fontWeight: FontWeight.w400,
-                          fontStyle: FontStyle.normal,
-                          fontSize: 14,
-                          color: Color(0xff000000),
-                        ),
-                        filled: true,
-                        fillColor: Color(0xfffefeff),
-                        isDense: false,
-                        contentPadding: EdgeInsets.all(8),
-                        prefixIcon: Icon(Icons.person,
-                            color: Color(0xff000000), size: 24),
-                      ),
+                  children: <Widget>[
+                    Image(
+                      image: AssetImage("img/logo.png"),
+                      height: 200,
+                      width: 200,
+                      fit: BoxFit.cover,
                     ),
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(0, 16, 0, 0),
-                      child: TextField(
-                        controller: TextEditingController(),
-                        obscureText: false,
-                        textAlign: TextAlign.start,
-                        maxLines: 1,
+                    SizedBox(height: 30),
+                    _buildTextField("Nom", _nomController),
+                    _buildTextField("Prénom", _prenomController),
+                    _buildTextField("Email", _emailController),
+                    _buildTextField("Mot de Passe", _passwordController, isPassword: true),
+                    _buildTextField("Confirmer le Mot de Passe", _confirmPasswordController, isPassword: true),
+                    MaterialButton(
+                      onPressed: _submitForm,
+                      color: Color.fromRGBO(3, 152, 158, 1),
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16.0),
+                      ),
+                      padding: EdgeInsets.symmetric(vertical: 16),
+                      child: Text(
+                        "Inscription",
                         style: TextStyle(
-                          fontWeight: FontWeight.w400,
-                          fontStyle: FontStyle.normal,
-                          fontSize: 12,
-                          color: Color(0xff000000),
-                        ),
-                        decoration: InputDecoration(
-                          disabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(22.0),
-                            borderSide:
-                                BorderSide(color: Color(0xffffffff), width: 1),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(22.0),
-                            borderSide:
-                                BorderSide(color: Color(0xffffffff), width: 1),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(22.0),
-                            borderSide:
-                                BorderSide(color: Color(0xffffffff), width: 1),
-                          ),
-                          hintText: "Email",
-                          hintStyle: TextStyle(
-                            fontWeight: FontWeight.w400,
-                            fontStyle: FontStyle.normal,
-                            fontSize: 14,
-                            color: Color(0xff000000),
-                          ),
-                          filled: true,
-                          fillColor: Color(0xffffffff),
-                          isDense: false,
-                          contentPadding: EdgeInsets.all(8),
-                          prefixIcon: Icon(Icons.mail,
-                              color: Color(0xff000000), size: 24),
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
                         ),
                       ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(0, 16, 0, 0),
-                      child: TextField(
-                        controller: TextEditingController(),
-                        obscureText: false,
-                        textAlign: TextAlign.start,
-                        maxLines: 1,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w400,
-                          fontStyle: FontStyle.normal,
-                          fontSize: 14,
-                          color: Color(0xff000000),
-                        ),
-                        decoration: InputDecoration(
-                          disabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(22.0),
-                            borderSide:
-                                BorderSide(color: Color(0xffffffff), width: 1),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(22.0),
-                            borderSide:
-                                BorderSide(color: Color(0xffffffff), width: 1),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(22.0),
-                            borderSide:
-                                BorderSide(color: Color(0xffffffff), width: 1),
-                          ),
-                          hintText: "Password",
-                          hintStyle: TextStyle(
-                            fontWeight: FontWeight.w400,
-                            fontStyle: FontStyle.normal,
-                            fontSize: 14,
-                            color: Color(0xff000000),
-                          ),
-                          filled: true,
-                          fillColor: Color(0xffffffff),
-                          isDense: false,
-                          contentPadding: EdgeInsets.all(8),
-                          prefixIcon: Icon(Icons.visibility_off,
-                              color: Color(0xff000000), size: 24),
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(0, 16, 0, 0),
-                      child: MaterialButton(
-                        onPressed: () {},
-                        color: Color(0xff3a57e8),
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(22.0),
-                          side: BorderSide(color: Color(0xff3a57e8), width: 1),
-                        ),
-                        padding: EdgeInsets.all(16),
-                        child: Text(
-                          "Register",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            fontStyle: FontStyle.normal,
-                          ),
-                        ),
-                        textColor: Color(0xffffffff),
-                        height: 45,
-                        minWidth: MediaQuery.of(context).size.width,
-                      ),
+                      minWidth: MediaQuery.of(context).size.width,
                     ),
                   ],
                 ),
               ),
             ),
-            Padding(
-              padding: EdgeInsets.fromLTRB(0, 30, 0, 0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Align(
-                    alignment: Alignment.center,
-                    child: Text(
-                      "Already have an account?",
-                      textAlign: TextAlign.start,
-                      overflow: TextOverflow.clip,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w400,
-                        fontStyle: FontStyle.normal,
-                        fontSize: 14,
-                        color: Color(0xff000000),
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(4, 0, 0, 0),
-                    child: Text(
-                      "Login",
-                      textAlign: TextAlign.start,
-                      overflow: TextOverflow.clip,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                        fontStyle: FontStyle.normal,
-                        fontSize: 14,
-                        color: Color(0xff3a57e8),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
+  }
+
+  Widget _buildTextField(String label, TextEditingController controller, {bool isPassword = false}) {
+    return TextFormField(
+      controller: controller,
+      obscureText: isPassword,
+      validator: (value) => _validateField(value, label),
+      decoration: InputDecoration(
+        labelText: label,
+        border: UnderlineInputBorder(),
+      ),
+    );
+  }
+
+  String? _validateField(String? value, String fieldName) {
+    if (value == null || value.isEmpty) {
+      return 'Ce champ est obligatoire';
+    }
+    if (fieldName == "Email" && !value.contains('@')) {
+      return 'Entrez un email valide';
+    }
+    if (fieldName.contains("Mot de Passe")) {
+      RegExp regex = RegExp(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{13,}$");
+      if (!regex.hasMatch(value)) {
+        return 'Le mot de passe doit contenir au moins 13 caractères, dont au moins une majuscule, un chiffre et un caractère spécial';
+      }
+    }
+    if (fieldName == "Confirmer le Mot de Passe" && value != _passwordController.text) {
+      return 'Les mots de passe ne correspondent pas';
+    }
+    return null;
+  }
+
+  Future<void> _submitForm() async {
+    if (_formKey.currentState!.validate()) {
+      // Si tout est valide, on envoie les données
+      final Map<String, dynamic> formData = {
+        'nom': _nomController.text,
+        'prenom': _prenomController.text,
+        'email': _emailController.text,
+        'password': _passwordController.text,  // Assurez-vous de sécuriser la transmission des mots de passe
+        'passwordControl': _confirmPasswordController.text,
+        'roles': ["string"],  // You may adjust this as needed
+        'code': 0,
+        'verif': false
+      };
+      String body = jsonEncode(formData);
+      try {
+        var response = await http.post(
+          Uri.parse('http://127.0.0.1:8000/api/utilisateurs'),
+          headers: <String, String>{
+            'Content-Type': 'application/ld+json',
+          },
+          body: body,
+        );
+        if (response.statusCode == 201) {
+          // Gestion du succès
+          showDialog(
+            context: context,
+            builder: (ctx) => AlertDialog(
+              title: Text("Succès"),
+              content: Text("Inscription réussie, veuillez vérifier votre email pour activer votre compte"),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(ctx).pop();
+                  },
+                  child: Text("OK"),
+                ),
+              ],
+            ),
+          );
+        } else {
+          // Gestion des erreurs de réponse
+          showDialog(
+            context: context,
+            builder: (ctx) => AlertDialog(
+              title: Text("Erreur, veuillez réessayer"),
+              content: Text("Erreur lors de l'inscription, veuillez réessayer plus tard"),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(ctx).pop();
+                  },
+                  child: Text("OK"),
+                ),
+              ],
+            ),
+          );
+        }
+      } catch (e) {
+        // Gestion des erreurs de réseau ou de parsing
+        print(e);  // Pour le debugging
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _nomController.dispose();
+    _prenomController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
   }
 }

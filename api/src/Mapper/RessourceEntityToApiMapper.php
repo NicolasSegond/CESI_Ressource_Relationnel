@@ -17,12 +17,13 @@ use App\Entity\Utilisateur;
 use Symfonycasts\MicroMapper\AsMapper;
 use Symfonycasts\MicroMapper\MapperInterface;
 use Symfonycasts\MicroMapper\MicroMapperInterface;
+
 #[AsMapper(from: Ressource::class, to: RessourceAPI::class)]
 class RessourceEntityToApiMapper implements MapperInterface
 {
     public function __construct(
         private MicroMapperInterface $microMapper,
-    ){
+    ) {
         // Initialise les dépendances nécessaires au fonctionnement du mapper.
     }
 
@@ -57,6 +58,7 @@ class RessourceEntityToApiMapper implements MapperInterface
         $dto->dateCreation = $entity->getDateCreation();
         $dto->dateModification = $entity->getDateModification();
         $dto->nombreVue = $entity->getNombreVue();
+        $dto->valide = $entity->getValide();
 
         $proprietaire = $entity->getProprietaire();
 
@@ -96,7 +98,7 @@ class RessourceEntityToApiMapper implements MapperInterface
             return $this->microMapper->map($utilisateur, UtilisateurAPI::class, [
                 MicroMapperInterface::MAX_DEPTH => 1,
             ]);
-        } , $entity->getVoirRessource()->getValues());
+        }, $entity->getVoirRessource()->getValues());
 
         // Retourne l'API Utilisateur mise à jour.
         return $dto;

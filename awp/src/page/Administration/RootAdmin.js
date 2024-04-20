@@ -1,16 +1,35 @@
-import * as React from "react";
+import React, { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
+import { getIdUser, getRolesUser, getTokenDisconnected } from "../../utils/authentification";
 
-const Admin = (props) => {
-    console.log("props", props);
-    const { roles } = props;
+const Admin = () => {
+    const [isAdmin, setIsAdmin] = useState(false);
     const navigate = useNavigate();
 
-    React.useEffect(() => {
-        if (!roles.includes("ROLE_ADMIN")) {
-            navigate("/");
-        }
-    }, [roles, navigate]);
+    useEffect(() => {
+        const fetchData = async () => {
+            const token = getTokenDisconnected();
+            if (!token) {
+                navigate('/');
+                return;
+            }
+
+            const userID = getIdUser(token);
+            const rolesUser = await getRolesUser(userID);
+
+            if (rolesUser.includes("ROLE_ADMIN")) {
+                setIsAdmin(true);
+            } else {
+                navigate('/');
+            }
+        };
+
+        fetchData();
+    }, [navigate]);
+
+    if (!isAdmin) {
+        return null; // Ou une indication de chargement si nécessaire
+    }
 
     return (
         <>
