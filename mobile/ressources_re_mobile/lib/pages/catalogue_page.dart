@@ -140,8 +140,10 @@ class _CatalogueState extends State<Catalogue> {
     try {
       // Récupérer les tokens de l'utilisateur
       final tokens = await getToken();
+      print(tokens);
       // Appeler la fonction pour extraire l'ID de l'utilisateur
       final id = await getIdUser(tokens!);
+      print(id);
       // Mettre à jour l'ID de l'utilisateur dans l'état de la page
       setState(() {
         userId = id;

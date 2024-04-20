@@ -19,7 +19,7 @@ Future<Map<String, dynamic>?> getToken() async {
 
   try {
     final Map<String, dynamic> tokens =  jsonDecode(tokensString) as Map<String, dynamic>;
-    
+    print(tokens);
 
     if (tokens['token'] != null &&
         tokens['refresh_token'] != null &&

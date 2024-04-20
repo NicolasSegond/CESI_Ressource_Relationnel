@@ -1,16 +1,24 @@
-///File download from FlutterViz- Drag and drop a tools. For more details visit https://flutterviz.io/
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:ressources_re_mobile/pages/catalogue_page.dart';
 import 'package:ressources_re_mobile/pages/inscription_page.dart';
 import 'package:ressources_re_mobile/services/connect.dart';
 
+class Login extends StatefulWidget {
+  final VoidCallback? onLoginSuccess;
 
-class login extends StatelessWidget {
+  Login({Key? key, this.onLoginSuccess}) : super(key: key);
+
+  @override
+  _LoginState createState() => _LoginState();
+}
+
+class _LoginState extends State<Login> {
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
+  bool _obscureText = true; // Variable pour gérer l'état du texte masqué
 
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,9 +57,8 @@ class login extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisSize: MainAxisSize.max,
                   children: [
-                    ///***If you have exported images you must have to copy those images in assets/images directory.
                     Image(
-                       image: AssetImage("assets/img/logo.png"),
+                      image: AssetImage("assets/img/logo.png"),
                       height: 200,
                       width: 200,
                       fit: BoxFit.cover,
@@ -74,8 +81,7 @@ class login extends StatelessWidget {
                       ),
                     ),
                     Padding(
-                      padding:
-                          EdgeInsets.symmetric(vertical: 16, horizontal: 0),
+                      padding: EdgeInsets.symmetric(vertical: 16, horizontal: 0),
                       child: TextField(
                         controller: _emailController,
                         obscureText: false,
@@ -90,18 +96,15 @@ class login extends StatelessWidget {
                         decoration: InputDecoration(
                           disabledBorder: UnderlineInputBorder(
                             borderRadius: BorderRadius.circular(4.0),
-                            borderSide:
-                                BorderSide(color: Color(0xff000000), width: 1),
+                            borderSide: BorderSide(color: Color(0xff000000), width: 1),
                           ),
                           focusedBorder: UnderlineInputBorder(
                             borderRadius: BorderRadius.circular(4.0),
-                            borderSide:
-                                BorderSide(color: Color(0xff000000), width: 1),
+                            borderSide: BorderSide(color: Color(0xff000000), width: 1),
                           ),
                           enabledBorder: UnderlineInputBorder(
                             borderRadius: BorderRadius.circular(4.0),
-                            borderSide:
-                                BorderSide(color: Color(0xff000000), width: 1),
+                            borderSide: BorderSide(color: Color(0xff000000), width: 1),
                           ),
                           hintText: "Mail",
                           hintStyle: TextStyle(
@@ -119,7 +122,7 @@ class login extends StatelessWidget {
                     ),
                     TextField(
                       controller: _passwordController,
-                      obscureText: false,
+                      obscureText: _obscureText, // Utilisation de la variable pour contrôler l'état du texte masqué
                       textAlign: TextAlign.start,
                       maxLines: 1,
                       style: TextStyle(
@@ -131,18 +134,15 @@ class login extends StatelessWidget {
                       decoration: InputDecoration(
                         disabledBorder: UnderlineInputBorder(
                           borderRadius: BorderRadius.circular(4.0),
-                          borderSide:
-                              BorderSide(color: Color(0xff000000), width: 1),
+                          borderSide: BorderSide(color: Color(0xff000000), width: 1),
                         ),
                         focusedBorder: UnderlineInputBorder(
                           borderRadius: BorderRadius.circular(4.0),
-                          borderSide:
-                              BorderSide(color: Color(0xff000000), width: 1),
+                          borderSide: BorderSide(color: Color(0xff000000), width: 1),
                         ),
                         enabledBorder: UnderlineInputBorder(
                           borderRadius: BorderRadius.circular(4.0),
-                          borderSide:
-                              BorderSide(color: Color(0xff000000), width: 1),
+                          borderSide: BorderSide(color: Color(0xff000000), width: 1),
                         ),
                         hintText: "Mot De Passe",
                         hintStyle: TextStyle(
@@ -155,6 +155,15 @@ class login extends StatelessWidget {
                         fillColor: Color(0xffffffff),
                         isDense: false,
                         contentPadding: EdgeInsets.all(0),
+                        suffixIcon: IconButton(
+                          icon: Icon(_obscureText ? Icons.visibility : Icons.visibility_off),
+                          onPressed: () {
+                            // Inverse l'état du texte masqué
+                            setState(() {
+                              _obscureText = !_obscureText;
+                            });
+                          },
+                        ),
                       ),
                     ),
                     Padding(
@@ -174,40 +183,39 @@ class login extends StatelessWidget {
                         ),
                       ),
                     ),
-             MaterialButton(
-                onPressed: () {
-                  String email = _emailController.text;
-                  String password = _passwordController.text;
-                  
-                  // Appeler la méthode de connexion avec la contexte actuel
-                  Connect.login(context, email, password, (success) {
-                    if (success) {
-                      // Si la connexion réussit, naviguer vers la page du catalogue
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => Catalogue()),
-                      );
-                    }
-                  });
-                },
-                color: Color.fromRGBO(3,152,158, 1),
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16.0),
-                ),
-                padding: EdgeInsets.all(16),
-                child: Text(
-                  "Login",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    fontStyle: FontStyle.normal,
-                  ),
-                ),
-                textColor: Color(0xffffffff),
-                height: 40,
-                minWidth: MediaQuery.of(context).size.width,
-              ),
+                    MaterialButton(
+                      onPressed: () {
+                        String email = _emailController.text;
+                        String password = _passwordController.text;
+
+                        // Appeler la méthode de connexion avec le contexte actuel
+                        Connect.login(context, email, password, (success) {
+                          if (success) {
+                            // Si la connexion réussit, appeler la fonction onLoginSuccess
+                            if (widget.onLoginSuccess != null) {
+                              widget.onLoginSuccess!();
+                            }
+                          }
+                        });
+                      },
+                      color: Color.fromRGBO(3,152,158, 1),
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16.0),
+                      ),
+                      padding: EdgeInsets.all(16),
+                      child: Text(
+                        "Login",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          fontStyle: FontStyle.normal,
+                        ),
+                      ),
+                      textColor: Color(0xffffffff),
+                      height: 40,
+                      minWidth: MediaQuery.of(context).size.width,
+                    ),
                     Padding(
                       padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
                       child: Row(

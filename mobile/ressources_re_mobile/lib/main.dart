@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:ressources_re_mobile/pages/connexion_page.dart';
+import 'package:ressources_re_mobile/pages/catalogue_page.dart';
 import 'package:ressources_re_mobile/pages/inscription_page.dart';
 import 'package:ressources_re_mobile/pages/test.dart';
-import 'package:ressources_re_mobile/pages/catalogue_page.dart';
+import 'package:ressources_re_mobile/pages/connexion_page.dart';
 
 void main() {
-  //Passerelle.initListApi();
   runApp(const MyApp());
 }
 
@@ -17,11 +16,17 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  int _currentIndex = 0;
+  int _currentIndex = 1;
 
   setCurrentIndex(int index) {
     setState(() {
       _currentIndex = index;
+    });
+  }
+
+  void navigateToCatalogue(BuildContext context) {
+    setState(() {
+      _currentIndex = 2; // Index de la page du catalogue
     });
   }
 
@@ -34,7 +39,6 @@ class _MyAppState extends State<MyApp> {
           title: Text([
             "Inscription",
             "Connexion",
-            "Login",
             "Catalogue",
             "Test",
           ][_currentIndex]),
@@ -43,7 +47,11 @@ class _MyAppState extends State<MyApp> {
           index: _currentIndex,
           children: [
             SignUp(),
-            login(), // Utilisation de la page de connexion ici
+            Login(
+              onLoginSuccess: () {
+                navigateToCatalogue(context); // Naviguer vers la page du catalogue après la connexion réussie
+              },
+            ),
             Catalogue(),
             FilterPage(),
           ],
