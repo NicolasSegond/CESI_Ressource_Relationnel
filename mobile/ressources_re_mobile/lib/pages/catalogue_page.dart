@@ -12,6 +12,7 @@ import 'package:ressources_re_mobile/services/connect.dart';
 import 'package:ressources_re_mobile/utilities/authentification.dart';
 import 'package:ressources_re_mobile/utilities/customFetch.dart';
 import 'package:ressources_re_mobile/utilities/apiConfig.dart';
+import 'package:ressources_re_mobile/components/Catalogue/LessButton.dart';
 
 class Catalogue extends StatefulWidget {
   const Catalogue({Key? key}) : super(key: key);
@@ -48,8 +49,8 @@ class _CatalogueState extends State<Catalogue> {
   @override
   void initState() {
     super.initState();
-    fetchData();
     fetchUserId();
+    fetchData();
   }
 
   void updatePage(int newPage) {
@@ -100,6 +101,8 @@ class _CatalogueState extends State<Catalogue> {
 
   Future<List<Ressource>> fetchAlbum() async {
     String url = buildUrlWithFilters(selectedFilters);
+    
+    print(url);
 
     Map<String, dynamic> response = await customFetch({
       'url': url,
@@ -150,6 +153,7 @@ class _CatalogueState extends State<Catalogue> {
 
   Future<void> fetchUserId() async {
     try {
+      print('ça passe');
       // Récupérer les tokens de l'utilisateur
       final tokens = await getTokenDisconnected();
 
@@ -227,9 +231,6 @@ class _CatalogueState extends State<Catalogue> {
     );
   }
 
-
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -237,17 +238,18 @@ class _CatalogueState extends State<Catalogue> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-           userId != null ? // Vérifiez d'abord si l'ID de l'utilisateur est disponible
-          Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Text(
-              'ID utilisateur : $userId',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ) : Container(), // Si l'ID de l'utilisateur n'est pas disponible, affichez un conteneur vide
+          userId != null
+              ? Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Text(
+                    'ID utilisateur : $userId',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                )
+              : Container(),
           Align(
             alignment: Alignment.centerLeft,
             child: Padding(
@@ -269,32 +271,68 @@ class _CatalogueState extends State<Catalogue> {
               ),
             ),
           ),
-          FutureBuilder(
-            future: fetchAlbum(),
-            builder: (BuildContext context, AsyncSnapshot snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(
-                  child: CircularProgressIndicator(),
-                );
-              } else if (snapshot.hasError) {
-                return Center(
-                  child: Text(snapshot.error.toString()),
-                );
-              } else {
-                albums = snapshot.data;
-
-                return Expanded(
-                  child: ListView.builder(
+          Expanded(
+            child: FutureBuilder(
+              future: fetchAlbum(),
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else if (snapshot.hasError) {
+                  return Center(
+                    child: Text(snapshot.error.toString()),
+                  );
+                } else {
+                  albums = snapshot.data;
+                  return ListView.builder(
                     itemCount: albums.length + 1,
                     itemBuilder: (context, index) {
                       if (index == albums.length) {
                         if (hydraView.id != hydraView.last ||
                             hydraView.id == '') {
-                          return MoreButton(
-                              currentPage: currentPage,
-                              fetchAlbum: fetchAlbum,
-                              updatePage: updatePage);
+                          return Row(
+                            children: [
+                              if (hydraView.id != hydraView.last ||
+                                  hydraView.id == '')
+                                Expanded(
+                                  child: MoreButton(
+                                    currentPage: currentPage,
+                                    fetchAlbum: fetchAlbum,
+                                    updatePage: updatePage,
+                                  ),
+                                ),
+                              if (index == albums.length - 1 &&
+                                  hydraView.first != hydraView.id)
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(10),
+                                    child: LessButton(
+                                      currentPage: currentPage,
+                                      fetchAlbum: fetchAlbum,
+                                      updatePage: updatePage,
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          );
                         }
+                      } else if (index == albums.length - 1 &&
+                          hydraView.first != hydraView.id) {
+                        return Row(
+                          children: [
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.all(10),
+                                child: LessButton(
+                                  currentPage: currentPage,
+                                  fetchAlbum: fetchAlbum,
+                                  updatePage: updatePage,
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
                       } else {
                         final album = albums[index];
                         return GestureDetector(
@@ -322,7 +360,7 @@ class _CatalogueState extends State<Catalogue> {
                                   width: double.infinity,
                                   height: 90,
                                   decoration: BoxDecoration(
-                                    color: const Color(0x1f000000),
+                                    color: const Color(0x1fffffff),
                                     shape: BoxShape.rectangle,
                                     borderRadius: const BorderRadius.only(
                                       topLeft: Radius.circular(15.0),
@@ -365,16 +403,14 @@ class _CatalogueState extends State<Catalogue> {
                                           mainAxisSize: MainAxisSize.max,
                                           children: [
                                             Align(
-                                              alignment:
-                                                  const Alignment(0.0, 0.9),
+                                              alignment: const Alignment(0.0, 0.9),
                                               child: Padding(
                                                 padding:
                                                     const EdgeInsets.fromLTRB(
                                                         10, 0, 0, 0),
                                                 child: ClipRRect(
                                                   borderRadius:
-                                                      BorderRadius.circular(
-                                                          15.0),
+                                                      BorderRadius.circular(15.0),
                                                   child: Image(
                                                     image: const NetworkImage(
                                                         "https://picsum.photos/250?image=9"),
@@ -392,12 +428,10 @@ class _CatalogueState extends State<Catalogue> {
                                               child: Align(
                                                 alignment: Alignment(0.0, 0.6),
                                                 child: Text(
-                                                  album
-                                                          .getProprietaire()!
+                                                  album.getProprietaire()!
                                                           .getNom()! +
                                                       ' ' +
-                                                      album
-                                                          .getProprietaire()!
+                                                      album.getProprietaire()!
                                                           .getPrenom()!,
                                                   textAlign: TextAlign.start,
                                                   overflow: TextOverflow.clip,
@@ -405,8 +439,7 @@ class _CatalogueState extends State<Catalogue> {
                                                     fontWeight: FontWeight.w600,
                                                     fontStyle: FontStyle.normal,
                                                     fontSize: 14,
-                                                    color:
-                                                        const Color(0xff000000),
+                                                    color: const Color(0xff000000),
                                                   ),
                                                 ),
                                               ),
@@ -420,12 +453,12 @@ class _CatalogueState extends State<Catalogue> {
                                                     CrossAxisAlignment.end,
                                                 children: [
                                                   Padding(
-                                                    padding: const EdgeInsets
-                                                        .fromLTRB(0, 5, 5, 0),
+                                                    padding:
+                                                        const EdgeInsets.fromLTRB(
+                                                            0, 5, 5, 0),
                                                     child: Align(
-                                                      alignment:
-                                                          const Alignment(
-                                                              0.8, -0.8),
+                                                      alignment: const Alignment(
+                                                          0.8, -0.8),
                                                       child: ModalOptions(
                                                           currentUser: '8',
                                                           ressourceProprietaire:
@@ -486,8 +519,7 @@ class _CatalogueState extends State<Catalogue> {
                                                   fontWeight: FontWeight.w400,
                                                   fontStyle: FontStyle.normal,
                                                   fontSize: 14,
-                                                  color:
-                                                      const Color(0xff000000),
+                                                  color: const Color(0xff000000),
                                                 ),
                                               ),
                                             ),
@@ -521,8 +553,7 @@ class _CatalogueState extends State<Catalogue> {
                                                       MainAxisAlignment.start,
                                                   crossAxisAlignment:
                                                       CrossAxisAlignment.center,
-                                                  mainAxisSize:
-                                                      MainAxisSize.min,
+                                                  mainAxisSize: MainAxisSize.min,
                                                   children: [
                                                     // Type de relation
                                                     ...album
@@ -530,25 +561,25 @@ class _CatalogueState extends State<Catalogue> {
                                                         .map((chip) {
                                                       return Padding(
                                                         padding:
-                                                            const EdgeInsets
-                                                                .only(
+                                                            const EdgeInsets.only(
                                                                 right: 5.0),
                                                         child: Chip(
                                                           labelPadding:
                                                               const EdgeInsets
                                                                   .symmetric(
-                                                                  vertical: 0,
-                                                                  horizontal:
-                                                                      4),
-                                                          label: Text(chip
-                                                              .getLibelle()!),
+                                                            vertical: 0,
+                                                            horizontal: 4,
+                                                          ),
+                                                          label: Text(
+                                                            chip.getLibelle()!,
+                                                          ),
                                                           labelStyle:
                                                               const TextStyle(
                                                             fontSize: 14,
                                                             fontWeight:
                                                                 FontWeight.w400,
-                                                            fontStyle: FontStyle
-                                                                .normal,
+                                                            fontStyle:
+                                                                FontStyle.normal,
                                                             color: const Color(
                                                                 0xffffffff),
                                                           ),
@@ -578,11 +609,14 @@ class _CatalogueState extends State<Catalogue> {
                                                         labelPadding:
                                                             const EdgeInsets
                                                                 .symmetric(
-                                                                vertical: 0,
-                                                                horizontal: 4),
-                                                        label: Text(album
-                                                            .getCategorie()!
-                                                            .getNom()!), // Supposant que `getLibelle()` est la méthode pour récupérer le libellé de la catégorie
+                                                          vertical: 0,
+                                                          horizontal: 4,
+                                                        ),
+                                                        label: Text(
+                                                          album
+                                                              .getCategorie()!
+                                                              .getNom()!,
+                                                        ),
                                                         labelStyle:
                                                             const TextStyle(
                                                           fontSize: 14,
@@ -617,11 +651,14 @@ class _CatalogueState extends State<Catalogue> {
                                                         labelPadding:
                                                             const EdgeInsets
                                                                 .symmetric(
-                                                                vertical: 0,
-                                                                horizontal: 4),
-                                                        label: Text(album
-                                                            .getTypeDeRessource()!
-                                                            .getLibelle()!), // Supposant que `getLibelle()` est la méthode pour récupérer le libellé du type de ressource
+                                                          vertical: 0,
+                                                          horizontal: 4,
+                                                        ),
+                                                        label: Text(
+                                                          album
+                                                              .getTypeDeRessource()!
+                                                              .getLibelle()!,
+                                                        ),
                                                         labelStyle:
                                                             const TextStyle(
                                                           fontSize: 14,
@@ -662,12 +699,11 @@ class _CatalogueState extends State<Catalogue> {
                           ),
                         );
                       }
-                      ;
                     },
-                  ),
-                );
-              }
-            },
+                  );
+                }
+              },
+            ),
           ),
         ],
       ),

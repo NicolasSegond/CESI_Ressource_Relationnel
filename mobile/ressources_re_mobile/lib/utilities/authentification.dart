@@ -38,6 +38,8 @@ Future<Map<String, dynamic>?> getToken() async {
 Future<Map<String, dynamic>?> getTokenDisconnected() async {
   final token = await storage.read(key: 'token');
 
+  print('token_test: ' + token!);
+
   try {
     final Map<String, dynamic> tokens = jsonDecode(token!) as Map<String, dynamic>;
 

@@ -191,10 +191,7 @@ class _LoginState extends State<Login> {
                         // Appeler la méthode de connexion avec le contexte actuel
                         Connect.login(context, email, password, (success) {
                           if (success) {
-                            // Si la connexion réussit, appeler la fonction onLoginSuccess
-                            if (widget.onLoginSuccess != null) {
-                              widget.onLoginSuccess!();
-                            }
+                            Navigator.pushNamed(context, '/');
                           }
                         });
                       },

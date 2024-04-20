@@ -31,6 +31,8 @@ class Connect {
       var jsonResponse = json.decode(response.body);
       // Stocker le token et le refresh localement
       await saveTokens(jsonEncode(jsonResponse)); // Stockez directement la réponse JSON encodée
+
+      print('Token : ' + jsonResponse['token']);
       
       // Appeler la fonction de rappel pour indiquer que la connexion a réussi
       onLoginSuccess(true);
