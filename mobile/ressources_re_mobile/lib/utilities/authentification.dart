@@ -50,7 +50,6 @@ Future<Map<String, dynamic>?> getTokenDisconnected() async {
       return null;
     }
   } catch (error) {
-    print("Erreur lors de l'analyse du token: $error");
     return null; 
   }
 }

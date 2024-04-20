@@ -43,13 +43,11 @@ Future<Map<String, dynamic>> customFetch(Map<String, dynamic> parameters, {bool 
 
     var res = await http.get(
       Uri.parse(parameters['url']),
-      headers: headers, // Passer les en-têtes directement ici
+      headers: parameters['headers']
     );
-
+    
     data = res.body;
     response['data'] = data;
-
-    print(data);
 
     if (res.statusCode != 200) {
       var responseData = jsonDecode(data);
@@ -65,7 +63,6 @@ Future<Map<String, dynamic>> customFetch(Map<String, dynamic> parameters, {bool 
           refreshTokenVar = refreshToken(authTokens!['refresh_token']);
         }
 
-        print('TEST');
         try {
           authTokens!['token'] = await refreshTokenVar;
 

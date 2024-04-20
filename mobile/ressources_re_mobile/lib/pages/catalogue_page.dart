@@ -8,9 +8,10 @@ import 'package:ressources_re_mobile/classes/Ressource.dart';
 import 'package:ressources_re_mobile/classes/HydraView.dart';
 import 'package:ressources_re_mobile/components/Catalogue/ModalOptions.dart';
 import 'package:ressources_re_mobile/components/Catalogue/MoreButton.dart';
-import 'package:ressources_re_mobile/services/connect.dart'; // Importez vos fichiers et fonctions nécessaires
-import 'package:ressources_re_mobile/utilities/authentification.dart'; // Importez vos fichiers et fonctions nécessaires
-
+import 'package:ressources_re_mobile/services/connect.dart';
+import 'package:ressources_re_mobile/utilities/authentification.dart';
+import 'package:ressources_re_mobile/utilities/customFetch.dart';
+import 'package:ressources_re_mobile/utilities/apiConfig.dart';
 
 class Catalogue extends StatefulWidget {
   const Catalogue({Key? key}) : super(key: key);
@@ -80,32 +81,37 @@ class _CatalogueState extends State<Catalogue> {
 
     if (params.containsKey('visibilite') &&
         params['visibilite']!.contains('2')) {
-      params['proprietaire'] = ['9'];
+      params['proprietaire'] = [userId.toString()];
     }
 
     if (params.containsKey('visibilite') &&
         params['visibilite']!.contains('3')) {
-      params['voirRessource'] = ['9'];
+      params['voirRessource'] = [userId.toString()];
     }
 
     if (params.containsKey('visibilite') &&
         params['visibilite']!.contains('4')) {
-      params['proprietaire'] = ['9'];
+      params['proprietaire'] = [userId.toString()];
       params['visibilite'] = [];
     }
 
-    return Uri.http('127.0.0.1:8000', '/api/ressources', params).toString();
+    return Uri.http(ApiConfig.url, '/api/ressources', params).toString();
   }
 
   Future<List<Ressource>> fetchAlbum() async {
     String url = buildUrlWithFilters(selectedFilters);
 
-    print(url);
+    Map<String, dynamic> response = await customFetch({
+      'url': url,
+      'method': 'GET',
+      'headers': {
+        'Content-Type': 'application/json',
+      }
+    }, connecter: false);
 
-    final response = await http.get(Uri.parse(url));
-
-    if (response.statusCode == 200) {
-      final dynamic result = json.decode(response.body);
+      print(response['error']);
+    if (response['error'] == '') {
+      final dynamic result = json.decode(response['data']);
       final List<dynamic> members = result['hydra:member'];
 
       hydraView = HydraView.fromJson(result['hydra:view']);
@@ -121,36 +127,43 @@ class _CatalogueState extends State<Catalogue> {
       isLoading = true;
     });
 
-    final response =
-        await http.get(Uri.parse('http://127.0.0.1:8000/api/options'));
-    if (response.statusCode == 200) {
-      Map<String, dynamic> data = json.decode(response.body);
+    Map<String, dynamic> response = await customFetch({
+      'url': ApiConfig.apiUrl + '/api/options',
+      'method': 'GET',
+      'headers': {
+        'Content-Type': 'application/json',
+      }
+    }, connecter: false);
+
+    if (response['error'] != '') {
+      throw Exception('Failed to load data: ${response['error']}');
+    } else {
+      Map<String, dynamic> data = json.decode(response['data']);
       setState(() {
         categories = data['categories'];
         relationTypes = data['relationTypes'];
         resourceTypes = data['resourceTypes'];
         isLoading = false;
       });
-    } else {
-      throw Exception('Failed to load data');
     }
   }
-   // Fonction pour récupérer l'ID de l'utilisateur
+
   Future<void> fetchUserId() async {
     try {
       // Récupérer les tokens de l'utilisateur
-      final tokens = await getToken();
-      print(tokens);
+      final tokens = await getTokenDisconnected();
+
       // Appeler la fonction pour extraire l'ID de l'utilisateur
-      final id = await getIdUser(tokens!);
-      print(id);
-      // Mettre à jour l'ID de l'utilisateur dans l'état de la page
+      if(tokens != null){
+        final id = await getIdUser(tokens!);
+
+        // Mettre à jour l'ID de l'utilisateur dans l'état de la page
       setState(() {
         userId = id;
       });
+      }
     } catch (e) {
       print('Une erreur s\'est produite lors de la récupération de l\'ID de l\'utilisateur : $e');
-      // Gérer l'erreur, par exemple rediriger vers la page de connexion
     }
   }
 
@@ -161,21 +174,39 @@ class _CatalogueState extends State<Catalogue> {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setState) {
             return Padding(
-              padding: EdgeInsets.only(left: 20),
+              padding: const EdgeInsets.only(left: 20),
               child: Container(
                 height: MediaQuery.of(context).size.height * 0.7,
                 child: SingleChildScrollView(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      _buildFilter('Visibilités : ', 'visibilite', visibilites,
-                          setState),
+                      userId != null
+                          ? _buildFilter(
+                              'Visibilités : ',
+                              'visibilite',
+                              visibilites,
+                              setState,
+                            )
+                          : Container(),
                       _buildFilter(
-                          'Catégories : ', 'categorie', categories, setState),
-                      _buildFilter('Type de relations : ', 'typeRelations',
-                          relationTypes, setState),
-                      _buildFilter('Type de ressources : ', 'typeDeRessource',
-                          resourceTypes, setState),
+                        'Catégories : ',
+                        'categorie',
+                        categories,
+                        setState,
+                      ),
+                      _buildFilter(
+                        'Type de relations : ',
+                        'typeRelations',
+                        relationTypes,
+                        setState,
+                      ),
+                      _buildFilter(
+                        'Type de ressources : ',
+                        'typeDeRessource',
+                        resourceTypes,
+                        setState,
+                      ),
                       SizedBox(height: 20),
                       ElevatedButton(
                         onPressed: () {
@@ -195,6 +226,9 @@ class _CatalogueState extends State<Catalogue> {
       },
     );
   }
+
+
+
 
   @override
   Widget build(BuildContext context) {

@@ -7,7 +7,7 @@ import TriComponent from "../../composants/Ressource/TriComponent";
 import * as authentification from "../../utils/authentification";
 import { getIdUser, getTokenDisconnected } from "../../utils/authentification";
 
-function ListRessources({}) {
+function ListRessources({ }) {
 
     const [data, setData] = useState([]);
     const [tri, setTri] = useState({});
@@ -61,7 +61,7 @@ function ListRessources({}) {
                 url += `&typeDeRessource=${selectedTypeRessource}`;
             }
             if (selectedVisibilite !== null) { // Vérifiez si la visibilité est sélectionnée
-                if(selectedVisibilite == 2)
+                if (selectedVisibilite == 2)
                     url += `&proprietaire=${connectUser}`;
                 else if (selectedVisibilite == 3)
                     url += `&voirRessource=${connectUser}`;
@@ -168,7 +168,7 @@ function ListRessources({}) {
                     onChangeTri={handleVisibiliteChange}
                     aucunActif={false}
                     defautSelect={1}
-                /> }
+                />}
             </div>
             <br /><br />
             {loading ? (
@@ -181,13 +181,13 @@ function ListRessources({}) {
                             imageUrl={`http://127.0.0.1:8000/images/book/${ressource.miniature}`}
                             title={ressource.titre}
                             description={ressource.contenu}
-                            vue = {ressource.nombreVue}
-                            auteur = {ressource.proprietaire.nom}
-                            visibilite = {ressource.visibilite.libelle}
-                            typeRessource = {ressource.typeDeRessource.libelle}
-                            typeRelations ={ressource.typeRelations}
-                            categorie = {ressource.categorie.nom}
-                            nbCommentaire = {ressource.commentaires.length}
+                            vue={ressource.nombreVue}
+                            auteur={ressource.proprietaire.nom}
+                            visibilite={ressource.visibilite.libelle}
+                            typeRessource={ressource.typeDeRessource.libelle}
+                            typeRelations={ressource.typeRelations}
+                            categorie={ressource.categorie.nom}
+                            nbCommentaire={ressource.commentaires.length}
                         />
                     ))}
                     <br /><br />
