@@ -8,6 +8,7 @@ import 'package:ressources_re_mobile/classes/Ressource.dart';
 import 'package:ressources_re_mobile/classes/HydraView.dart';
 import 'package:ressources_re_mobile/components/Catalogue/ModalOptions.dart';
 import 'package:ressources_re_mobile/components/Catalogue/MoreButton.dart';
+import 'package:ressources_re_mobile/pages/ressource_page.dart';
 
 class Catalogue extends StatefulWidget {
   const Catalogue({Key? key}) : super(key: key);
@@ -229,8 +230,13 @@ class _CatalogueState extends State<Catalogue> {
                       } else {
                         final album = albums[index];
                         return GestureDetector(
-                          onTap: () {
-                            print('Album tapped: $index');
+                         onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => Ressources_page(uneRessource: album),
+                              ),
+                            );
                           },
                           child: Container(
                             margin: const EdgeInsets.all(10),
