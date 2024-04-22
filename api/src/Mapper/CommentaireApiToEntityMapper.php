@@ -4,9 +4,12 @@ namespace App\Mapper;
 
 use App\ApiResource\CommentaireAPI;
 use App\Entity\Commentaire;
+use App\Entity\Utilisateur;
 use App\Repository\CommentaireRepository;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfonycasts\MicroMapper\AsMapper;
 use Symfonycasts\MicroMapper\MapperInterface;
+use Symfonycasts\MicroMapper\MicroMapperInterface;
 
 #[AsMapper(from: CommentaireAPI::class, to: Commentaire::class)]
 class CommentaireApiToEntityMapper implements MapperInterface
@@ -47,6 +50,15 @@ class CommentaireApiToEntityMapper implements MapperInterface
 
         $entity->setDate($dto->date);
         $entity->setContenu($dto->contenu);
+        $entity->setUtilisateur($dto->utilisateur);
+
+        if ($dto->utilisateur === null) {
+            throw new HttpException(400, 'L\'utilisateur ne peux pas être vide');
+        } else {
+            $entity->setUtilisateur($this->microMapper->map($dto->utilisateur, Utilisateur::class, [
+                MicroMapperInterface::MAX_DEPTH => 1,
+            ]));
+        }
 
         // Retourne l'entité utilisateur mise à jour.
         return $entity;

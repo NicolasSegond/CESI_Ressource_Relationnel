@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:ressources_re_mobile/classes/Ressource.dart';
+import 'package:ressources_re_mobile/classes/Utilisateur.dart';
+import 'package:ressources_re_mobile/classes/Commentaire.dart';
+
+
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:flutter_html/flutter_html.dart';
-import 'package:flutter_html_all/flutter_html_all.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 
 class Ressources_page extends StatelessWidget {
   final Ressource? uneRessource;
@@ -55,7 +58,7 @@ class Ressources_page extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisSize: MainAxisSize.max,
                             children: [
-                              Row(
+                                Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 mainAxisSize: MainAxisSize.max,
@@ -86,358 +89,187 @@ class Ressources_page extends StatelessWidget {
                                     allowHalfRating: false,
                                     onRatingUpdate: (value) {},
                                   ),
-                                  Padding(
-                                    padding: EdgeInsets.fromLTRB(4, 0, 0, 0),
-                                    child: Text(
-                                      "4.5",
-                                      textAlign: TextAlign.start,
-                                      overflow: TextOverflow.clip,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w700,
-                                        fontStyle: FontStyle.normal,
-                                        fontSize: 16,
-                                        color: Color(0xff000000),
-                                      ),
-                                    ),
-                                  ),
                                 ],
                               ),
-                               Padding(
-                                padding: EdgeInsets.fromLTRB(0, 16, 0, 0),
-                                child: Html(
-                                  data: uneRessource?.getContenu() ?? '',
-                                  style: {
-                                    // Your custom styles here
-                                  },
-                                  onLinkTap: (url, _, __) {
-                                    debugPrint("Opening $url...");
-                                  },
-                                  onCssParseError: (css, messages) {
-                                    debugPrint("css that errored: $css");
-                                    debugPrint("error messages:");
-                                    for (var element in messages) {
-                                      debugPrint(element.toString());
-                                    }
-                                    return '';
-                                  },
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.fromLTRB(0, 16, 0, 0),
-                                child: Text(
-                                  "SHOW ON MAP",
-                                  textAlign: TextAlign.start,
-                                  overflow: TextOverflow.clip,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w700,
-                                    fontStyle: FontStyle.normal,
-                                    fontSize: 14,
-                                    color: Color(0xff3a57e8),
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisSize: MainAxisSize.max,
-                                  children: [
-                                    Expanded(
-                                      flex: 1,
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        mainAxisSize: MainAxisSize.max,
-                                        children: [
-                                          Icon(
-                                            Icons.location_on,
-                                            color: Color(0xff212435),
-                                            size: 18,
-                                          ),
-                                          Padding(
-                                            padding:
-                                                EdgeInsets.fromLTRB(4, 0, 0, 0),
-                                            child: Text(
-                                              "3.1km",
-                                              textAlign: TextAlign.start,
-                                              overflow: TextOverflow.clip,
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.w400,
-                                                fontStyle: FontStyle.normal,
-                                                fontSize: 14,
-                                                color: Color(0xff000000),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    Expanded(
-                                      flex: 1,
-                                      child: Padding(
-                                        padding:
-                                            EdgeInsets.fromLTRB(8, 0, 0, 0),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          mainAxisSize: MainAxisSize.max,
-                                          children: [
-                                            Icon(
-                                              Icons.shopping_cart,
-                                              color: Color(0xff212435),
-                                              size: 18,
-                                            ),
-                                            Expanded(
-                                              flex: 1,
-                                              child: Padding(
-                                                padding: EdgeInsets.fromLTRB(
-                                                    4, 0, 0, 0),
-                                                child: Text(
-                                                  "Free Delivery",
-                                                  textAlign: TextAlign.start,
-                                                  overflow: TextOverflow.clip,
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.w400,
-                                                    fontStyle: FontStyle.normal,
-                                                    fontSize: 14,
-                                                    color: Color(0xff000000),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      flex: 1,
-                                      child: Padding(
-                                        padding:
-                                            EdgeInsets.fromLTRB(8, 0, 0, 0),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          mainAxisSize: MainAxisSize.max,
-                                          children: [
-                                            Text(
-                                              "20-30min",
-                                              textAlign: TextAlign.start,
-                                              overflow: TextOverflow.clip,
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.w400,
-                                                fontStyle: FontStyle.normal,
-                                                fontSize: 14,
-                                                color: Color(0xff000000),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.fromLTRB(0, 16, 0, 0),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisSize: MainAxisSize.max,
-                                  children: [
-                                    Text(
-                                      "Open",
+                               Row(
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsets.fromLTRB(0, 16, 8, 0), // Ajustez les valeurs de padding selon vos besoins
+                                    child: Text(
+                                      (uneRessource?.getDateCreation() ?? ""),
                                       textAlign: TextAlign.start,
                                       overflow: TextOverflow.clip,
                                       style: TextStyle(
                                         fontWeight: FontWeight.w700,
                                         fontStyle: FontStyle.normal,
                                         fontSize: 14,
-                                        color: Color(0xff23751a),
+                                        color:Color.fromRGBO(3, 152, 158, 1),
                                       ),
                                     ),
-                                    Padding(
-                                      padding: EdgeInsets.fromLTRB(8, 0, 0, 0),
-                                      child: Text(
-                                        "10:00AM - 11:00PM",
-                                        textAlign: TextAlign.start,
-                                        overflow: TextOverflow.clip,
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w700,
-                                          fontStyle: FontStyle.normal,
-                                          fontSize: 14,
-                                          color: Color(0xff000000),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.fromLTRB(0, 16, 0, 0),
-                                child: Text(
-                                  "Food",
-                                  textAlign: TextAlign.start,
-                                  overflow: TextOverflow.clip,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w700,
-                                    fontStyle: FontStyle.normal,
-                                    fontSize: 16,
-                                    color: Color(0xff3a57e8),
                                   ),
-                                ),
-                              ),
-                              ListView(
-                                scrollDirection: Axis.vertical,
-                                padding: EdgeInsets.fromLTRB(0, 16, 0, 0),
-                                shrinkWrap: true,
-                                physics: NeverScrollableScrollPhysics(),
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisSize: MainAxisSize.max,
-                                    children: [
-                                      ///***If you have exported images you must have to copy those images in assets/images directory.
-                                      Image(
-                                        image: NetworkImage(
-                                            "https://cdn.pixabay.com/photo/2019/07/29/05/52/burger-4369973_960_720.jpg"),
-                                        height: 40,
-                                        width: 40,
-                                        fit: BoxFit.cover,
+                                  Padding(
+                                    padding: EdgeInsets.fromLTRB(0, 16, 0, 0), // Ajustez les valeurs de padding selon vos besoins
+                                    child: Text(
+                                      (uneRessource?.getDateModification() ?? "")+" ",
+                                      textAlign: TextAlign.start,
+                                      overflow: TextOverflow.clip,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w700,
+                                        fontStyle: FontStyle.normal,
+                                        fontSize: 14,
+                                        color:Color.fromRGBO(3, 152, 158, 1),
                                       ),
-                                      Expanded(
-                                        flex: 1,
-                                        child: Padding(
-                                          padding:
-                                              EdgeInsets.fromLTRB(16, 0, 0, 0),
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            mainAxisSize: MainAxisSize.max,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              
+                            Padding(
+                                padding: EdgeInsets.fromLTRB(0, 16, 0, 0),
+                                child: HtmlWidget(uneRessource?.getContenu()?? ""),
+                              ),
+                             
+                            Padding(
+                              padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.max,
+                                children: [
+                                  Expanded(
+                                    flex: 1,
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      mainAxisSize: MainAxisSize.max,
+                                      children: [
+                                        Padding(
+                                          padding: EdgeInsets.fromLTRB(0, 16, 0, 0), // Ajustez les valeurs de padding selon vos besoins
+                                          child: Row(
                                             children: [
+                                              Icon(
+                                                Icons.person, // Choisissez l'icône souhaitée ici
+                                                color: Color.fromRGBO(3, 152, 158, 1), // Couleur de l'icône
+                                              ),
+                                              SizedBox(width: 8), // Espacement entre l'icône et le texte
                                               Text(
-                                                "Package 1",
+                                                (uneRessource?.getProprietaire()?.getNom() ?? "") +" "+ (uneRessource?.getProprietaire()?.getPrenom() ?? "") + " ",
                                                 textAlign: TextAlign.start,
                                                 overflow: TextOverflow.clip,
                                                 style: TextStyle(
                                                   fontWeight: FontWeight.w700,
                                                   fontStyle: FontStyle.normal,
                                                   fontSize: 14,
-                                                  color: Color(0xff000000),
-                                                ),
-                                              ),
-                                              Padding(
-                                                padding: EdgeInsets.fromLTRB(
-                                                    0, 4, 0, 0),
-                                                child: Text(
-                                                  "Veg Pizza",
-                                                  textAlign: TextAlign.start,
-                                                  overflow: TextOverflow.clip,
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.w400,
-                                                    fontStyle: FontStyle.normal,
-                                                    fontSize: 12,
-                                                    color: Color(0xff000000),
-                                                  ),
-                                                ),
-                                              ),
-                                              Padding(
-                                                padding: EdgeInsets.fromLTRB(
-                                                    0, 4, 0, 0),
-                                                child: Text(
-                                                  "35.00",
-                                                  textAlign: TextAlign.start,
-                                                  overflow: TextOverflow.clip,
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.w700,
-                                                    fontStyle: FontStyle.normal,
-                                                    fontSize: 14,
-                                                    color: Color(0xff000000),
-                                                  ),
+                                                  color:Color.fromRGBO(3, 152, 158, 1),
                                                 ),
                                               ),
                                             ],
                                           ),
                                         ),
+                                      ],
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 1,
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      mainAxisSize: MainAxisSize.max,
+                                      children: [
+                                        Padding(
+                                          padding: EdgeInsets.fromLTRB(0, 16, 0, 0), // Ajustez les valeurs de padding selon vos besoins
+                                          child: Row(
+                                            children: [
+                                              Icon(
+                                                Icons.visibility, // Icône pour le nombre de vues
+                                                color: Color.fromRGBO(3, 152, 158, 1), // Couleur de l'icône
+                                              ),
+                                              SizedBox(width: 8), // Espacement entre l'icône et le texte
+                                              Text(
+                                                "Nombre de vues: ${uneRessource?.getNombreVue() ?? 0}", // Affichage du nombre de vues
+                                                textAlign: TextAlign.start,
+                                                overflow: TextOverflow.clip,
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.w700,
+                                                  fontStyle: FontStyle.normal,
+                                                  fontSize: 14,
+                                                  color:Color.fromRGBO(3, 152, 158, 1),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                              Padding(
+                                padding: EdgeInsets.fromLTRB(0, 16, 0, 0),
+                                child: SingleChildScrollView(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "Commentaires",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18,
+                                          color: Color.fromRGBO(3, 152, 158, 1),
+                                        ),
                                       ),
-                                      Padding(
-                                        padding:
-                                            EdgeInsets.fromLTRB(8, 0, 0, 0),
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          mainAxisSize: MainAxisSize.max,
-                                          children: [
-                                            Icon(
-                                              Icons.favorite,
-                                              color: Color(0xffff0004),
-                                              size: 16,
-                                            ),
-                                            Padding(
-                                              padding: EdgeInsets.fromLTRB(
-                                                  0, 8, 0, 0),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                mainAxisSize: MainAxisSize.max,
+                                      SizedBox(height: 8), // Espacement entre le titre et les commentaires
+                                      ListView.builder(
+                                        shrinkWrap: true, // Pour éviter les problèmes de débordement dans une colonne
+                                        physics: NeverScrollableScrollPhysics(), // Pour désactiver le défilement de la ListView à l'intérieur de SingleChildScrollView
+                                        itemCount: uneRessource?.getCommentaires().length ?? 0,
+                                        itemBuilder: (context, index) {
+                                          Commentaire commentaire = uneRessource!.getCommentaires()[index];
+                                          return Card(
+                                            elevation: 2,
+                                            margin: EdgeInsets.symmetric(vertical: 4),
+                                            child: Padding(
+                                              padding: EdgeInsets.all(8),
+                                              child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
                                                 children: [
-                                                  Icon(
-                                                    Icons.add,
-                                                    color: Color(0xff212435),
-                                                    size: 18,
-                                                  ),
-                                                  Padding(
-                                                    padding:
-                                                        EdgeInsets.symmetric(
-                                                            vertical: 0,
-                                                            horizontal: 8),
-                                                    child: Text(
-                                                      "1",
-                                                      textAlign:
-                                                          TextAlign.start,
-                                                      overflow:
-                                                          TextOverflow.clip,
-                                                      style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.w700,
-                                                        fontStyle:
-                                                            FontStyle.normal,
-                                                        fontSize: 14,
-                                                        color:
-                                                            Color(0xff000000),
-                                                      ),
+                                                  Text(
+                                                    commentaire.getUtilisateur()?.getNom() ?? "", // Nom de l'utilisateur
+                                                    style: TextStyle(
+                                                      fontWeight: FontWeight.bold,
+                                                      fontSize: 16,
+                                                      color: Colors.black,
                                                     ),
                                                   ),
-                                                  Icon(
-                                                    Icons.remove,
-                                                    color: Color(0xff212435),
-                                                    size: 18,
+                                                  SizedBox(height: 4),
+                                                  Text(
+                                                    commentaire.getContenu() ?? "", // Contenu du commentaire
+                                                    style: TextStyle(
+                                                      fontSize: 14,
+                                                    ),
+                                                  ),
+                                                  SizedBox(height: 4),
+                                                  Text(
+                                                    "${commentaire.getDate()?.toString() ?? ''} - ${commentaire.getUtilisateur()?.getNom() ?? 'Utilisateur inconnu'} - ${commentaire.getUtilisateur()?.getPrenom() ?? 'Utilisateur inconnu'}",
+                                                    style: TextStyle(
+                                                      fontSize: 12,
+                                                      color: Colors.grey,
+                                                    ),
                                                   ),
                                                 ],
                                               ),
                                             ),
-                                          ],
-                                        ),
+                                          );
+                                        },
                                       ),
                                     ],
                                   ),
-                                ],
+                                ),
                               ),
                             ],
+                            
                           ),
                         ),
                       ),

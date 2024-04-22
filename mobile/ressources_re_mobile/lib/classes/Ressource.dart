@@ -72,9 +72,23 @@ class Ressource {
     this.dateCreation = dateCreation;
   }
 
-  DateTime? getDateModification() {
-    return dateModification;
+String? getDateModification() {
+  if (dateModification != null) {
+    Duration difference = DateTime.now().difference(dateModification!);
+    if (difference.inDays == 0) {
+      return 'Modifié aujourd\'hui';
+    } else if (difference.inDays == 1) {
+      return 'Modifié hier';
+    } else if (difference.inDays < 30) {
+      return 'Modifié il y a ${difference.inDays} jours';
+    } else {
+      return 'Modifié le ' + DateFormat('dd-MM-yyyy').format(dateModification!);
+    }
+  } else {
+    return null;
   }
+}
+
 
   void setDateModification(DateTime dateModification) {
     this.dateModification = dateModification;

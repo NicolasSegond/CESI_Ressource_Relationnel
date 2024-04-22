@@ -2,6 +2,7 @@
 
 import 'package:ressources_re_mobile/classes/Ressource.dart';
 import 'package:ressources_re_mobile/classes/Utilisateur.dart';
+import 'package:intl/intl.dart'; // Importation du package intl pour utiliser DateFormat
 
 class Commentaire {
   int? id;
@@ -40,10 +41,13 @@ class Commentaire {
     this.utilisateur = utilisateur;
   }
 
-  DateTime? getDate() {
-    return date;
+String? getDate() {
+  if (date != null) {
+    return DateFormat('yyyy-MM-dd HH:mm').format(date!); // Formatage de la date sans les secondes
+  } else {
+    return null;
   }
-
+}
   void setDate(DateTime date) {
     this.date = date;
   }
@@ -53,5 +57,6 @@ class Commentaire {
     id = json['id'];
     contenu = json['contenu'];
     date = DateTime.parse(json['date']);
+    utilisateur = Utilisateur.fromJson(json['utilisateur']);
   }
 }
