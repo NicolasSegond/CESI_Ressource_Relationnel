@@ -236,7 +236,7 @@ class Ressources_page extends StatelessWidget {
                                                 crossAxisAlignment: CrossAxisAlignment.start,
                                                 children: [
                                                   Text(
-                                                    commentaire.getUtilisateur()?.getNom() ?? "", // Nom de l'utilisateur
+                                                    "${commentaire.getUtilisateur()?.getNom() ?? ''} ${commentaire.getUtilisateur()?.getPrenom() ?? ''}", // Nom et prénom de l'utilisateur
                                                     style: TextStyle(
                                                       fontWeight: FontWeight.bold,
                                                       fontSize: 16,
@@ -252,7 +252,7 @@ class Ressources_page extends StatelessWidget {
                                                   ),
                                                   SizedBox(height: 4),
                                                   Text(
-                                                    "${commentaire.getDate()?.toString() ?? ''} - ${commentaire.getUtilisateur()?.getNom() ?? 'Utilisateur inconnu'} - ${commentaire.getUtilisateur()?.getPrenom() ?? 'Utilisateur inconnu'}",
+                                                    "${commentaire.getDate()?.toString() ?? ''}",
                                                     style: TextStyle(
                                                       fontSize: 12,
                                                       color: Colors.grey,
