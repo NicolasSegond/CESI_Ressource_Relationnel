@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:ressources_re_mobile/classes/Ressource.dart';
-import 'package:ressources_re_mobile/classes/Utilisateur.dart';
 import 'package:ressources_re_mobile/classes/Commentaire.dart';
-
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:ressources_re_mobile/utilities/authentification.dart'; // Import du fichier d'authentification
 
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 
 class Ressources_page extends StatelessWidget {
   final Ressource? uneRessource;
-  const Ressources_page({Key? key, required this.uneRessource}) : super(key: key);
+
+  final TextEditingController _commentaireController = TextEditingController();
+
+  Ressources_page({Key? key, required this.uneRessource}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +34,6 @@ class Ressources_page extends StatelessWidget {
               child: Stack(
                 alignment: Alignment.topLeft,
                 children: [
-                  ///***If you have exported images you must have to copy those images in assets/images directory.
                   Image(
                     image: NetworkImage("http://127.0.0.1:8000/images/book/" + (uneRessource?.getMiniature() ?? '')),
                     height: 220,
@@ -58,7 +61,7 @@ class Ressources_page extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisSize: MainAxisSize.max,
                             children: [
-                                Row(
+                              Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 mainAxisSize: MainAxisSize.max,
@@ -81,8 +84,9 @@ class Ressources_page extends StatelessWidget {
                                     initialRating: 1,
                                     unratedColor: Color(0xff9e9e9e),
                                     itemBuilder: (context, index) => Icon(
-                                        Icons.star,
-                                        color: Color(0xffffc107)),
+                                      Icons.star,
+                                      color: Color(0xffffc107),
+                                    ),
                                     itemCount: 1,
                                     itemSize: 22,
                                     direction: Axis.horizontal,
@@ -91,10 +95,10 @@ class Ressources_page extends StatelessWidget {
                                   ),
                                 ],
                               ),
-                               Row(
+                              Row(
                                 children: [
                                   Padding(
-                                    padding: EdgeInsets.fromLTRB(0, 16, 8, 0), // Ajustez les valeurs de padding selon vos besoins
+                                    padding: EdgeInsets.fromLTRB(0, 16, 8, 0),
                                     child: Text(
                                       (uneRessource?.getDateCreation() ?? ""),
                                       textAlign: TextAlign.start,
@@ -103,109 +107,111 @@ class Ressources_page extends StatelessWidget {
                                         fontWeight: FontWeight.w700,
                                         fontStyle: FontStyle.normal,
                                         fontSize: 14,
-                                        color:Color.fromRGBO(3, 152, 158, 1),
+                                        color: Color.fromRGBO(3, 152, 158, 1),
                                       ),
                                     ),
                                   ),
                                   Padding(
-                                    padding: EdgeInsets.fromLTRB(0, 16, 0, 0), // Ajustez les valeurs de padding selon vos besoins
+                                    padding: EdgeInsets.fromLTRB(0, 16, 0, 0),
                                     child: Text(
-                                      (uneRessource?.getDateModification() ?? "")+" ",
+                                      (uneRessource?.getDateModification() ?? "") + " ",
                                       textAlign: TextAlign.start,
                                       overflow: TextOverflow.clip,
                                       style: TextStyle(
                                         fontWeight: FontWeight.w700,
                                         fontStyle: FontStyle.normal,
                                         fontSize: 14,
-                                        color:Color.fromRGBO(3, 152, 158, 1),
+                                        color: Color.fromRGBO(3, 152, 158, 1),
                                       ),
                                     ),
                                   ),
                                 ],
                               ),
-                              
-                            Padding(
+                              Padding(
                                 padding: EdgeInsets.fromLTRB(0, 16, 0, 0),
-                                child: HtmlWidget(uneRessource?.getContenu()?? ""),
+                                child: HtmlWidget(uneRessource?.getContenu() ?? ""),
                               ),
-                             
-                            Padding(
-                              padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisSize: MainAxisSize.max,
-                                children: [
-                                  Expanded(
-                                    flex: 1,
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      mainAxisSize: MainAxisSize.max,
-                                      children: [
-                                        Padding(
-                                          padding: EdgeInsets.fromLTRB(0, 16, 0, 0), // Ajustez les valeurs de padding selon vos besoins
-                                          child: Row(
-                                            children: [
-                                              Icon(
-                                                Icons.person, // Choisissez l'icône souhaitée ici
-                                                color: Color.fromRGBO(3, 152, 158, 1), // Couleur de l'icône
-                                              ),
-                                              SizedBox(width: 8), // Espacement entre l'icône et le texte
-                                              Text(
-                                                (uneRessource?.getProprietaire()?.getNom() ?? "") +" "+ (uneRessource?.getProprietaire()?.getPrenom() ?? "") + " ",
-                                                textAlign: TextAlign.start,
-                                                overflow: TextOverflow.clip,
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w700,
-                                                  fontStyle: FontStyle.normal,
-                                                  fontSize: 14,
-                                                  color:Color.fromRGBO(3, 152, 158, 1),
+                              Padding(
+                                padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisSize: MainAxisSize.max,
+                                  children: [
+                                    Expanded(
+                                      flex: 1,
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        mainAxisSize: MainAxisSize.max,
+                                        children: [
+                                          Padding(
+                                            padding: EdgeInsets.fromLTRB(0, 16, 0, 0),
+                                            child: Row(
+                                              children: [
+                                                Icon(
+                                                  Icons.person,
+                                                  color: Color.fromRGBO(3, 152, 158, 1),
                                                 ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 1,
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      mainAxisSize: MainAxisSize.max,
-                                      children: [
-                                        Padding(
-                                          padding: EdgeInsets.fromLTRB(0, 16, 0, 0), // Ajustez les valeurs de padding selon vos besoins
-                                          child: Row(
-                                            children: [
-                                              Icon(
-                                                Icons.visibility, // Icône pour le nombre de vues
-                                                color: Color.fromRGBO(3, 152, 158, 1), // Couleur de l'icône
-                                              ),
-                                              SizedBox(width: 8), // Espacement entre l'icône et le texte
-                                              Text(
-                                                "Nombre de vues: ${uneRessource?.getNombreVue() ?? 0}", // Affichage du nombre de vues
-                                                textAlign: TextAlign.start,
-                                                overflow: TextOverflow.clip,
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w700,
-                                                  fontStyle: FontStyle.normal,
-                                                  fontSize: 14,
-                                                  color:Color.fromRGBO(3, 152, 158, 1),
+                                                SizedBox(width: 8),
+                                                Text(
+                                                  (uneRessource?.getProprietaire()?.getNom() ?? "") +
+                                                      " " +
+                                                      (uneRessource?.getProprietaire()?.getPrenom() ?? "") +
+                                                      " ",
+                                                  textAlign: TextAlign.start,
+                                                  overflow: TextOverflow.clip,
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.w700,
+                                                    fontStyle: FontStyle.normal,
+                                                    fontSize: 14,
+                                                    color: Color.fromRGBO(3, 152, 158, 1),
+                                                  ),
                                                 ),
-                                              ),
-                                            ],
+                                              ],
+                                            ),
                                           ),
-                                        ),
-                                        
-                                      ],
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                    Expanded(
+                                      flex: 1,
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        mainAxisSize: MainAxisSize.max,
+                                        children: [
+                                          Padding(
+                                            padding: EdgeInsets.fromLTRB(0, 16, 0, 0),
+                                            child: Row(
+                                              children: [
+                                                Icon(
+                                                  Icons.visibility,
+                                                  color: Color.fromRGBO(3, 152, 158, 1),
+                                                ),
+                                                SizedBox(width
+
+: 8),
+                                                Text(
+                                                  "Nombre de vues: ${uneRessource?.getNombreVue() ?? 0}",
+                                                  textAlign: TextAlign.start,
+                                                  overflow: TextOverflow.clip,
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.w700,
+                                                    fontStyle: FontStyle.normal,
+                                                    fontSize: 14,
+                                                    color: Color.fromRGBO(3, 152, 158, 1),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
                               Padding(
                                 padding: EdgeInsets.fromLTRB(0, 16, 0, 0),
                                 child: SingleChildScrollView(
@@ -220,10 +226,10 @@ class Ressources_page extends StatelessWidget {
                                           color: Color.fromRGBO(3, 152, 158, 1),
                                         ),
                                       ),
-                                      SizedBox(height: 8), // Espacement entre le titre et les commentaires
+                                      SizedBox(height: 8),
                                       ListView.builder(
-                                        shrinkWrap: true, // Pour éviter les problèmes de débordement dans une colonne
-                                        physics: NeverScrollableScrollPhysics(), // Pour désactiver le défilement de la ListView à l'intérieur de SingleChildScrollView
+                                        shrinkWrap: true,
+                                        physics: NeverScrollableScrollPhysics(),
                                         itemCount: uneRessource?.getCommentaires().length ?? 0,
                                         itemBuilder: (context, index) {
                                           Commentaire commentaire = uneRessource!.getCommentaires()[index];
@@ -236,7 +242,7 @@ class Ressources_page extends StatelessWidget {
                                                 crossAxisAlignment: CrossAxisAlignment.start,
                                                 children: [
                                                   Text(
-                                                    "${commentaire.getUtilisateur()?.getNom() ?? ''} ${commentaire.getUtilisateur()?.getPrenom() ?? ''}", // Nom et prénom de l'utilisateur
+                                                    "${commentaire.getUtilisateur()?.getNom() ?? ''} ${commentaire.getUtilisateur()?.getPrenom() ?? ''}",
                                                     style: TextStyle(
                                                       fontWeight: FontWeight.bold,
                                                       fontSize: 16,
@@ -245,7 +251,7 @@ class Ressources_page extends StatelessWidget {
                                                   ),
                                                   SizedBox(height: 4),
                                                   Text(
-                                                    commentaire.getContenu() ?? "", // Contenu du commentaire
+                                                    commentaire.getContenu() ?? "",
                                                     style: TextStyle(
                                                       fontSize: 14,
                                                     ),
@@ -281,30 +287,76 @@ class Ressources_page extends StatelessWidget {
                                         color: Color.fromRGBO(3, 152, 158, 1),
                                       ),
                                     ),
-                                    SizedBox(height: 8), // Espacement entre le titre et le formulaire
+                                    SizedBox(height: 8),
                                     TextField(
+                                      controller: _commentaireController,
                                       decoration: InputDecoration(
                                         hintText: "Votre commentaire",
                                         border: OutlineInputBorder(),
                                       ),
-                                      maxLines: null, // Pour permettre plusieurs lignes
-                                      // onChanged: (value) {
-                                      //   // Ici, vous pouvez mettre à jour l'état de votre widget avec la valeur du commentaire
-                                      // },
+                                      maxLines: null,
                                     ),
-                                    SizedBox(height: 8), // Espacement entre le champ de texte et le bouton
+                                    SizedBox(height: 8),
                                     ElevatedButton(
-                                      onPressed: () {
-                                        // Logique pour soumettre le commentaire ici
+                                      onPressed: () async {
+                                        // Capture du contenu du commentaire saisi par l'utilisateur
+                                        String commentaireContenu = _commentaireController.text;
+
+                                        // Obtention de l'ID de l'utilisateur connecté
+                                        int userId = 0; // Initialisation de userId avec une valeur par défaut
+                                        try {
+                                          // Obtenez les tokens d'authentification
+                                          final Map<String, dynamic>? tokens = await getToken();
+
+                                          if (tokens != null) {
+                                            // Si les tokens sont disponibles, obtenez l'ID de l'utilisateur
+                                            userId = await getIdUser(tokens);
+                                          } else {
+                                            throw Exception('Tokens non disponibles');
+                                          }
+                                        } catch (e) {
+                                          print("Erreur lors de la récupération de l'ID utilisateur: $e");
+                                          // Gérez l'erreur selon vos besoins
+                                        }
+
+                                        // Construction de l'URL de l'utilisateur
+                                        String utilisateurUrl = 'http://127.0.0.1:8000/api/utilisateurs/$userId';
+
+                                        // Construction du corps de la requête
+                                        Map<String, dynamic> requestBody = {
+                                          "contenu": commentaireContenu,
+                                          "utilisateur": utilisateurUrl,
+                                          "date": DateTime.now().toIso8601String(),
+                                        };
+
+                                        // Envoi de la requête HTTP POST
+                                        var response = await http.post(
+                                          Uri.parse('http://127.0.0.1:8000/api/commentaires'),
+                                          headers: <String, String>{
+                                            'Content-Type': 'application/json; charset=UTF-8',
+                                          },
+                                          body: jsonEncode(requestBody),
+                                        );
+
+                                        // Traitement de la réponse de la requête
+                                        if (response.statusCode == 201) {
+                                          // Si la création du commentaire réussit
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(content: Text('Commentaire ajouté avec succès')),
+                                          );
+                                        } else {
+                                          // Si la création du commentaire échoue
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(content: Text('Erreur lors de l\'ajout du commentaire')),
+                                          );
+                                        }
                                       },
                                       child: Text("Ajouter"),
                                     ),
                                   ],
                                 ),
                               ),
-
                             ],
-                            
                           ),
                         ),
                       ),
