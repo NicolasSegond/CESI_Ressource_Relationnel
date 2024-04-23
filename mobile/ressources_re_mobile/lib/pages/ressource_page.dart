@@ -268,6 +268,41 @@ class Ressources_page extends StatelessWidget {
                                   ),
                                 ),
                               ),
+                              Padding(
+                                padding: EdgeInsets.fromLTRB(0, 16, 0, 0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Ajouter un commentaire",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18,
+                                        color: Color.fromRGBO(3, 152, 158, 1),
+                                      ),
+                                    ),
+                                    SizedBox(height: 8), // Espacement entre le titre et le formulaire
+                                    TextField(
+                                      decoration: InputDecoration(
+                                        hintText: "Votre commentaire",
+                                        border: OutlineInputBorder(),
+                                      ),
+                                      maxLines: null, // Pour permettre plusieurs lignes
+                                      // onChanged: (value) {
+                                      //   // Ici, vous pouvez mettre à jour l'état de votre widget avec la valeur du commentaire
+                                      // },
+                                    ),
+                                    SizedBox(height: 8), // Espacement entre le champ de texte et le bouton
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        // Logique pour soumettre le commentaire ici
+                                      },
+                                      child: Text("Ajouter"),
+                                    ),
+                                  ],
+                                ),
+                              ),
+
                             ],
                             
                           ),

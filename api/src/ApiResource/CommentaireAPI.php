@@ -5,8 +5,10 @@ namespace App\ApiResource;
 use ApiPlatform\Doctrine\Orm\State\Options;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\GetCollection;
 use App\Entity\Utilisateur;
+use App\State\DtoToEntityStateProcessor;
 use App\State\EntityToDtoStateProvider;
 use App\Entity\Commentaire;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -15,12 +17,14 @@ use Symfony\Component\Serializer\Annotation\Groups;
     shortName: 'Commentaire',
     operations: [
         new GetCollection(),
-        new Get()
+        new Get(),
+        new Post(),
     ],
     normalizationContext: [
         'groups' => ['commentaire:read']
     ],
     provider: EntityToDtoStateProvider::class,
+    processor: DtoToEntityStateProcessor::class, # POST, PUT, PATCH
     stateOptions: new Options(entityClass: Commentaire::class),
 )]
 class CommentaireAPI
