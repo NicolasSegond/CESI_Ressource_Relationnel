@@ -1,9 +1,9 @@
-import {addBearerToTheHeader, getToken, getTokenExpiration, refreshToken} from "./authentification";
+import { addBearerToTheHeader, getToken, getTokenExpiration, refreshToken } from "./authentification";
 
 let refreshTokenVar = undefined;
 
 export async function customFetch(parametres, connecter = true) {
-    let reponse = {data: null, error: null};
+    let reponse = { data: null, error: null };
     let data;
 
     let requeteConfig = {

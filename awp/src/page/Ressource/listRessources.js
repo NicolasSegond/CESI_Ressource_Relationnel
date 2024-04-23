@@ -7,7 +7,7 @@ import TriComponent from "../../composants/Ressource/TriComponent";
 import { getIdUser, getTokenDisconnected } from "../../utils/authentification";
 import styles from './listRessources.module.css';
 
-function ListRessources({}) {
+function ListRessources({ }) {
 
     const [data, setData] = useState([]);
     const [tri, setTri] = useState({});
@@ -61,7 +61,7 @@ function ListRessources({}) {
                 url += `&typeDeRessource=${selectedTypeRessource}`;
             }
             if (selectedVisibilite !== null) { // Vérifiez si la visibilité est sélectionnée
-                if(selectedVisibilite == 2)
+                if (selectedVisibilite == 2)
                     url += `&proprietaire=${connectUser}`;
                 else if (selectedVisibilite == 3)
                     url += `&voirRessource=${connectUser}`;
@@ -167,7 +167,7 @@ function ListRessources({}) {
                     onChangeTri={handleVisibiliteChange}
                     aucunActif={false}
                     defautSelect={1}
-                /> }
+                />}
             </div>
             <br /><br />
             {loading ? (
