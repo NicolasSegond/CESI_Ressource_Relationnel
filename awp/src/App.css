@@ -1,20 +1,30 @@
 /* Reset des marges et des paddings par défaut */
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: "Roboto","Helvetica","Arial",sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
 }
 
 /* Style de base pour le corps de la page */
 body, html, #root, #container-root {
-  min-height: 100vh;
-  max-width: 100vw;
+    min-height: 100vh;
+    max-width: 100vw;
 }
 
-:root{
-  --bleu: #03989E;
-  --blanc: #ffffff;
-  --noir: #000;
-  --gris-blanc: #eee;
+:root {
+    --bleu: #03989E;
+    --blanc: #ffffff;
+    --noir: #000;
+    --gris-blanc: #eee;
+    --gris: #F1F2F5;
+}
+
+.MuiGrid-container {
+    margin: 0 !important;
+}
+
+.MuiGrid-root {
+    flex-basis: 100% !important;
+    padding: 0 !important;
 }

@@ -68,8 +68,7 @@ class _CatalogueState extends State<Catalogue> {
       'typeRelations[]': filters.containsKey('typeRelations')
           ? filters['typeRelations']!.map((v) => v.toString()).toList()
           : [],
-      'statut': ['1'],
-      'valide': ['true']
+      'statut': ['1']
     };
 
     if (params.containsKey('visibilite') &&

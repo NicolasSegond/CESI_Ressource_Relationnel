@@ -1,0 +1,45 @@
+/* TabMenu.css */
+.tab-menu {
+    width: 100%;
+    margin-top: 20px;
+}
+
+.tab-buttons {
+    display: flex;
+    border-bottom: 2px solid #ddd; /* Ligne de séparation sous les boutons */
+}
+
+.tab-button {
+    background-color: transparent;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 15px 20px;
+    font-size: 16px;
+    color: #555;
+    transition: color 0.3s, border-bottom-color 0.3s; /* Transition pour la couleur et la bordure inférieure */
+}
+
+.tab-button:hover {
+    color: #333; /* Changement de couleur au survol */
+}
+
+.tab-button.active {
+    color: #000; /* Couleur du texte pour l'onglet actif */
+    border-bottom-color: #007bff; /* Couleur de la bordure inférieure pour l'onglet actif */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Ombre plus prononcée pour mettre en évidence */
+    font-weight: bold; /* Texte en gras pour davantage d'accentuation */
+}
+
+.tab-content {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    margin-top: 10px;
+}
+
+.containerstat {
+    width: 100%;
+    margin-top: 20px;
+}

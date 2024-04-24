@@ -1,0 +1,87 @@
+.lien {
+    font-weight: 600;
+    color: var(--noir);
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    margin: 50px 0;
+}
+
+.container > * {
+    background-color: var(--blanc);
+}
+
+.datatable {
+    margin-bottom: 15px;
+}
+
+.id_visibilite_public {
+    padding: 5px 20px;
+    background-color: #82b1ff;
+    color: var(--blanc);
+    min-width: 90px;
+    width: min-content;
+    text-align: center;
+    border-radius: 30px;
+    font-size: 14px;
+}
+
+.id_visibilite_prive {
+    padding: 5px 20px;
+    background-color: #ff8a80;
+    color: var(--blanc);
+    text-align: center;
+    min-width: 90px;
+    width: min-content;
+    border-radius: 30px;
+    font-size: 14px;
+}
+
+.id_visibilite_partage {
+    padding: 5px 20px;
+    background-color: #5D7052;
+    color: var(--blanc);
+    min-width: 90px;
+    width: min-content;
+    text-align: center;
+    border-radius: 30px;
+    font-size: 14px;
+}
+
+.id_statut_valide {
+    padding: 5px 20px;
+    background-color: #B7CE66;
+    color: var(--blanc);
+    min-width: 90px;
+    width: min-content;
+    text-align: center;
+    border-radius: 30px;
+    font-size: 14px;
+}
+
+.id_statut_attente {
+    padding: 5px 20px;
+    background-color: #F6B12D;
+    color: var(--blanc);
+    min-width: 90px;
+    width: min-content;
+    text-align: center;
+    border-radius: 30px;
+    font-size: 14px;
+}
+
+.id_statut_refuse {
+    padding: 5px 20px;
+    background-color: #FF6347;
+    color: var(--blanc);
+    min-width: 90px;
+    width: min-content;
+    text-align: center;
+    border-radius: 30px;
+    font-size: 14px;
+}

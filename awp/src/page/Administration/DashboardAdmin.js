@@ -4,7 +4,7 @@ import './Dashboard_admin.css';
 import EditIcon from '@mui/icons-material/Edit';
 import BlockIcon from '@mui/icons-material/Block';
 import ClearIcon from '@mui/icons-material/Clear';
-import DataTableComponent from '../../composants/Administration/dataTable.js';
+import DataTableComponent from '../../composants/Administration/dataTableRessource.js';
 
 const DashboardAdmin = () => {
     const [data, setData] = useState([]);

@@ -1,17 +1,17 @@
 import React from "react";
 import Connexion from "./page/connexion";
 import './App.css';
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import {createBrowserRouter, RouterProvider} from "react-router-dom";
 import Inscription from "./page/Inscription/inscription";
 import Root from "./page/Root/Root";
-import Deconnexion, { loader as deconnexionLoader } from "./page/Deconnexion/deconnexion";
-import AjoutRessource, { loader as AjoutLoader } from "./page/Ressource/ajoutRessource";
+import Deconnexion, {loader as deconnexionLoader} from "./page/Deconnexion/deconnexion";
+import AjoutRessource, {loader as AjoutLoader} from "./page/Ressource/ajoutRessource";
 import VerifCodeInscription from "./page/verifCodeInscription";
 import Admin from "./page/Administration/RootAdmin";
 import AdminDashboard from "./page/Administration/DashboardAdmin";
-import { getIdUser, getRolesUser, getTokenDisconnected } from "./utils/authentification";
 import Forgottenpassword from "./page/forgottenpassword";
 import ListRessources, {loader as GetDefaultList} from "./page/Ressource/listRessources";
+import GestionAdmin from "./page/Administration/Gestion/GestionAdmin";
 
 function App() {
     const router = createBrowserRouter([
@@ -21,7 +21,7 @@ function App() {
             children: [
                 {
                     path: '/ressource/ajout',
-                    element: <AjoutRessource />,
+                    element: <AjoutRessource/>,
                     loader: AjoutLoader
                 },
                 {
@@ -35,11 +35,15 @@ function App() {
                 },
                 {
                     path: '/admin',
-                    element: <Admin />,
+                    element: <Admin/>,
                     children: [
                         {
                             path: '/admin/dashboard',
-                            element: <AdminDashboard />
+                            element: <AdminDashboard/>
+                        },
+                        {
+                            path: '/admin/gestion',
+                            element: <GestionAdmin/>
                         }
                     ]
                 }
@@ -47,15 +51,15 @@ function App() {
         },
         {
             path: '/inscription',
-            element: <Inscription />,
+            element: <Inscription/>,
         },
         {
             path: '/connexion',
-            element: <Connexion />,
+            element: <Connexion/>,
         },
         {
             path: '/deconnexion',
-            element: <Deconnexion />,
+            element: <Deconnexion/>,
             loader: deconnexionLoader,
         },
         {
