@@ -10,9 +10,7 @@ class Commentaire {
   Ressource? ressource;
   Utilisateur? utilisateur;
   DateTime? date;
-
-  Commentaire();
-
+  
   int? getId() {
     return id;
   }

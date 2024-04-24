@@ -38,6 +38,7 @@ dependencies:
   intl: ^0.17.0
   flutter_widget_from_html: ^0.14.11
   flutter_secure_storage: ^5.0.3
+  floating_bottom_navigation_bar: ^1.5.2
   jwt_decode: ^0.3.1
   #Rating bar lib
   flutter_rating_bar: ^4.0.0 
