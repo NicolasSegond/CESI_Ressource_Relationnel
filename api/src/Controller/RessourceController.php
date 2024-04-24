@@ -321,11 +321,15 @@ class RessourceController extends AbstractController
     {
         $ressource = $this->ressourceRepository->find($request->attributes->get('id'));
 
+        $data = json_decode($request->getContent(), true);
+
+        $message = $data['message'] ?? '';
+
         if (!$ressource) {
             throw new HttpException(404, "La ressource n'existe pas");
         }
 
-        if ($ressource->getStatut()->getId() == 2) {
+        if ($ressource->getStatut()->getId() == 3) {
             throw new HttpException(400, "La ressource est déjà refusée");
         }
 
@@ -418,7 +422,7 @@ class RessourceController extends AbstractController
                                         <td>
                                             <h1>Refus de votre ressource</h1>
                                             <p>Votre ressource intitulée "<strong>' . $ressource->getTitre() . '</strong>" a été refusée par l\'administrateur.</p>
-                                            <p>Nous vous informons que votre ressource a été refusée par l\'administrateur du site car elle ne respectait pas les règles pour la publication d\'une ressource. C\'est à dire pour ces raions :  Si vous avez des questions, n\'hésitez pas à nous contacter.</p>
+                                            <p>Nous vous informons que votre ressource a été refusée par l\'administrateur du site car elle ne respectait pas les règles pour la publication d\'une ressource. C\'est à dire pour ces raisons : <strong>' . $message . ' </strong> Si vous avez des questions, n\'hésitez pas à nous contacter.</p>
                                             <p>Cordialement,<br>L\'équipe de gestion</p>
                                         </td>
                                     </tr>

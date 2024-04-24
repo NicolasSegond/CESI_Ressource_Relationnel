@@ -1,6 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import {
+    Button,
     IconButton,
+    Modal,
     Paper,
     Table,
     TableBody,
@@ -8,6 +10,7 @@ import {
     TableContainer,
     TableHead,
     TableRow,
+    TextField,
     Tooltip
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
@@ -34,6 +37,9 @@ const GestionRessources = () => {
     const [severity, setSeverity] = useState('');
     const [message, setMessage] = useState('');
     const [alertOpen, setAlertOpen] = useState(false);
+    const [openModal, setOpenModal] = useState(false);
+    const [row, setRow] = useState(null);
+    const [rejectReason, setRejectReason] = useState('');
 
     const statut = [
         {libelle: 'Valide', id: 1},
@@ -125,6 +131,15 @@ const GestionRessources = () => {
         setSelectedStatut(selectedStatut);
     };
 
+    const handleOpenModal = (row) => {
+        setOpenModal(true);
+        setRow(row);
+    };
+
+    const handleCloseModal = () => {
+        setOpenModal(false);
+    };
+
     const handlePageChange = (page) => {
         setCurrentPage(page);
     };
@@ -134,6 +149,32 @@ const GestionRessources = () => {
         setMessage('');
         setAlertOpen(false);
     }
+
+    const handleRejectClick = async (row, message) => {
+        const url = apiConfig.apiUrl + '/api/ressources/' + row.id + '/refuser';
+
+        const {data, error} = await customFetch({
+            url: url,
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/merge-patch+json',
+            },
+            body: JSON.stringify({message: message})
+        }, true);
+
+        if (!error) {
+            setSeverity('success');
+            setMessage('La ressource a bien été refusée');
+            setAlertOpen(true);
+            fetchData();
+            handleCloseModal();
+        } else {
+            setSeverity('error');
+            setMessage('Erreur lors du refus de la ressource : ' + (error.message || 'Erreur inconnue'));
+            setAlertOpen(true);
+            handleCloseModal();
+        }
+    };
 
     const formatDate = (dateString) => {
         const date = new Date(dateString);
@@ -202,30 +243,6 @@ const GestionRessources = () => {
             }
         };
 
-        const handleRejectClick = async () => {
-            const url = apiConfig.apiUrl + '/api/ressources/' + row.id + '/refuser';
-
-            const {data, error} = await customFetch({
-                url: url,
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/merge-patch+json',
-                },
-                body: JSON.stringify({})
-            }, true);
-
-            if (!error) {
-                setSeverity('success');
-                setMessage('La ressource a bien été refusée');
-                setAlertOpen(true);
-                fetchData();
-            } else {
-                setSeverity('error');
-                setMessage('Erreur lors du refus de la ressource : ' + (error.message || 'Erreur inconnue'));
-                setAlertOpen(true);
-            }
-        };
-
         const handleDeleteClick = async () => {
             const url = apiConfig.apiUrl + '/api/ressources/' + row.id;
 
@@ -266,7 +283,7 @@ const GestionRessources = () => {
 
                 {row.statut.id === 2 && (
                     <Tooltip title="Refuser">
-                        <IconButton aria-label="Refuser" onClick={handleRejectClick}>
+                        <IconButton aria-label="Refuser" onClick={() => handleOpenModal(row)}>
                             <ClearIcon/>
                         </IconButton>
                     </Tooltip>
@@ -365,8 +382,30 @@ const GestionRessources = () => {
             </TableContainer>
             <PaginationGlobal currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange}/>
             <CustomAlert open={alertOpen} handleClose={handleCloseAlert} severity={severity} message={message}/>
+            <Modal open={openModal} onClose={() => handleOpenModal()}>
+                <div className={styles["modal-container"]}>
+                    <Paper className={styles["modal-content"]}>
+                        <h2>Confirmer le rejet</h2>
+                        <TextField
+                            fullWidth
+                            label="Raison du rejet"
+                            variant="outlined"
+                            value={rejectReason}
+                            onChange={(e) => setRejectReason(e.target.value)}
+                            multiline
+                            className={styles["reject-reason"]}
+                        />
+                        <div>
+                            <Button onClick={() => handleCloseModal()}>Annuler</Button>
+                            <Button variant="contained" color="primary"
+                                    onClick={() => handleRejectClick(row, rejectReason)}>Confirmer</Button>
+                        </div>
+                    </Paper>
+                </div>
+            </Modal>
         </>
-    );
+    )
+        ;
 };
 
 export default GestionRessources;

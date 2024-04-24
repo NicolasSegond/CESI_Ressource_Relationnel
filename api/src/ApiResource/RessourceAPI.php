@@ -31,6 +31,10 @@ use Symfony\Component\Serializer\Attribute\Groups;
         ),
         new Patch(security: "is_granted('ROLE_USER')"),
         new Patch(
+            uriTemplate: '/ressources/{id}/refuser',
+            controller: RessourceController::class . '::refuser',
+        ),
+        new Patch(
             uriTemplate: '/ressources/{id}/valider',
             controller: RessourceController::class . '::valider',
             openapiContext: [
