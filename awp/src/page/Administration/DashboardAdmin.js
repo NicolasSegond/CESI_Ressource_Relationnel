@@ -4,7 +4,6 @@ import './Dashboard_admin.css';
 import EditIcon from '@mui/icons-material/Edit';
 import BlockIcon from '@mui/icons-material/Block';
 import ClearIcon from '@mui/icons-material/Clear';
-import DataTableComponent from '../../composants/Administration/dataTableRessource.js';
 
 const DashboardAdmin = () => {
     const [data, setData] = useState([]);
@@ -87,17 +86,6 @@ const DashboardAdmin = () => {
 
                 </div>
             </div>
-            <DataTableComponent
-                data={data} // Data should be an array of object
-                columns={columns}
-                totalRows={totalPages}
-                currentPage={page}
-                onPageChange={handlePageChange}
-                sortDirection={sortDirection}
-                onSortChange={handleSortChange}
-                loading={loading}
-                actions={actions}
-            />
         </>
     );
 };

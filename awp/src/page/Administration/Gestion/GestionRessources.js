@@ -1,28 +1,15 @@
 import React, {useEffect, useState} from 'react';
-import {
-    Button,
-    IconButton,
-    Modal,
-    Paper,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    TextField,
-    Tooltip
-} from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import CheckIcon from "@mui/icons-material/Check";
-import ClearIcon from '@mui/icons-material/Clear';
-import RestoreFromTrashIcon from '@mui/icons-material/RestoreFromTrash';
-import styles from './GestionRessources.module.css';
+import GenericTable from '../../../composants/Administration/Gestion/Ressource/dataTable.js'; // Import du composant générique
+import apiConfig from "../../../utils/config.js";
 import {customFetch} from "../../../utils/customFetch";
 import PaginationGlobal from "../../../composants/General/PaginationGlobal";
-import TriComponent from "../../../composants/Ressource/TriComponent";
-import apiConfig from "../../../utils/config.js";
 import CustomAlert from "../../../composants/CustomAlert";
+import {Button, IconButton, Modal, Paper, TextField, Tooltip} from "@mui/material";
+import styles from './GestionRessources.module.css';
+import {Delete as DeleteIcon, Edit as EditIcon} from "@mui/icons-material";
+import ClearIcon from "@mui/icons-material/Clear";
+import CheckIcon from "@mui/icons-material/Check";
+import TriComponent from "../../../composants/Ressource/TriComponent";
 
 const GestionRessources = () => {
     const [data, setData] = useState([]);
@@ -41,6 +28,7 @@ const GestionRessources = () => {
     const [row, setRow] = useState(null);
     const [rejectReason, setRejectReason] = useState('');
 
+    // Options pour le statut des ressources
     const statut = [
         {libelle: 'Valide', id: 1},
         {libelle: 'En attente', id: 2},
@@ -48,6 +36,7 @@ const GestionRessources = () => {
     ];
 
     useEffect(() => {
+        // Fonction pour récupérer les options (catégories, types de ressources, etc.) depuis l'API
         const fetchOptions = async () => {
             const response = await fetch(apiConfig.apiUrl + '/api/options');
             const responseData = await response.json();
@@ -63,14 +52,16 @@ const GestionRessources = () => {
     }, []);
 
     useEffect(() => {
-        fetchData();
+        fetchData(); // Met à jour les données lorsque currentPage, selectedCategory, etc. changent
     }, [currentPage, selectedCategory, selectedTypeRelation, selectedTypeRessource, selectedStatut]);
 
+    // Fonction pour récupérer les données depuis l'API en fonction des filtres sélectionnés
     const fetchData = async () => {
-        setLoading(true);
-        try {
-            let url = apiConfig.apiUrl + `/api/ressources?page=${currentPage}`;
+        setLoading(true); // Affiche un message de chargement
 
+        try {
+            // Construit l'URL en fonction des filtres sélectionnés
+            let url = apiConfig.apiUrl + `/api/ressources?page=${currentPage}`;
             if (selectedCategory) {
                 url += `&categorie=${selectedCategory}`;
             }
@@ -84,6 +75,7 @@ const GestionRessources = () => {
                 url += `&statut=${selectedStatut}`;
             }
 
+            // Effectue la requête GET à l'API
             const {data, error} = await customFetch({
                 url: url,
                 method: 'GET',
@@ -91,10 +83,12 @@ const GestionRessources = () => {
                     'Content-Type': 'application/json',
                 }
             }, false);
+
             if (error) {
                 console.error('Erreur lors de la récupération des ressources:', error);
-                setData([]);
+                setData([]); // Réinitialise les données en cas d'erreur
             } else {
+                // Met à jour les données et le nombre total de pages
                 setData(data['hydra:member']);
                 const lastPageUrl = data['hydra:view'] ? data['hydra:view']['hydra:last'] : null;
                 const totalPages = lastPageUrl ? extractTotalPages(lastPageUrl) : 1;
@@ -102,11 +96,13 @@ const GestionRessources = () => {
             }
         } catch (error) {
             console.error('Erreur lors de la récupération des ressources:', error);
-            setData([]);
+            setData([]); // Réinitialise les données en cas d'erreur
         }
-        setLoading(false);
+
+        setLoading(false); // Masque le message de chargement
     };
 
+    // Fonction utilitaire pour extraire le nombre total de pages depuis l'URL de la dernière page
     const extractTotalPages = (url) => {
         const match = url.match(/page=(\d+)$/);
         if (match && match[1]) {
@@ -115,41 +111,50 @@ const GestionRessources = () => {
         return 1;
     };
 
+    // Gère le changement de catégorie sélectionnée
     const handleCategoryChange = (category) => {
         setSelectedCategory(category);
     };
 
+    // Gère le changement de type de relation sélectionné
     const handleTypeRelationChange = (typeRelation) => {
         setSelectedTypeRelation(typeRelation);
     };
 
+    // Gère le changement de type de ressource sélectionné
     const handleTypeRessourceChange = (typeRessource) => {
         setSelectedTypeRessource(typeRessource);
     };
 
+    // Gère le changement de statut sélectionné
     const handleStatutChange = (selectedStatut) => {
         setSelectedStatut(selectedStatut);
     };
 
+    // Ouvre le modal de rejet et passe la ligne sélectionnée
     const handleOpenModal = (row) => {
         setOpenModal(true);
         setRow(row);
     };
 
+    // Ferme le modal de rejet
     const handleCloseModal = () => {
         setOpenModal(false);
     };
 
+    // Gère le changement de page
     const handlePageChange = (page) => {
         setCurrentPage(page);
     };
 
+    // Ferme l'alerte
     const handleCloseAlert = () => {
         setSeverity('');
         setMessage('');
         setAlertOpen(false);
     }
 
+    // Gère le rejet de la ressource
     const handleRejectClick = async (row, message) => {
         const url = apiConfig.apiUrl + '/api/ressources/' + row.id + '/refuser';
 
@@ -166,37 +171,89 @@ const GestionRessources = () => {
             setSeverity('success');
             setMessage('La ressource a bien été refusée');
             setAlertOpen(true);
-            fetchData();
-            handleCloseModal();
+            fetchData(); // Rafraîchit les données après le rejet
+            handleCloseModal(); // Ferme le modal après le rejet
         } else {
             setSeverity('error');
             setMessage('Erreur lors du refus de la ressource : ' + (error.message || 'Erreur inconnue'));
             setAlertOpen(true);
-            handleCloseModal();
+            handleCloseModal(); // Ferme le modal en cas d'erreur
         }
     };
 
-    const formatDate = (dateString) => {
-        const date = new Date(dateString);
-        return date.toLocaleDateString('fr-FR', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            hour: 'numeric',
-            minute: 'numeric',
-            second: 'numeric'
-        });
+    // Fonction de rendu pour le statut
+    const renderStatut = (row) => {
+        return (
+            <div className={getStatusClass(row.statut.nomStatut)}>{row.statut.nomStatut}</div>
+        );
+    };
+
+    const renderVisibilite = (row) => {
+        return (
+            <div className={getVisibilityClass(row.visibilite.libelle)}>{row.visibilite.libelle}</div>
+        );
+    };
+
+    // Fonction pour éditer une ressource
+    const handleEdit = (row) => {
+        console.log('Edit clicked for row:', row);
+    };
+
+    // Fonction pour supprimer une ressource
+    const handleDelete = async (row) => {
+        const url = apiConfig.apiUrl + '/api/ressources/' + row.id;
+
+        console.log(url);
+
+        const {data, error} = await customFetch({
+            url: url,
+            method: 'DELETE',
+        }, true);
+
+        if (!error) {
+            setSeverity('success');
+            setMessage('La ressource a bien été supprimée');
+            setAlertOpen(true);
+            fetchData();
+        } else {
+            setSeverity('error');
+            setMessage('Erreur lors de la suppression de la ressource : ' + (error.message || 'Erreur inconnue'));
+            setAlertOpen(true);
+        }
+    };
+
+    const handleAccept = async (row) => {
+        const url = apiConfig.apiUrl + '/api/ressources/' + row.id + '/valider';
+
+        const {data, error} = await customFetch({
+            url: url,
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/merge-patch+json',
+            },
+            body: JSON.stringify({})
+        }, true);
+
+        if (!error) {
+            setSeverity('success');
+            setMessage('La ressource a bien été validée');
+            setAlertOpen(true);
+            fetchData();
+        } else {
+            setSeverity('error');
+            setMessage('Erreur lors de la validation de la ressource : ' + (error.message || 'Erreur inconnue'));
+            setAlertOpen(true);
+        }
     };
 
     const getVisibilityClass = (visibility) => {
         switch (visibility) {
             case 'Public':
-                return 'id_visibilite_public';
+                return styles['id_visibilite_public'];
             case 'Partage':
-                return 'id_visibilite_partage';
+                return styles['id_visibilite_partage'];
             case 'Prive':
-                return 'id_visibilite_prive';
+                return styles['id_visibilite_prive'];
             default:
                 return '';
         }
@@ -205,97 +262,63 @@ const GestionRessources = () => {
     const getStatusClass = (status) => {
         switch (status) {
             case 'Valide':
-                return 'id_statut_valide';
+                return styles['id_statut_valide'];
             case 'Attente':
-                return 'id_statut_attente';
+                return styles['id_statut_attente'];
             case 'Refuse':
-                return 'id_statut_refuse';
+                return styles['id_statut_refuse'];
             default:
                 return '';
         }
     };
+
+    const actions = [
+        {
+            label: "Modifier",
+            icon: <EditIcon/>,
+            tooltip: "Modifier la ressource",
+            onClick: handleEdit
+        },
+        {
+            label: "Accepter",
+            icon: <CheckIcon/>,
+            tooltip: "Accepter la ressource",
+            onClick: handleAccept
+        },
+        {
+            label: "Rejeter",
+            icon: <ClearIcon/>,
+            tooltip: "Rejeter la ressource",
+            onClick: handleOpenModal
+        },
+        {
+            label: "Supprimer",
+            icon: <DeleteIcon/>,
+            tooltip: "Supprimer la ressource",
+            onClick: handleDelete
+        }
+    ];
+
     const renderActions = (row) => {
-        const handleEditClick = () => {
-            console.log('Edit clicked for row:', row);
-        };
-
-        const handleAcceptClick = async () => {
-            const url = apiConfig.apiUrl + '/api/ressources/' + row.id + '/valider';
-
-            const {data, error} = await customFetch({
-                url: url,
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/merge-patch+json',
-                },
-                body: JSON.stringify({})
-            }, true);
-
-            if (!error) {
-                setSeverity('success');
-                setMessage('La ressource a bien été validée');
-                setAlertOpen(true);
-                fetchData();
-            } else {
-                setSeverity('error');
-                setMessage('Erreur lors de la validation de la ressource : ' + (error.message || 'Erreur inconnue'));
-                setAlertOpen(true);
-            }
-        };
-
-        const handleDeleteClick = async () => {
-            const url = apiConfig.apiUrl + '/api/ressources/' + row.id;
-
-            console.log(url);
-
-            const {data, error} = await customFetch({
-                url: url,
-                method: 'DELETE',
-            }, true);
-
-            if (!error) {
-                setSeverity('success');
-                setMessage('La ressource a bien été supprimée');
-                setAlertOpen(true);
-                fetchData();
-            } else {
-                setSeverity('error');
-                setMessage('Erreur lors de la suppression de la ressource : ' + (error.message || 'Erreur inconnue'));
-                setAlertOpen(true);
-            }
-        };
-
-        return (
-            <div>
-                <Tooltip title="Modifier">
-                    <IconButton aria-label="Modifier" onClick={handleEditClick}>
-                        <EditIcon/>
+        if (row && row.statut && row.statut.id === 2) {
+            return actions.map((action, index) => (
+                <Tooltip title={action.tooltip} key={index}>
+                    <IconButton aria-label={action.label} onClick={() => action.onClick(row)}>
+                        {action.icon}
                     </IconButton>
                 </Tooltip>
-
-                {row.statut.id === 2 && (
-                    <Tooltip title="Accepter">
-                        <IconButton aria-label="Mettre en attente" onClick={handleAcceptClick}>
-                            <CheckIcon/>
+            ));
+        } else {
+            return actions
+                .filter(action => action.label === 'Modifier' || action.label === 'Supprimer')
+                .map((action, index) => (
+                    <Tooltip title={action.tooltip} key={index}>
+                        <IconButton aria-label={action.label} onClick={() => action.onClick(row)}>
+                            {action.icon}
                         </IconButton>
                     </Tooltip>
-                )}
-
-                {row.statut.id === 2 && (
-                    <Tooltip title="Refuser">
-                        <IconButton aria-label="Refuser" onClick={() => handleOpenModal(row)}>
-                            <ClearIcon/>
-                        </IconButton>
-                    </Tooltip>
-                )}
-
-                <Tooltip title="Supprimer">
-                    <IconButton aria-label="Supprimer" onClick={handleDeleteClick}>
-                        <RestoreFromTrashIcon/>
-                    </IconButton>
-                </Tooltip>
-            </div>
-        );
+                ));
+        }
     };
 
 
@@ -327,65 +350,29 @@ const GestionRessources = () => {
                     aucunActif={true}
                 />
             </div>
-            <TableContainer component={Paper} className={styles['datatable']}>
-                <Table aria-label="simple table">
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Titre</TableCell>
-                            <TableCell>Date de création</TableCell>
-                            <TableCell>Date de modification</TableCell>
-                            <TableCell>Propriétaire</TableCell>
-                            <TableCell>Catégories</TableCell>
-                            <TableCell>Type de ressource</TableCell>
-                            <TableCell>Visibilité</TableCell>
-                            <TableCell>Statut</TableCell>
-                            <TableCell>Type de relations</TableCell>
-                            <TableCell>Actions</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {loading ? (
-                            <TableRow>
-                                <TableCell colSpan={10}>Chargement en cours...</TableCell>
-                            </TableRow>
-                        ) : (
-                            data.map((row) => (
-                                <TableRow key={row.id}>
-                                    <TableCell component="th" scope="row">
-                                        {row.titre}
-                                    </TableCell>
-                                    <TableCell>{formatDate(row.dateCreation)}</TableCell>
-                                    <TableCell>{formatDate(row.dateModification)}</TableCell>
-                                    <TableCell>{row.proprietaire.nom} {row.proprietaire.prenom}</TableCell>
-                                    <TableCell>{row.categorie.nom}</TableCell>
-                                    <TableCell>{row.typeDeRessource.libelle}</TableCell>
-                                    <TableCell>
-                                        <div
-                                            className={styles[getVisibilityClass(row.visibilite.libelle)]}>{row.visibilite.libelle}</div>
-                                    </TableCell>
-                                    <TableCell>
-                                        <div
-                                            className={styles[getStatusClass(row.statut.nomStatut)]}>{row.statut.nomStatut}</div>
-                                    </TableCell>
-                                    <TableCell>
-                                        {row.typeRelations.map((relation, index) => (
-                                            <span
-                                                key={index}>{relation.libelle}{index !== row.typeRelations.length - 1 && ', '}</span>
-                                        ))}
-                                    </TableCell>
-                                    <TableCell>{renderActions(row)}</TableCell>
-                                </TableRow>
-                            ))
-                        )}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+            <GenericTable
+                data={data}
+                loading={loading}
+                columns={[
+                    {label: 'Titre', field: 'titre'},
+                    {label: 'Date de création', field: 'dateCreation', renderDate: true},
+                    {label: 'Date de modification', field: 'dateModification', renderDate: true},
+                    {label: 'Propriétaire', render: row => `${row.proprietaire.nom} ${row.proprietaire.prenom}`},
+                    {label: 'Catégories', render: row => row.categorie.nom},
+                    {label: 'Type de ressource', render: row => row.typeDeRessource.libelle},
+                    {label: 'Visibilité', render: renderVisibilite},
+                    {label: 'Statut', render: renderStatut},
+                ]}
+                renderActions={renderActions}
+            />
             <PaginationGlobal currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange}/>
             <CustomAlert open={alertOpen} handleClose={handleCloseAlert} severity={severity} message={message}/>
             <Modal open={openModal} onClose={() => handleOpenModal()}>
+                {/* Contenu du modal pour le rejet */}
                 <div className={styles["modal-container"]}>
                     <Paper className={styles["modal-content"]}>
                         <h2>Confirmer le rejet</h2>
+                        {/* Champ de texte pour saisir la raison du rejet */}
                         <TextField
                             fullWidth
                             label="Raison du rejet"
@@ -395,6 +382,7 @@ const GestionRessources = () => {
                             multiline
                             className={styles["reject-reason"]}
                         />
+                        {/* Boutons pour annuler ou confirmer le rejet */}
                         <div>
                             <Button onClick={() => handleCloseModal()}>Annuler</Button>
                             <Button variant="contained" color="primary"
@@ -404,8 +392,7 @@ const GestionRessources = () => {
                 </div>
             </Modal>
         </>
-    )
-        ;
+    );
 };
 
 export default GestionRessources;
