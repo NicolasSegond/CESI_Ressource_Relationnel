@@ -101,6 +101,21 @@
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-.reject-reason {
-    margin: 10px 0;
+.modal-textarea {
+    margin: 10px 0 !important;
+}
+
+.btn-ajouter {
+    background-color: #1AA4C8;
+    cursor: pointer;
+    color: white;
+    height: 46px;
+    width: 150px;
+    border-radius: 5px;
+    margin: 10px;
+    font-size: 18px;
+    text-decoration: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }

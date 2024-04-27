@@ -1,6 +1,7 @@
 import React from 'react';
 import TabMenu from '../../../composants/Administration/TabMenu.js';
 import GestionRessources from "./GestionRessources";
+import GestionCategories from "./GestionCategories";
 
 const GestionAdmin = () => {
     const tabs = [
@@ -14,7 +15,7 @@ const GestionAdmin = () => {
         },
         {
             label: 'Catégories',
-            content: 'Contenu du tableau 2'
+            content: <GestionCategories/>
         }
     ];
 

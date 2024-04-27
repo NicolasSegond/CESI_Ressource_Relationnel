@@ -47,7 +47,7 @@ const DataTable = ({data, loading, columns, renderActions}) => {
                                     </TableCell>
 
                                 ))}
-                                <TableCell>{renderActions(row)}</TableCell>
+                                <TableCell>{renderActions ? renderActions(row) : ''}</TableCell>
                             </TableRow>
                         ))
                     )}

@@ -4,9 +4,12 @@ namespace App\ApiResource;
 
 use ApiPlatform\Doctrine\Orm\State\Options;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
+use App\Controller\CategorieController;
 use App\Controller\OptionsController;
 use App\Entity\Categorie;
 use App\State\DtoToEntityStateProcessor;
@@ -19,7 +22,12 @@ use Symfony\Component\Serializer\Attribute\Groups;
     operations: [
         new GetCollection(),
         new Get(),
-        new Post(security: "is_granted('ROLE_USER')"),
+        new Post(security: "is_granted('ROLE_ADMIN')"),
+        new Delete(
+            controller: CategorieController::class . '::delete',
+            security: "is_granted('ROLE_ADMIN')",
+        ),
+        new Patch(security: "is_granted('ROLE_ADMIN')")
     ],
     provider: EntityToDtoStateProvider::class, # GET, GET collection
     processor: DtoToEntityStateProcessor::class, # POST, PUT, PATCH

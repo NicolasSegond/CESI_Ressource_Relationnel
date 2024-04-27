@@ -5,6 +5,7 @@ namespace App\Mapper;
 use App\ApiResource\CategorieAPI;
 use App\Entity\Categorie;
 use App\Repository\CategorieRepository;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfonycasts\MicroMapper\AsMapper;
 use Symfonycasts\MicroMapper\MapperInterface;
@@ -14,8 +15,8 @@ use Symfonycasts\MicroMapper\MicroMapperInterface;
 class CategorieApiToEntityMapper implements MapperInterface
 {
     public function __construct(
-        private CategorieRepository $categorieRepository,
-        private MicroMapperInterface $microMapper,
+        private CategorieRepository       $categorieRepository,
+        private MicroMapperInterface      $microMapper,
         private PropertyAccessorInterface $propertyAccessor
     )
     {
@@ -28,10 +29,18 @@ class CategorieApiToEntityMapper implements MapperInterface
         $dto = $from;
         assert($dto instanceof CategorieAPI);
 
+        // Vérifie si le nom de la catégorie existe déjà dans la base de données.
+        $existingCategorie = $this->categorieRepository->findOneBy(['nom' => $dto->nom]);
+
+        // Si une catégorie avec ce nom existe déjà, lance une exception.
+        if ($existingCategorie) {
+            throw new HttpException(500, 'Ce nom de catégorie est déjà utilisé.');
+        }
+
         // Charge l'entité categorie existante ou crée une nouvelle instance.
         $categorieEntity = $dto->id ? $this->categorieRepository->find($dto->id) : new Categorie();
         // Si l'entité categorie n'existe pas, lance une exception.
-        if(!$categorieEntity){
+        if (!$categorieEntity) {
             throw new \Exception('User not found');
         }
 

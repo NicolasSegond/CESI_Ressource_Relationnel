@@ -5,7 +5,7 @@ import {customFetch} from "../../../utils/customFetch";
 import PaginationGlobal from "../../../composants/General/PaginationGlobal";
 import CustomAlert from "../../../composants/CustomAlert";
 import {Button, IconButton, Modal, Paper, TextField, Tooltip} from "@mui/material";
-import styles from './GestionRessources.module.css';
+import styles from './Gestion.module.css';
 import {Delete as DeleteIcon, Edit as EditIcon} from "@mui/icons-material";
 import ClearIcon from "@mui/icons-material/Clear";
 import CheckIcon from "@mui/icons-material/Check";
