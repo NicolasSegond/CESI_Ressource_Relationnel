@@ -3,8 +3,9 @@ import { addBearerToTheHeader, getToken, getTokenExpiration, refreshToken } from
 let refreshTokenVar = undefined;
 
 export async function customFetch(parametres, connecter = true) {
-    let reponse = { data: null, error: null };
+    let reponse = {data: null, error: null, statusCode: null};
     let data;
+    let statusCode;
 
     let requeteConfig = {
         method: parametres.method ? parametres.method : 'GET',
@@ -36,8 +37,10 @@ export async function customFetch(parametres, connecter = true) {
         }
 
         let res = await fetch(parametres.url, requeteConfig);
+        reponse.statusCode = res.status;
 
         data = await res.json();
+        console.log("data", data);
         reponse.data = data;
 
         if (!res.ok) {
@@ -55,6 +58,7 @@ export async function customFetch(parametres, connecter = true) {
                 }
 
                 res = await fetch(parametres.url, requeteConfig);
+                reponse.statusCode = res.status;
                 data = await res.json();
                 reponse.data = data;
 

@@ -84,7 +84,6 @@ function ListRessources({ }) {
                     'Content-Type': 'application/json',
                 }
             }, false);
-            console.log(url);
             if (error) {
                 console.error('Erreur lors de la récupération des ressources:', error);
                 setData([]);

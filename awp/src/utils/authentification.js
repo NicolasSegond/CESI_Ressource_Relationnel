@@ -42,7 +42,6 @@ export function getTokenDisconnected() {
             return null;
         }
     } catch (error) {
-        console.error("Erreur lors de l'analyse du token:", error);
         return null; // La valeur n'est pas un JSON valide
     }
 }

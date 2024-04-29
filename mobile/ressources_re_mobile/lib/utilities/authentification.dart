@@ -19,7 +19,6 @@ Future<Map<String, dynamic>?> getToken() async {
 
   try {
     final Map<String, dynamic> tokens =  jsonDecode(tokensString) as Map<String, dynamic>;
-    print(tokens);
 
     if (tokens['token'] != null &&
         tokens['refresh_token'] != null &&
@@ -38,8 +37,6 @@ Future<Map<String, dynamic>?> getToken() async {
 Future<Map<String, dynamic>?> getTokenDisconnected() async {
   final token = await storage.read(key: 'token');
 
-  print('token_test: ' + token!);
-
   try {
     final Map<String, dynamic> tokens = jsonDecode(token!) as Map<String, dynamic>;
 
@@ -52,6 +49,7 @@ Future<Map<String, dynamic>?> getTokenDisconnected() async {
       return null;
     }
   } catch (error) {
+    print("Erreur lors de l'analyse du token: $error");
     return null; 
   }
 }

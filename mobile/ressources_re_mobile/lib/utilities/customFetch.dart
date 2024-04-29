@@ -45,7 +45,7 @@ Future<Map<String, dynamic>> customFetch(Map<String, dynamic> parameters, {bool 
       Uri.parse(parameters['url']),
       headers: parameters['headers']
     );
-    
+
     data = res.body;
     response['data'] = data;
 

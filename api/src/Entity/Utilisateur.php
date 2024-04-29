@@ -10,7 +10,6 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UtilisateurRepository::class)]
-
 class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -38,7 +37,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $code = null;
 
     #[ORM\Column]
-    private ?bool $verif = false;
+    private ?int $verif = 0;
 
     #[ORM\OneToMany(mappedBy: 'proprietaire', targetEntity: Ressource::class)]
     private Collection $proprietaireRessource;
@@ -101,7 +100,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
 
-
     /**
      * A visual identifier that represents this user.
      *
@@ -109,7 +107,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getUserIdentifier(): string
     {
-        return (string) $this->email;
+        return (string)$this->email;
     }
 
     /**
@@ -153,12 +151,12 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         $this->code = $code;
     }
 
-    public function getVerif(): ?bool
+    public function getVerif(): ?int
     {
         return $this->verif;
     }
 
-    public function setVerif(?bool $verif): void
+    public function setVerif(?int $verif): void
     {
         $this->verif = $verif;
     }

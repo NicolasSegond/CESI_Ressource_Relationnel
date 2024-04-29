@@ -62,7 +62,6 @@ class _CatalogueState extends State<Catalogue> {
       currentPage = newPage;
     });
   }
-  
 
   String buildUrlWithFilters(Map<String, List<int>> filters) {
     Map<String, List<String>> params = {
@@ -80,8 +79,7 @@ class _CatalogueState extends State<Catalogue> {
       'typeRelations[]': filters.containsKey('typeRelations')
           ? filters['typeRelations']!.map((v) => v.toString()).toList()
           : [],
-      'statut': ['1'],
-      'valide': ['true']
+      'statut': ['1']
     };
 
     if (params.containsKey('visibilite') &&
@@ -105,8 +103,6 @@ class _CatalogueState extends State<Catalogue> {
 
   Future<List<Ressource>> fetchAlbum() async {
     String url = buildUrlWithFilters(selectedFilters);
-    
-    print(url);
 
     Map<String, dynamic> response = await customFetch({
       'url': url,
@@ -116,7 +112,6 @@ class _CatalogueState extends State<Catalogue> {
       }
     }, connecter: false);
 
-      print(response['error']);
     if (response['error'] == '') {
       final dynamic result = json.decode(response['data']);
       final List<dynamic> members = result['hydra:member'];

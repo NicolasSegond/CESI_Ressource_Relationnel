@@ -9,6 +9,9 @@ import AjoutRessource, {loader as AjoutLoader} from "./page/Ressource/ajoutResso
 import VerifCodeInscription from "./page/verifCodeInscription";
 import Forgottenpassword from "./page/forgottenpassword";
 import ListRessources, {loader as GetDefaultList} from "./page/Ressource/listRessources";
+import Admin from "./page/Administration/RootAdmin";
+import AdminDashboard from "./page/Administration/DashboardAdmin";
+import GestionAdmin from "./page/Administration/Gestion/GestionAdmin";
 
 function App() {
     const router = createBrowserRouter([
@@ -18,7 +21,7 @@ function App() {
             children: [
                 {
                     path: '/ressource/ajout',
-                    element: <AjoutRessource />,
+                    element: <AjoutRessource/>,
                     loader: AjoutLoader
                 },
                 {
@@ -29,6 +32,20 @@ function App() {
                     path: '/ressource/lists',
                     element: <ListRessources/>,
                     loader: GetDefaultList
+                },
+                {
+                    path: '/admin',
+                    element: <Admin/>,
+                    children: [
+                        {
+                            path: '/admin/dashboard',
+                            element: <AdminDashboard/>
+                        },
+                        {
+                            path: '/admin/gestion',
+                            element: <GestionAdmin/>
+                        }
+                    ]
                 }
             ],
         },
@@ -50,6 +67,7 @@ function App() {
             element: <Forgottenpassword/>,
         }
     ]);
+
     return (
         <div>
             <RouterProvider router={router}>

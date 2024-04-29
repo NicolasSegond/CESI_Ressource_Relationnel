@@ -1,0 +1,154 @@
+.lien {
+    font-weight: 600;
+    color: var(--noir);
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    margin: 50px 0;
+}
+
+.container > * {
+    background-color: var(--blanc);
+}
+
+.datatable {
+    margin-bottom: 15px;
+}
+
+.id_visibilite_public {
+    padding: 5px 20px;
+    background-color: #82b1ff;
+    color: var(--blanc);
+    min-width: 90px;
+    width: min-content;
+    text-align: center;
+    border-radius: 30px;
+    font-size: 14px;
+}
+
+.id_visibilite_prive {
+    padding: 5px 20px;
+    background-color: #ff8a80;
+    color: var(--blanc);
+    text-align: center;
+    min-width: 90px;
+    width: min-content;
+    border-radius: 30px;
+    font-size: 14px;
+}
+
+.id_visibilite_partage {
+    padding: 5px 20px;
+    background-color: #5D7052;
+    color: var(--blanc);
+    min-width: 90px;
+    width: min-content;
+    text-align: center;
+    border-radius: 30px;
+    font-size: 14px;
+}
+
+.id_statut_valide {
+    padding: 5px 20px;
+    background-color: #B7CE66;
+    color: var(--blanc);
+    min-width: 90px;
+    width: min-content;
+    text-align: center;
+    border-radius: 30px;
+    font-size: 14px;
+}
+
+.id_statut_attente {
+    padding: 5px 20px;
+    background-color: #F6B12D;
+    color: var(--blanc);
+    min-width: 90px;
+    width: min-content;
+    text-align: center;
+    border-radius: 30px;
+    font-size: 14px;
+}
+
+.id_statut_refuse {
+    padding: 5px 20px;
+    background-color: #FF6347;
+    color: var(--blanc);
+    min-width: 90px;
+    width: min-content;
+    text-align: center;
+    border-radius: 30px;
+    font-size: 14px;
+}
+
+.modal-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.modal-content {
+    width: 400px;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.modal-textarea {
+    margin: 10px 0 !important;
+}
+
+.btn-ajouter {
+    background-color: #1AA4C8;
+    cursor: pointer;
+    color: white;
+    height: 46px;
+    width: 150px;
+    border-radius: 5px;
+    margin: 10px;
+    font-size: 18px;
+    text-decoration: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.id_verif_non {
+    padding: 5px 10px;
+    background-color: #FF6347;
+    color: var(--blanc);
+    min-width: 90px;
+    width: min-content;
+    text-align: center;
+    border-radius: 30px;
+    font-size: 14px;
+}
+
+.id_verif_ok {
+    padding: 5px 10px;
+    background-color: #B7CE66;
+    color: var(--blanc);
+    min-width: 90px;
+    width: min-content;
+    text-align: center;
+    border-radius: 30px;
+    font-size: 14px;
+}
+
+.id_verif_ban {
+    padding: 5px 10px;
+    background-color: #F6B12D;
+    color: var(--blanc);
+    min-width: 90px;
+    width: min-content;
+    text-align: center;
+    border-radius: 30px;
+    font-size: 14px;
+}

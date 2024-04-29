@@ -26,8 +26,34 @@ use Symfony\Component\Serializer\Attribute\Groups;
         new GetCollection(),
         new Get(),
         new Post(),
-        new Delete(security: "is_granted('ROLE_USER')"),
-        new Patch(security: "is_granted('ROLE_USER')")
+        new Delete(
+            controller: RessourceController::class . '::delete',
+            security: "is_granted('ROLE_USER')"
+        ),
+        new Patch(security: "is_granted('ROLE_USER')"),
+        new Patch(
+            uriTemplate: '/ressources/{id}/refuser',
+            controller: RessourceController::class . '::refuser',
+        ),
+        new Patch(
+            uriTemplate: '/ressources/{id}/valider',
+            controller: RessourceController::class . '::valider',
+            openapiContext: [
+                'summary' => 'Valider une ressource',
+                'description' => 'Valider une ressource en changeant son statut à "Validé".',
+                'requestBody' => [
+                    'content' => [
+                        'application/merge-patch+json' => [
+                            'schema' => [
+                                'type' => 'object',
+                                'properties' => [
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        )
     ],
     normalizationContext: [
         'groups' => ['ressource:read']
