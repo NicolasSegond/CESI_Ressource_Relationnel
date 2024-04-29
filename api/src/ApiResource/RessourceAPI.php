@@ -3,6 +3,7 @@
 namespace App\ApiResource;
 
 use ApiPlatform\Doctrine\Orm\Filter\BooleanFilter;
+use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Doctrine\Orm\State\Options;
 use ApiPlatform\Metadata\ApiFilter;
@@ -55,7 +56,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
 )]
 class RessourceAPI
 {
-    #[Groups('ressource:read')]
+    #[Groups(['ressource:read','commentaire:write', 'commentaire:read'])]
     public ?int $id = null;
 
     #[Groups(['ressource:read', 'ressource:write'])]

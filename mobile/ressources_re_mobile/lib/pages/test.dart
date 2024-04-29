@@ -51,8 +51,6 @@ class _FilterPageState extends State<FilterPage> {
         'Accept': 'application/json',
       }
     }, connecter: false);
-    
-    print(response);
 
     setState(() {
       _token = token;

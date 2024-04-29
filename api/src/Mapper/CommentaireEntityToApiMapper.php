@@ -3,6 +3,8 @@
 namespace App\Mapper;
 
 use App\ApiResource\CommentaireAPI;
+use App\ApiResource\RessourceAPI;
+use App\ApiResource\UtilisateurAPI;
 use App\Entity\Commentaire;
 use Symfonycasts\MicroMapper\AsMapper;
 use Symfonycasts\MicroMapper\MapperInterface;
@@ -44,6 +46,12 @@ class CommentaireEntityToApiMapper implements MapperInterface
         $dto->id = $entity->getId();
         $dto->contenu = $entity->getContenu();
         $dto->date = $entity->getDate();
+        $dto->utilisateur = $this->microMapper->map($entity->getUtilisateur(), UtilisateurAPI::class, [
+            MicroMapperInterface::MAX_DEPTH => 1,
+        ]);
+        $dto->ressource = $this->microMapper->map($entity->getRessource(), RessourceAPI::class, [
+            MicroMapperInterface::MAX_DEPTH => 0,
+        ]);
 
         // Retourne l'API Utilisateur mise à jour.
         return $dto;

@@ -171,7 +171,7 @@ class Utilisateur {
     email = json['email'];
     nom = json['nom'];
     prenom = json['prenom'];
-    roles = List<String>.from(json['roles']);
+    roles = json['roles'] != null ? List<String>.from(json['roles']) : [];
     code = json['code'];
     verif = json['verif'];
   }
