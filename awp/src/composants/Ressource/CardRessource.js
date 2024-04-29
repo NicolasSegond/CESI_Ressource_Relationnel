@@ -3,6 +3,7 @@ import './CardRessource.css';
 import Vu from "../../assets/vue.png";
 import Com from "../../assets/commentaire.png";
 import Menu from "../../assets/menu.png";
+import { Link } from 'react-router-dom'; // Importez le composant Link de react-router-dom
 
 function couleurAleatoire() {
     return '#' + Math.floor(Math.random() * 16777215).toString(16);
@@ -31,7 +32,7 @@ function formatDelai(date) {
     }
 }
 
-function Card({ imageUrl, title, description, vue, nom, prenom, date_creation, visibilite, typeRessource, typeRelations, categorie, nbCommentaire }) {
+function Card({ imageUrl, title, description, vue, nom, prenom, date_creation, visibilite, typeRessource, typeRelations, categorie, nbCommentaire, proprietaireId, connectUserId, resourceId }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalContent, setModalContent] = useState(""); // Contenu du modal spécifique à chaque ressource
     const [color] = useState(useMemo(() => couleurAleatoire(), [])); // Calcul de la couleur une seule fois
@@ -59,6 +60,9 @@ function Card({ imageUrl, title, description, vue, nom, prenom, date_creation, v
                         {isModalOpen && (
                             <div className="modal" onClick={() => setIsModalOpen(false)}>
                                 <a> Mettre en favoris la ressource </a>
+                                {proprietaireId === connectUserId && (
+                                    <Link to={`/modifressource/${resourceId}`}><a> Modifier</a></Link>
+                                )} {/* Afficher le bouton Modifier uniquement si l'utilisateur connecté est le propriétaire */}
                             </div>
                         )}
                     </div>

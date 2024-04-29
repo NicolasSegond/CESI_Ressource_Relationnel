@@ -30,11 +30,16 @@ class CategorieApiToEntityMapper implements MapperInterface
         assert($dto instanceof CategorieAPI);
 
         // Vérifie si le nom de la catégorie existe déjà dans la base de données.
-        $existingCategorie = $this->categorieRepository->findOneBy(['nom' => $dto->nom]);
+        $requestMethod = $_SERVER['REQUEST_METHOD'] ?? null;
 
-        // Si une catégorie avec ce nom existe déjà, lance une exception.
-        if ($existingCategorie) {
-            throw new HttpException(500, 'Ce nom de catégorie est déjà utilisé.');
+        if ($requestMethod === 'POST') {
+            // Vérifie si le nom de la catégorie existe déjà dans la base de données.
+            $existingCategorie = $this->categorieRepository->findOneBy(['nom' => $dto->nom]);
+
+            // Si une catégorie avec ce nom existe déjà, lance une exception.
+            if ($existingCategorie) {
+                throw new HttpException(500, 'Ce nom de catégorie est déjà utilisé.');
+            }
         }
 
         // Charge l'entité categorie existante ou crée une nouvelle instance.
