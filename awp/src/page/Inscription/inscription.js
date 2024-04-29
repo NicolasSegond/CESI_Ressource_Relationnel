@@ -1,9 +1,9 @@
 // Inscription.js
-import React, {useRef, useState} from "react";
+import React, { useRef, useState } from "react";
 import MyForm from "../../composants/MyForm";
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import "./inscriptionDesign.css";
-import {Alert} from "@mui/material";
+import { Alert } from "@mui/material";
 import CheckIcon from '@mui/icons-material/Check';
 const Inscription = () => {
     const nomRef = useRef();
@@ -12,11 +12,11 @@ const Inscription = () => {
     const motDePasseRef = useRef();
     const motDePasseControlRef = useRef();
     const [formData, setFormData] = useState([
-        { type: "text", name: "nom", label: "Nom" , ref:nomRef},
-        { type: "text", name: "prenom", label: "Prénom" , ref:prenomRef},
-        { type: "email", name: "email", label: "Email" , ref:emailRef},
-        { type: "password", name: "motDePasse",  label: "Mot de Passe" , ref:motDePasseRef},
-        { type: "password", name: "motDePasseControl", label: "Confirmer Mot de Passe", ref: motDePasseControlRef}
+        { type: "text", name: "nom", label: "Nom", ref: nomRef },
+        { type: "text", name: "prenom", label: "Prénom", ref: prenomRef },
+        { type: "email", name: "email", label: "Email", ref: emailRef },
+        { type: "password", name: "motDePasse", label: "Mot de Passe", ref: motDePasseRef },
+        { type: "password", name: "motDePasseControl", label: "Confirmer Mot de Passe", ref: motDePasseControlRef }
     ]);
 
     const [alertType, setAlertType] = useState(null);
@@ -36,8 +36,7 @@ const Inscription = () => {
             setAlertType(3)
             return;
         }
-        if(!regexPass.test(motDePasse))
-        {
+        if (!regexPass.test(motDePasse)) {
             setAlertType(4)
             return;
         }
@@ -64,7 +63,7 @@ const Inscription = () => {
                 roles: ["string"],  // You may adjust this as needed
                 code: 0,
                 tokenVerif: "",
-                verif: false
+                verif: 0
             };
 
             const body = JSON.stringify(formDataObject);
@@ -102,11 +101,11 @@ const Inscription = () => {
 
             // Reset the form fields
             setFormData([
-                { type: "text", name: "nom", label: "Nom" , ref:nomRef},
-                { type: "text", name: "prenom", label: "Prénom" , ref:prenomRef},
-                { type: "email", name: "email", label: "Email" , ref:emailRef},
-                { type: "password", name: "motDePasse",  label: "Mot de Passe" , ref:motDePasseRef},
-                { type: "password", name: "motDePasseControl", label: "Confirmer Mot de Passe", ref: motDePasseControlRef}
+                { type: "text", name: "nom", label: "Nom", ref: nomRef },
+                { type: "text", name: "prenom", label: "Prénom", ref: prenomRef },
+                { type: "email", name: "email", label: "Email", ref: emailRef },
+                { type: "password", name: "motDePasse", label: "Mot de Passe", ref: motDePasseRef },
+                { type: "password", name: "motDePasseControl", label: "Confirmer Mot de Passe", ref: motDePasseControlRef }
             ]);
         } catch (error) {
             alert("API ERROR : contactez un administrateur!");
@@ -117,11 +116,11 @@ const Inscription = () => {
     return (
         <div className={"container"}>
             <div className={"filigranes-container"}>
-                <img src={"./filigranes.png"} className={"filigranes"} alt={"Filigranes"}/>
+                <img src={"./filigranes.png"} className={"filigranes"} alt={"Filigranes"} />
             </div>
             <div className={"left-div"}>
                 <div className={"form-container"}>
-                    <img className={"logo"} src={"./logo.png"} alt={"Logo Du site internet"}/>
+                    <img className={"logo"} src={"./logo.png"} alt={"Logo Du site internet"} />
                     <div className={"title"}>S'inscrire</div>
                     <MyForm
                         formData={formData}
@@ -153,7 +152,7 @@ const Inscription = () => {
                 )}
                 {alertType === 4 && (
                     <Alert icon={<CheckIcon fontSize="inherit" />} severity="warning">
-                        Le mot de passe doit contenir au moins 13 caractères, dont une majuscule, <br/>une minuscule, un chiffre et un caractère spécial.
+                        Le mot de passe doit contenir au moins 13 caractères, dont une majuscule, <br />une minuscule, un chiffre et un caractère spécial.
                     </Alert>
                 )}
                 {alertType === 5 && (
@@ -168,7 +167,7 @@ const Inscription = () => {
                 )}
             </div>
             <div className={"right-div"}>
-                <img src={"./imageADroite.jpg"} alt={"image représentation"}/>
+                <img src={"./imageADroite.jpg"} alt={"image représentation"} />
             </div>
         </div>
     );

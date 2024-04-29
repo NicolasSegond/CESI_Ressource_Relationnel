@@ -13,7 +13,7 @@ class Utilisateur {
   List<String> roles = [];
   String? password;
   int? code;
-  bool? verif;
+  int? verif;
   List<Ressource> proprietaireRessource = [];
   List<Commentaire> commentaires = [];
   List<Progression> progressions = [];
@@ -79,11 +79,11 @@ class Utilisateur {
     this.code = code;
   }
 
-  bool? getVerif() {
+  int? getVerif() {
     return verif;
   }
 
-  void setVerif(bool? verif) {
+  void setVerif(int? verif) {
     this.verif = verif;
   }
 

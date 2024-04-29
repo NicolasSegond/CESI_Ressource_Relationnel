@@ -126,7 +126,7 @@ class _SignUpState extends State<SignUp> {
         'passwordControl': _confirmPasswordController.text,
         'roles': ["string"],  // You may adjust this as needed
         'code': 0,
-        'verif': false
+        'verif': 0
       };
       String body = jsonEncode(formData);
       try {
