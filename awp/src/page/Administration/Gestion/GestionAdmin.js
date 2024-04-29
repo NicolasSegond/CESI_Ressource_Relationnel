@@ -2,12 +2,13 @@ import React from 'react';
 import TabMenu from '../../../composants/Administration/TabMenu.js';
 import GestionRessources from "./GestionRessources";
 import GestionCategories from "./GestionCategories";
+import GestionUtilisateurs from "./GestionUtilisateurs";
 
 const GestionAdmin = () => {
     const tabs = [
         {
             label: 'Utilisateurs',
-            content: 'Contenu du tableau 1'
+            content: <GestionUtilisateurs/>
         },
         {
             label: 'Ressources',
