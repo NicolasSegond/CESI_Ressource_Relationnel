@@ -367,7 +367,7 @@ class _Ressources_pageState extends State<Ressources_page> {
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
                                               Text(
-                                                "${commentaire.getUtilisateur()?.getNom() ?? ''}",
+                                                "${commentaire.getUtilisateur()?.getNom() ?? ''} ${commentaire.getUtilisateur()?.getPrenom() ?? ''}",
                                                 style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: 16,
