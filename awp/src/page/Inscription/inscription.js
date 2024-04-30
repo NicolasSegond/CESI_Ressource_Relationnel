@@ -64,7 +64,7 @@ const Inscription = () => {
                 roles: ["string"],  // You may adjust this as needed
                 code: 0,
                 tokenVerif: "",
-                verif: false
+                verif: 0
             };
 
             const body = JSON.stringify(formDataObject);
