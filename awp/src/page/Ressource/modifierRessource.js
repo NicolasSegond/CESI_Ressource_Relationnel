@@ -1,18 +1,43 @@
 import React, {useState, useEffect, useRef} from 'react';
-import { useParams } from 'react-router-dom';
+import {redirect, useLoaderData, useParams} from 'react-router-dom';
 import MonFormRessource from "../../composants/Ressource/MonFormRessource";
+import {customFetch} from "../../utils/customFetch";
+import apiConfig from "../../utils/config";
 
 function ModifierRessource() {
     const { id } = useParams();
     const [ressource, setRessource] = useState(null);
+    const [relation, setRelation] = React.useState([]);
+    const [typeRessource, setTypeRessource] = React.useState('');
     const miniatureRef = useRef(null); // Créez une référence pour la miniature
-
+    const [categorie, setCategorie] = React.useState('');
+    const data = useLoaderData().data;
     const handleChange = (content) => {
 
     };
     const handleSubmit = (content) => {
 
     };
+    const handleRelationChange = (e) => {
+        if (e.target.value.length <= 3) {
+            setRelation(e.target.value);
+        }
+    }
+
+    const onDeleteRelation = (value) => {
+        setRelation(
+            relation.filter((item) => item !== value)
+        )
+    }
+
+    const handleCategorieChange = (value) => {
+        setCategorie(value);
+    }
+
+    const handleTypeChange = (value) => {
+        setTypeRessource(value);
+    }
+
 
     useEffect(() => {
         const fetchRessource = async () => {
@@ -55,6 +80,38 @@ function ModifierRessource() {
                             onChange: (value) => setRessource({ ...ressource, contenu: value })
                         },
                         {
+                            select_type: "select",
+                            label: "Catégories *",
+                            name: "categorie",
+                            label_select: "Catégories de la ressource :",
+                            alignment: "droite",
+                            options: data.categories,
+                            value: categorie,
+                            onChange: handleCategorieChange,
+                        },
+                        {
+                            select_type: "multi-select",
+                            label_select: "Type de relations :",
+                            label: "Relations * ",
+                            alignment: "droite",
+                            options: data.relationTypes,
+                            name: "relations",
+                            nbElementMax: 3,
+                            value: relation,
+                            onChange: handleRelationChange,
+                            onDelete: onDeleteRelation,
+                        },
+                        {
+                            select_type: "select",
+                            label_select: "Type de la ressource :",
+                            label: "Type *",
+                            alignment: "droite",
+                            options: data.resourceTypes,
+                            name: "typeRessource",
+                            value: typeRessource,
+                            onChange: handleTypeChange,
+                        },
+                        {
                             select_type: "telechargement",
                             label: "Miniature de la ressource :",
                             alignment: "droite",
@@ -79,3 +136,23 @@ function ModifierRessource() {
 }
 
 export default ModifierRessource;
+
+export async function loader({}) {
+    let {data, error} = await customFetch({
+            url: apiConfig.apiUrl + '/api/options',
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        },
+        true
+    );
+
+    if (error && error.message && error.message.includes('DECONNEXION NECCESSAIRE')) {
+        return redirect('/connexion');
+    }
+
+    return {
+        data: data,
+    };
+}
