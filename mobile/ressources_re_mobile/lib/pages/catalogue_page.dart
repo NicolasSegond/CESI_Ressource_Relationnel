@@ -130,10 +130,7 @@ class _CatalogueState extends State<Catalogue> {
   }
 
   Future<void> fetchData() async {
-    setState(() {
-      isLoading = true;
-    });
-
+   
     Map<String, dynamic> response = await customFetch({
       'url': ApiConfig.apiUrl + '/api/options',
       'method': 'GET',
@@ -150,7 +147,7 @@ class _CatalogueState extends State<Catalogue> {
         categories = data['categories'];
         relationTypes = data['relationTypes'];
         resourceTypes = data['resourceTypes'];
-        isLoading = false;
+       
       });
     }
   }
@@ -344,7 +341,7 @@ class _CatalogueState extends State<Catalogue> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => Ressources_page(uneRessource: album),
+                                builder: (context) => Ressources_page(idRessource: album.getId()),
                               ),
                             );
                           },

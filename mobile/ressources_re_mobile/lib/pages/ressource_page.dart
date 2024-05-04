@@ -14,8 +14,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 
 class Ressources_page extends StatefulWidget {
-  final Ressource? uneRessource;
-  const Ressources_page({Key? key, required this.uneRessource}) : super(key: key);
+  final int? idRessource;
+  const Ressources_page({Key? key, required this.idRessource}) : super(key: key);
 
   @override
   _Ressources_pageState createState() => _Ressources_pageState();
@@ -23,6 +23,7 @@ class Ressources_page extends StatefulWidget {
 
 class _Ressources_pageState extends State<Ressources_page> {
   final TextEditingController _commentaireController = TextEditingController();
+  Ressource? uneRessource; // Variable pour stocker la ressource
   List<Commentaire> commentaires = [];
   HydraView hydraView = HydraView(id: '', first: '', last: '');
   bool isAddingComment = false;
@@ -33,6 +34,8 @@ class _Ressources_pageState extends State<Ressources_page> {
   bool tokenExists = false;
   int indexPage = 1;
   bool hasNextPage = false;
+  bool isLoading = true;
+
   // Méthode pour mettre à jour le nombre de caractères restants
   void updateMaxLength(String value) {
     setState(() {
@@ -43,9 +46,10 @@ class _Ressources_pageState extends State<Ressources_page> {
   @override
   void initState() {
     super.initState();
-    fetchCommentaires();
+    fetchRessourceById(widget.idRessource!);
     indexPage = 1;
     checkTokenExists();
+    
   }
 
   @override
@@ -53,16 +57,55 @@ class _Ressources_pageState extends State<Ressources_page> {
     _commentaireController.dispose();
     super.dispose();
   }
-
+  void _stopLoading() {
+    setState(() {
+      isLoading = false;
+    });
+  }
   Future<void> checkTokenExists() async {
     String? token = await storage.read(key: 'token');
     setState(() {
       tokenExists = token != null;
     });
   }
+
+  Future<void> fetchRessourceById(int idRessource) async {
+     setState(() {
+      isLoading = true; // Démarrez le chargement
+    });
+    try {
+      final response = await http.get(
+        Uri.parse('http://127.0.0.1:8000/api/ressources/$idRessource'),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        final dynamic result = json.decode(response.body);
+        final dynamic ressourceData = result;
+
+        // Créez une nouvelle instance de la classe Ressource à partir des données JSON
+        uneRessource = Ressource.fromJson(ressourceData);
+
+        // Une fois que vous avez récupéré la ressource, appelez fetchCommentaires
+        fetchCommentaires();
+      } else {
+        throw Exception('Failed to load ressource');
+      }
+    } catch (e) {
+      print('Error fetching ressource: $e');
+      throw Exception('Failed to load ressource: $e');
+    }
+    finally {
+      setState(() {
+        isLoading = false; // Arrêtez le chargement une fois terminé
+      });
+    }
+  }
+
+
   Future<void> fetchCommentaires() async {
     final response = await customFetch({
-      'url': 'http://127.0.0.1:8000/api/commentaires/${widget.uneRessource!.getId()}/ressources?page=${indexPage}&order%5Bdate%5D=desc',
+      'url': 'http://127.0.0.1:8000/api/commentaires/${uneRessource!.getId()}/ressources?page=${indexPage}&order%5Bdate%5D=desc',
       'method': 'GET',
       'headers': {
         'Content-Type': 'application/json',
@@ -117,7 +160,7 @@ class _Ressources_pageState extends State<Ressources_page> {
       "id": 0,
       "contenu": commentaireContenu,
       "utilisateur": "/api/utilisateurs/$userId",
-      "ressource": "/api/ressources/${widget.uneRessource?.getId()}",
+      "ressource": "/api/ressources/${uneRessource?.getId()}",
       "date": DateTime.now().toIso8601String(),
     };
 
@@ -146,283 +189,291 @@ class _Ressources_pageState extends State<Ressources_page> {
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Ressources for Album ${widget.uneRessource!.getId()}'),
-      ),
-      backgroundColor: Color(0xffffffff),
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            SizedBox(
-              height: MediaQuery.of(context).size.height,
-              width: MediaQuery.of(context).size.width,
-              child: Stack(
-                alignment: Alignment.topLeft,
-                children: [
-                  Image(
-                    image: NetworkImage("http://127.0.0.1:8000/images/book/" + (widget.uneRessource?.getMiniature() ?? '')),
-                    height: 220,
+ @override
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+       title: isLoading
+      ? Text('Chargement...')
+      : Text('Ressources for Album ${uneRessource!.getId()}'),
+    ),
+    backgroundColor: Color(0xffffffff),
+    body: isLoading // Vérifiez si les données sont en cours de chargement
+          ? Center(
+              child: CircularProgressIndicator(), // Affichez le cercle de chargement
+            )
+          : SingleChildScrollView(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          SizedBox(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            child: Stack(
+              alignment: Alignment.topLeft,
+              children: [
+                Image(
+                  image: NetworkImage("http://127.0.0.1:8000/images/book/" + (uneRessource?.getMiniature() ?? '')),
+                  height: 220,
+                  width: MediaQuery.of(context).size.width,
+                  fit: BoxFit.cover,
+                ),
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Container(
+                    margin: EdgeInsets.all(0),
+                    padding: EdgeInsets.all(0),
                     width: MediaQuery.of(context).size.width,
-                    fit: BoxFit.cover,
-                  ),
-                  Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Container(
-                      margin: EdgeInsets.all(0),
-                      padding: EdgeInsets.all(0),
-                      width: MediaQuery.of(context).size.width,
-                      height: MediaQuery.of(context).size.height * 0.75,
-                      decoration: BoxDecoration(
-                        color: Color(0xffffffff),
-                        shape: BoxShape.rectangle,
-                        borderRadius: BorderRadius.circular(16.0),
-                        border: Border.all(color: Color(0x4d9e9e9e), width: 1),
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.all(16),
-                        child: SingleChildScrollView(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.max,
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
+                    height: MediaQuery.of(context).size.height * 0.75,
+                    decoration: BoxDecoration(
+                      color: Color(0xffffffff),
+                      shape: BoxShape.rectangle,
+                      borderRadius: BorderRadius.circular(16.0),
+                      border: Border.all(color: Color(0x4d9e9e9e), width: 1),
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.all(16),
+                      child: SingleChildScrollView(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.max,
+                              children: [
+                                Expanded(
+                                  flex: 1,
+                                  child: Text(
+                                    (uneRessource?.getTitre() ?? ''),
+                                    textAlign: TextAlign.start,
+                                    overflow: TextOverflow.clip,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                      fontStyle: FontStyle.normal,
+                                      fontSize: 20,
+                                      color: Color(0xff000000),
+                                    ),
+                                  ),
+                                ),
+                                RatingBar.builder(
+                                  initialRating: 1,
+                                  unratedColor: Color(0xff9e9e9e),
+                                  itemBuilder: (context, index) => Icon(
+                                    Icons.star,
+                                    color: Color(0xffffc107),
+                                  ),
+                                  itemCount: 1,
+                                  itemSize: 22,
+                                  direction: Axis.horizontal,
+                                  allowHalfRating: false,
+                                  onRatingUpdate: (value) {},
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.fromLTRB(0, 16, 8, 0),
+                                  child: Text(
+                                    (uneRessource?.getDateCreation() ?? ""),
+                                    textAlign: TextAlign.start,
+                                    overflow: TextOverflow.clip,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                      fontStyle: FontStyle.normal,
+                                      fontSize: 14,
+                                      color: Color.fromRGBO(3, 152, 158, 1),
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.fromLTRB(0, 16, 0, 0),
+                                  child: Text(
+                                    (uneRessource?.getDateModification() ?? "") + " ",
+                                    textAlign: TextAlign.start,
+                                    overflow: TextOverflow.clip,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                      fontStyle: FontStyle.normal,
+                                      fontSize: 14,
+                                      color: Color.fromRGBO(3, 152, 158, 1),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Padding(
+                              padding: EdgeInsets.fromLTRB(0, 16, 0, 0),
+                              child: HtmlWidget(uneRessource?.getContenu() ?? ""),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 mainAxisSize: MainAxisSize.max,
                                 children: [
                                   Expanded(
                                     flex: 1,
-                                    child: Text(
-                                      (widget.uneRessource?.getTitre() ?? ''),
-                                      textAlign: TextAlign.start,
-                                      overflow: TextOverflow.clip,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w700,
-                                        fontStyle: FontStyle.normal,
-                                        fontSize: 20,
-                                        color: Color(0xff000000),
-                                      ),
-                                    ),
-                                  ),
-                                  RatingBar.builder(
-                                    initialRating: 1,
-                                    unratedColor: Color(0xff9e9e9e),
-                                    itemBuilder: (context, index) => Icon(
-                                      Icons.star,
-                                      color: Color(0xffffc107),
-                                    ),
-                                    itemCount: 1,
-                                    itemSize: 22,
-                                    direction: Axis.horizontal,
-                                    allowHalfRating: false,
-                                    onRatingUpdate: (value) {},
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  Padding(
-                                    padding: EdgeInsets.fromLTRB(0, 16, 8, 0),
-                                    child: Text(
-                                      (widget.uneRessource?.getDateCreation() ?? ""),
-                                      textAlign: TextAlign.start,
-                                      overflow: TextOverflow.clip,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w700,
-                                        fontStyle: FontStyle.normal,
-                                        fontSize: 14,
-                                        color: Color.fromRGBO(3, 152, 158, 1),
-                                      ),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: EdgeInsets.fromLTRB(0, 16, 0, 0),
-                                    child: Text(
-                                      (widget.uneRessource?.getDateModification() ?? "") + " ",
-                                      textAlign: TextAlign.start,
-                                      overflow: TextOverflow.clip,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w700,
-                                        fontStyle: FontStyle.normal,
-                                        fontSize: 14,
-                                        color: Color.fromRGBO(3, 152, 158, 1),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Padding(
-                                padding: EdgeInsets.fromLTRB(0, 16, 0, 0),
-                                child: HtmlWidget(widget.uneRessource?.getContenu() ?? ""),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisSize: MainAxisSize.max,
-                                  children: [
-                                    Expanded(
-                                      flex: 1,
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        mainAxisSize: MainAxisSize.max,
-                                        children: [
-                                          Padding(
-                                            padding: EdgeInsets.fromLTRB(0, 16, 0, 0),
-                                            child: Row(
-                                              children: [
-                                                Icon(
-                                                  Icons.person,
-                                                  color: Color.fromRGBO(3, 152, 158, 1),
-                                                ),
-                                                SizedBox(width: 8),
-                                                Text(
-                                                  (widget.uneRessource?.getProprietaire()?.getNom() ?? "") +
-                                                      " " +
-                                                      (widget.uneRessource?.getProprietaire()?.getPrenom() ?? "") +
-                                                      " ",
-                                                  textAlign: TextAlign.start,
-                                                  overflow: TextOverflow.clip,
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.w700,
-                                                    fontStyle: FontStyle.normal,
-                                                    fontSize: 14,
-                                                    color: Color.fromRGBO(3, 152, 158, 1),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    Expanded(
-                                      flex: 1,
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        mainAxisSize: MainAxisSize.max,
-                                        children: [
-                                          Padding(
-                                            padding: EdgeInsets.fromLTRB(0, 16, 0, 0),
-                                            child: Row(
-                                              children: [
-                                                Icon(
-                                                  Icons.visibility,
-                                                  color: Color.fromRGBO(3, 152, 158, 1),
-                                                ),
-                                                SizedBox(width: 8),
-                                                Text(
-                                                  "Nombre de vues: ${widget.uneRessource?.getNombreVue() ?? 0}",
-                                                  textAlign: TextAlign.start,
-                                                  overflow: TextOverflow.clip,
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.w700,
-                                                    fontStyle: FontStyle.normal,
-                                                    fontSize: 14,
-                                                    color: Color.fromRGBO(3, 152, 158, 1),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.fromLTRB(0, 16, 0, 0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      "Commentaires",
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 18,
-                                        color: Color.fromRGBO(3, 152, 158, 1),
-                                      ),
-                                    ),
-                                    SizedBox(height: 8),
-                                    // Utilisez un Column à la place de ListView.builder
-                                    Column(
-                                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                                      children: commentaires.map((commentaire) => Card(
-                                        elevation: 2,
-                                        margin: EdgeInsets.symmetric(vertical: 4),
-                                        child: Padding(
-                                          padding: EdgeInsets.all(8),
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      mainAxisSize: MainAxisSize.max,
+                                      children: [
+                                        Padding(
+                                          padding: EdgeInsets.fromLTRB(0, 16, 0, 0),
+                                          child: Row(
                                             children: [
-                                              Text(
-                                                "${commentaire.getUtilisateur()?.getNom() ?? ''} ${commentaire.getUtilisateur()?.getPrenom() ?? ''}",
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 16,
-                                                  color: Colors.black,
-                                                ),
+                                              Icon(
+                                                Icons.person,
+                                                color: Color.fromRGBO(3, 152, 158, 1),
                                               ),
-                                              SizedBox(height: 4),
+                                              SizedBox(width: 8),
                                               Text(
-                                                commentaire.getContenu() ?? "",
+                                                (uneRessource?.getProprietaire()?.getNom() ?? "") +
+                                                    " " +
+                                                    (uneRessource?.getProprietaire()?.getPrenom() ?? "") +
+                                                    " ",
+                                                textAlign: TextAlign.start,
+                                                overflow: TextOverflow.clip,
                                                 style: TextStyle(
+                                                  fontWeight: FontWeight.w700,
+                                                  fontStyle: FontStyle.normal,
                                                   fontSize: 14,
-                                                ),
-                                              ),
-                                              SizedBox(height: 4),
-                                              Text(
-                                                "${commentaire.getDate()?.toString() ?? ''}",
-                                                style: TextStyle(
-                                                  fontSize: 12,
-                                                  color: Colors.grey,
+                                                  color: Color.fromRGBO(3, 152, 158, 1),
                                                 ),
                                               ),
                                             ],
                                           ),
                                         ),
-                                      )).toList(),
+                                      ],
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                  Expanded(
+                                    flex: 1,
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      mainAxisSize: MainAxisSize.max,
+                                      children: [
+                                        Padding(
+                                          padding: EdgeInsets.fromLTRB(0, 16, 0, 0),
+                                          child: Row(
+                                            children: [
+                                              Icon(
+                                                Icons.visibility,
+                                                color: Color.fromRGBO(3, 152, 158, 1),
+                                              ),
+                                              SizedBox(width: 8),
+                                              Text(
+                                                "Nombre de vues: ${uneRessource?.getNombreVue() ?? 0}",
+                                                textAlign: TextAlign.start,
+                                                overflow: TextOverflow.clip,
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.w700,
+                                                  fontStyle: FontStyle.normal,
+                                                  fontSize: 14,
+                                                  color: Color.fromRGBO(3, 152, 158, 1),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               ),
-                              Padding(
-                                padding: EdgeInsets.fromLTRB(0, 16, 0, 0),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    ElevatedButton(
-                                      onPressed: () {
-                                        // Décrémenter indexPage et recharger les commentaires
-                                        setState(() {
-                                          if (indexPage > 1) {
-                                            indexPage--;
-                                            fetchCommentaires();
-                                          }
-                                        });
-                                      },
-                                      child: Text("Page précédente"),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.fromLTRB(0, 16, 0, 0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment
+
+.start,
+                                children: [
+                                  Text(
+                                    "Commentaires",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18,
+                                      color: Color.fromRGBO(3, 152, 158, 1),
                                     ),
-                                    Text(
-                                      indexPage.toString(),
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 18,
-                                        color: Color.fromRGBO(3, 152, 158, 1),
+                                  ),
+                                  SizedBox(height: 8),
+                                  // Utilisez un Column à la place de ListView.builder
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                                    children: commentaires.map((commentaire) => Card(
+                                      elevation: 2,
+                                      margin: EdgeInsets.symmetric(vertical: 4),
+                                      child: Padding(
+                                        padding: EdgeInsets.all(8),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              "${commentaire.getUtilisateur()?.getNom() ?? ''} ${commentaire.getUtilisateur()?.getPrenom() ?? ''}",
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16,
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                            SizedBox(height: 4),
+                                            Text(
+                                              commentaire.getContenu() ?? "",
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                              ),
+                                            ),
+                                            SizedBox(height: 4),
+                                            Text(
+                                              "${commentaire.getDate()?.toString() ?? ''}",
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
+                                    )).toList(),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.fromLTRB(0, 16, 0, 0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      // Décrémenter indexPage et recharger les commentaires
+                                      setState(() {
+                                        if (indexPage > 1) {
+                                          indexPage--;
+                                          fetchCommentaires();
+                                        }
+                                      });
+                                    },
+                                    child: Text("Page précédente"),
+                                  ),
+                                  Text(
+                                    indexPage.toString(),
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18,
+                                      color: Color.fromRGBO(3, 152, 158, 1),
                                     ),
-                                    ElevatedButton(
+                                  ),
+                                  ElevatedButton(
                                     onPressed: hasNextPage ? () {
                                       // Incrémenter indexPage et recharger les commentaires
                                       setState(() {
@@ -432,9 +483,9 @@ class _Ressources_pageState extends State<Ressources_page> {
                                     } : null, // Désactiver le bouton si hasNextPage est false
                                     child: Text("Page suivante"),
                                   ),
-                                  ],
-                                ),
+                                ],
                               ),
+                            ),
                             Padding(
                               padding: EdgeInsets.fromLTRB(0, 16, 0, 0),
                               child: Visibility(
@@ -479,18 +530,20 @@ class _Ressources_pageState extends State<Ressources_page> {
                                 ),
                               ),
                             ),
-                            ],
-                          ),
+                          ],
                         ),
                       ),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
 }
+}
+
+
