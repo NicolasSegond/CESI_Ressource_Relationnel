@@ -104,6 +104,8 @@ class _CatalogueState extends State<Catalogue> {
   Future<List<Ressource>> fetchAlbum() async {
     String url = buildUrlWithFilters(selectedFilters);
 
+    print(url);
+
     Map<String, dynamic> response = await customFetch({
       'url': url,
       'method': 'GET',
@@ -152,7 +154,6 @@ class _CatalogueState extends State<Catalogue> {
 
   Future<void> fetchUserId() async {
     try {
-      print('ça passe');
       // Récupérer les tokens de l'utilisateur
       final tokens = await getTokenDisconnected();
 
@@ -160,7 +161,7 @@ class _CatalogueState extends State<Catalogue> {
       if(tokens != null){
         final id = await getIdUser(tokens!);
 
-        // Mettre à jour l'ID de l'utilisateur dans l'état de la page
+      // Mettre à jour l'ID de l'utilisateur dans l'état de la page
       setState(() {
         userId = id;
       });
@@ -292,15 +293,13 @@ class _CatalogueState extends State<Catalogue> {
                             hydraView.id == '') {
                           return Row(
                             children: [
-                              if (hydraView.id != hydraView.last ||
-                                  hydraView.id == '')
-                                Expanded(
-                                  child: MoreButton(
-                                    currentPage: currentPage,
-                                    fetchAlbum: fetchAlbum,
-                                    updatePage: updatePage,
-                                  ),
+                              Expanded(
+                                child: MoreButton(
+                                  currentPage: currentPage,
+                                  fetchAlbum: fetchAlbum,
+                                  updatePage: updatePage,
                                 ),
+                              ),
                               if (index == albums.length - 1 &&
                                   hydraView.first != hydraView.id)
                                 Expanded(
@@ -335,11 +334,13 @@ class _CatalogueState extends State<Catalogue> {
                       } else {
                         final album = albums[index];
                         return GestureDetector(
-                         onTap: () {
+                          onTap: () {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => Ressources_page(uneRessource: album),
+                                builder: (context) => Ressources_page(
+                                  uneRessource: album,
+                                ),
                               ),
                             );
                           },
@@ -381,7 +382,8 @@ class _CatalogueState extends State<Catalogue> {
                                       Opacity(
                                         opacity: 0.5,
                                         child: ClipRRect(
-                                          borderRadius: const BorderRadius.only(
+                                          borderRadius:
+                                              const BorderRadius.only(
                                             topLeft: Radius.circular(15.0),
                                             topRight: Radius.circular(15.0),
                                           ),
@@ -407,14 +409,16 @@ class _CatalogueState extends State<Catalogue> {
                                           mainAxisSize: MainAxisSize.max,
                                           children: [
                                             Align(
-                                              alignment: const Alignment(0.0, 0.9),
+                                              alignment:
+                                                  const Alignment(0.0, 0.9),
                                               child: Padding(
                                                 padding:
                                                     const EdgeInsets.fromLTRB(
                                                         10, 0, 0, 0),
                                                 child: ClipRRect(
                                                   borderRadius:
-                                                      BorderRadius.circular(15.0),
+                                                      BorderRadius.circular(
+                                                          15.0),
                                                   child: Image(
                                                     image: const NetworkImage(
                                                         "https://picsum.photos/250?image=9"),
@@ -430,7 +434,8 @@ class _CatalogueState extends State<Catalogue> {
                                                   const EdgeInsets.fromLTRB(
                                                       10, 0, 0, 0),
                                               child: Align(
-                                                alignment: Alignment(0.0, 0.6),
+                                                alignment:
+                                                    Alignment(0.0, 0.6),
                                                 child: Text(
                                                   album.getProprietaire()!
                                                           .getNom()! +
@@ -438,43 +443,45 @@ class _CatalogueState extends State<Catalogue> {
                                                       album.getProprietaire()!
                                                           .getPrenom()!,
                                                   textAlign: TextAlign.start,
-                                                  overflow: TextOverflow.clip,
+                                                  overflow:
+                                                      TextOverflow.clip,
                                                   style: TextStyle(
-                                                    fontWeight: FontWeight.w600,
-                                                    fontStyle: FontStyle.normal,
+                                                    fontWeight:
+                                                        FontWeight.w600,
+                                                    fontStyle:
+                                                        FontStyle.normal,
                                                     fontSize: 14,
-                                                    color: const Color(0xff000000),
+                                                    color: const Color(
+                                                        0xff000000),
                                                   ),
                                                 ),
                                               ),
                                             ),
-                                            Expanded(
-                                              flex: 1,
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.end,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.end,
-                                                children: [
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.fromLTRB(
-                                                            0, 5, 5, 0),
-                                                    child: Align(
-                                                      alignment: const Alignment(
-                                                          0.8, -0.8),
-                                                      child: ModalOptions(
-                                                          currentUser: '8',
-                                                          ressourceProprietaire:
-                                                              album
-                                                                  .getProprietaire()!
-                                                                  .getId()!
-                                                                  .toString()),
+                                            if (userId != null) // Check if user is logged in
+                                              Expanded(
+                                                flex: 1,
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.end,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.end,
+                                                  children: [
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsets.fromLTRB(
+                                                              0, 5, 5, 0),
+                                                      child: Align(
+                                                        alignment:
+                                                            const Alignment(
+                                                                0.8, -0.8),
+                                                        child: ModalOptions(
+                                                            currentUser: userId,
+                                                            ressource: album),
+                                                      ),
                                                     ),
-                                                  ),
-                                                ],
+                                                  ],
+                                                ),
                                               ),
-                                            ),
                                           ],
                                         ),
                                       ),
@@ -489,7 +496,8 @@ class _CatalogueState extends State<Catalogue> {
                                   decoration: BoxDecoration(
                                     color: const Color(0x1fffffff),
                                     shape: BoxShape.rectangle,
-                                    borderRadius: const BorderRadius.only(
+                                    borderRadius:
+                                        const BorderRadius.only(
                                       bottomLeft: Radius.circular(15.0),
                                       bottomRight: Radius.circular(15.0),
                                     ),
@@ -511,36 +519,47 @@ class _CatalogueState extends State<Catalogue> {
                                         mainAxisSize: MainAxisSize.max,
                                         children: [
                                           Padding(
-                                            padding: const EdgeInsets.fromLTRB(
-                                                0, 10, 0, 0),
+                                            padding:
+                                                const EdgeInsets.fromLTRB(
+                                                    0, 10, 0, 0),
                                             child: Align(
-                                              alignment: Alignment.centerLeft,
+                                              alignment:
+                                                  Alignment.centerLeft,
                                               child: Text(
                                                 album.getTitre()!,
                                                 textAlign: TextAlign.start,
-                                                overflow: TextOverflow.clip,
+                                                overflow:
+                                                    TextOverflow.clip,
                                                 style: TextStyle(
-                                                  fontWeight: FontWeight.w400,
-                                                  fontStyle: FontStyle.normal,
+                                                  fontWeight:
+                                                      FontWeight.w400,
+                                                  fontStyle:
+                                                      FontStyle.normal,
                                                   fontSize: 14,
-                                                  color: const Color(0xff000000),
+                                                  color: const Color(
+                                                      0xff000000),
                                                 ),
                                               ),
                                             ),
                                           ),
                                           Align(
-                                            alignment: Alignment.centerLeft,
+                                            alignment:
+                                                Alignment.centerLeft,
                                             child: Text(
                                               album
                                                   .getDateCreation()
                                                   .toString(),
                                               textAlign: TextAlign.start,
-                                              overflow: TextOverflow.clip,
+                                              overflow:
+                                                  TextOverflow.clip,
                                               style: TextStyle(
-                                                fontWeight: FontWeight.w300,
-                                                fontStyle: FontStyle.normal,
+                                                fontWeight:
+                                                    FontWeight.w300,
+                                                fontStyle:
+                                                    FontStyle.normal,
                                                 fontSize: 12,
-                                                color: const Color(0xff000000),
+                                                color: const Color(
+                                                    0xff000000),
                                               ),
                                             ),
                                           ),
@@ -556,8 +575,10 @@ class _CatalogueState extends State<Catalogue> {
                                                   mainAxisAlignment:
                                                       MainAxisAlignment.start,
                                                   crossAxisAlignment:
-                                                      CrossAxisAlignment.center,
-                                                  mainAxisSize: MainAxisSize.min,
+                                                      CrossAxisAlignment
+                                                          .center,
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
                                                   children: [
                                                     // Type de relation
                                                     ...album
@@ -570,20 +591,23 @@ class _CatalogueState extends State<Catalogue> {
                                                         child: Chip(
                                                           labelPadding:
                                                               const EdgeInsets
-                                                                  .symmetric(
-                                                            vertical: 0,
-                                                            horizontal: 4,
-                                                          ),
+                                                                      .symmetric(
+                                                                  vertical: 0,
+                                                                  horizontal:
+                                                                      4),
                                                           label: Text(
-                                                            chip.getLibelle()!,
+                                                            chip
+                                                                .getLibelle()!,
                                                           ),
                                                           labelStyle:
                                                               const TextStyle(
                                                             fontSize: 14,
                                                             fontWeight:
-                                                                FontWeight.w400,
+                                                                FontWeight
+                                                                    .w400,
                                                             fontStyle:
-                                                                FontStyle.normal,
+                                                                FontStyle
+                                                                    .normal,
                                                             color: const Color(
                                                                 0xffffffff),
                                                           ),
@@ -612,10 +636,9 @@ class _CatalogueState extends State<Catalogue> {
                                                       child: Chip(
                                                         labelPadding:
                                                             const EdgeInsets
-                                                                .symmetric(
-                                                          vertical: 0,
-                                                          horizontal: 4,
-                                                        ),
+                                                                    .symmetric(
+                                                                vertical: 0,
+                                                                horizontal: 4),
                                                         label: Text(
                                                           album
                                                               .getCategorie()!
@@ -654,10 +677,9 @@ class _CatalogueState extends State<Catalogue> {
                                                       child: Chip(
                                                         labelPadding:
                                                             const EdgeInsets
-                                                                .symmetric(
-                                                          vertical: 0,
-                                                          horizontal: 4,
-                                                        ),
+                                                                    .symmetric(
+                                                                vertical: 0,
+                                                                horizontal: 4),
                                                         label: Text(
                                                           album
                                                               .getTypeDeRessource()!
@@ -713,6 +735,8 @@ class _CatalogueState extends State<Catalogue> {
       ),
     );
   }
+
+
 
   Widget _buildFilter(String title, String filterName, List<dynamic> items,
       StateSetter setState) {

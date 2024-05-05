@@ -8,6 +8,7 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use App\State\EntityToDtoStateProvider;
 use App\Entity\TypeProgression;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ApiResource(
     shortName: 'TypeProgression',
@@ -20,6 +21,9 @@ use App\Entity\TypeProgression;
 )]
 class TypeProgressionAPI
 {
+    #[Groups(['progression:read'])]
     public ?int $id = null;
+
+    #[Groups(['progression:read'])]
     public ?string $libelle;
 }

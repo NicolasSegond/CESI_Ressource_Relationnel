@@ -53,15 +53,15 @@ class CommentaireAPI
 {
     public ?int $id = null;
 
-    #[Groups(['ressource:read', 'ressource:write', 'commentaire:read'])]
+    #[Groups(['ressource:read', 'ressource:write', 'commentaire:read', 'progression:read'])]
     public ?string $contenu = null;
 
-    #[Groups(['ressource:read', 'ressource:write', 'commentaire:read'])]
+    #[Groups(['ressource:read', 'ressource:write', 'commentaire:read', 'progression:read'])]
     public ?UtilisateurAPI $utilisateur = null;
 
-    #[Groups(['ressource:read','commentaire:write', 'commentaire:read'])]
+    #[Groups(['ressource:read', 'commentaire:write', 'commentaire:read', 'progression:read'])]
     public ?RessourceAPI $ressource = null;
 
-    #[Groups(['ressource:read', 'ressource:write', 'commentaire:read'])]
+    #[Groups(['ressource:read', 'ressource:write', 'commentaire:read', 'progression:read'])]
     public ?\DateTimeInterface $date = null;
 }

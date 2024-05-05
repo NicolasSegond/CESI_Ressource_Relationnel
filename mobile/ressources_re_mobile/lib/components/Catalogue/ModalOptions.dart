@@ -1,10 +1,74 @@
 import 'package:flutter/material.dart';
+import 'package:ressources_re_mobile/classes/Ressource.dart';
+import 'package:ressources_re_mobile/utilities/authentification.dart';
+import 'package:ressources_re_mobile/utilities/customFetch.dart';
+import 'package:ressources_re_mobile/utilities/apiConfig.dart';
+import 'dart:convert';
 
 class ModalOptions extends StatelessWidget {
-  final String currentUser; // Ajouter currentUser comme paramètre
-  final String ressourceProprietaire; // Ajouter ressourceProprietaire comme paramètre
+  final int? currentUser;
+  final Ressource? ressource;
 
-  ModalOptions({required this.currentUser, required this.ressourceProprietaire}); // Initialiser currentUser
+  ModalOptions({required this.currentUser, required this.ressource});
+
+   // Fonction pour effectuer la requête et afficher une alerte en fonction du résultat
+  void addToFavorites(BuildContext context) async {
+    Map<String, dynamic> response = await customFetchPost({
+      'url': ApiConfig.apiUrl + '/api/progressions',
+      'method': 'POST',
+      'headers': {
+        'Content-Type': 'application/json',
+      }, 
+      'body': jsonEncode({
+        'TypeProgression' : 'api/type_progressions/1',
+        'Utilisateur' : 'api/utilisateurs/' + currentUser.toString(),
+        'Ressource' : 'api/ressources/' + ressource!.id.toString()
+      })
+    }, connecter: true);
+
+    if (response['error'] != '') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erreur : ' + response['error']),
+        ),
+      );
+    } else {
+       ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Ajout de la ressource en favoris avec succès'),
+        ),
+      );
+    }
+  }
+
+  void addToMiseDeCote(BuildContext context) async{
+Map<String, dynamic> response = await customFetchPost({
+      'url': ApiConfig.apiUrl + '/api/progressions',
+      'method': 'POST',
+      'headers': {
+        'Content-Type': 'application/json',
+      }, 
+      'body': jsonEncode({
+        'TypeProgression' : 'api/type_progressions/2',
+        'Utilisateur' : 'api/utilisateurs/' + currentUser.toString(),
+        'Ressource' : 'api/ressources/' + ressource!.id.toString()
+      })
+    }, connecter: true);
+
+    if (response['error'] != '') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erreur : ' + response['error']),
+        ),
+      );
+    } else {
+       ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Ressource mise de côté avec succès'),
+        ),
+      );
+    }
+  }
 
 
   @override
@@ -16,45 +80,45 @@ class ModalOptions extends StatelessWidget {
         size: 24,
       ),
       onPressed: () {
-        // Afficher le bottom sheet avec les options supplémentaires
         showModalBottomSheet(
           context: context,
-          builder: (BuildContext context) {
+          builder: (BuildContext dialogContext) {
             return Container(
               padding: EdgeInsets.all(16),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  if(currentUser == ressourceProprietaire)
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(8),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.3),
-                          spreadRadius: 2,
-                          blurRadius: 5,
-                          offset: Offset(0, 2), // changes position of shadow
-                        ),
-                      ],
-                    ),
-                    child: TextButton(
-                      onPressed: () {
-                        Navigator.pop(context); // Fermer le bottom sheet après l'action
-                      },
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent), // Fond transparent
+                  if (currentUser == ressource?.getProprietaire()?.getId())
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.3),
+                            spreadRadius: 2,
+                            blurRadius: 5,
+                            offset: Offset(0, 2),
+                          ),
+                        ],
                       ),
-                      child: Text(
-                        'Supprimer la ressource',
-                        style: TextStyle(
-                          color: Colors.black, // Couleur du texte noir
+                      child: TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all<Color>(
+                              Colors.transparent),
+                        ),
+                        child: Text(
+                          'Supprimer la ressource',
+                          style: TextStyle(
+                            color: Colors.black,
+                          ),
                         ),
                       ),
                     ),
-                  ),
                   SizedBox(height: 16),
                   Container(
                     decoration: BoxDecoration(
@@ -65,21 +129,23 @@ class ModalOptions extends StatelessWidget {
                           color: Colors.grey.withOpacity(0.3),
                           spreadRadius: 2,
                           blurRadius: 5,
-                          offset: Offset(0, 2), // changes position of shadow
+                          offset: Offset(0, 2),
                         ),
                       ],
                     ),
                     child: TextButton(
                       onPressed: () {
-                        // Autres actions possibles ici
+                        addToFavorites(context);
+                        Navigator.pop(dialogContext);
                       },
                       style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent), // Fond transparent
+                        backgroundColor: MaterialStateProperty.all<Color>(
+                            Colors.transparent),
                       ),
                       child: Text(
                         'Ajouter la ressource en favoris',
                         style: TextStyle(
-                          color: Colors.black, // Couleur du texte noir
+                          color: Colors.black,
                         ),
                       ),
                     ),
@@ -94,21 +160,23 @@ class ModalOptions extends StatelessWidget {
                           color: Colors.grey.withOpacity(0.3),
                           spreadRadius: 2,
                           blurRadius: 5,
-                          offset: Offset(0, 2), // changes position of shadow
+                          offset: Offset(0, 2),
                         ),
                       ],
                     ),
                     child: TextButton(
                       onPressed: () {
-                        // Autres actions possibles ici
+                        addToMiseDeCote(context);
+                        Navigator.pop(dialogContext);
                       },
                       style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent), // Fond transparent
+                        backgroundColor: MaterialStateProperty.all<Color>(
+                            Colors.transparent),
                       ),
                       child: Text(
                         'Mettre de côté la ressource',
                         style: TextStyle(
-                          color: Colors.black, // Couleur du texte noir
+                          color: Colors.black,
                         ),
                       ),
                     ),

@@ -62,14 +62,4 @@ class Progression
 
         return $this;
     }
-
-    public function toArray(): array
-    {
-        return [
-            'id' => $this->id,
-            'TypeProgression' => $this->TypeProgression->toArray(),
-            'Utilisateur' => $this->Utilisateur->toArray(),
-            'Ressource' => $this->Ressource->toArray(),
-        ];
-    }
 }

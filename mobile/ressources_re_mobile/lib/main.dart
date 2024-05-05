@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:floating_bottom_navigation_bar/floating_bottom_navigation_bar.dart';
 import 'package:ressources_re_mobile/pages/catalogue_page.dart';
 import 'package:ressources_re_mobile/pages/inscription_page.dart';
-import 'package:ressources_re_mobile/pages/test.dart';
+import 'package:ressources_re_mobile/pages/favoris_page.dart';
 import 'package:ressources_re_mobile/pages/connexion_page.dart';
 
 void main() {
@@ -21,10 +21,10 @@ class MyApp extends StatelessWidget {
         primaryIconTheme: IconThemeData(color: Colors.black), // Icônes en noir
       ),
       routes: {
-        '/': (context) => const MyMainPage(title: "Catalogue"),
-        '/inscription': (context) => const MyMainPage(title: "Inscription"),
-        '/connexion': (context) => const MyMainPage(title: "Connexion"),
-        '/test': (context) => const MyMainPage(title: "Test"),
+        '/': (context) => const MyMainPage(title: "Catalogue", initialIndex: 0),
+        '/inscription': (context) => const MyMainPage(title: "Inscription", initialIndex: 1),
+        '/connexion': (context) => const MyMainPage(title: "Connexion", initialIndex: 2),
+        '/favoris': (context) => const MyMainPage(title: "Mes favoris", initialIndex: 3),
       },
       initialRoute: '/',
     );
@@ -32,16 +32,23 @@ class MyApp extends StatelessWidget {
 }
 
 class MyMainPage extends StatefulWidget {
-  const MyMainPage({Key? key, required this.title}) : super(key: key);
+  const MyMainPage({Key? key, required this.title, required this.initialIndex}) : super(key: key);
 
   final String title;
+  final int initialIndex;
 
   @override
   State<MyMainPage> createState() => _MyMainPageState();
 }
 
 class _MyMainPageState extends State<MyMainPage> {
-  int _index = 0;
+  late int _index;
+
+  @override
+  void initState() {
+    super.initState();
+    _index = widget.initialIndex;
+  }
 
   void setCurrentIndex(int index) {
     setState(() {
@@ -54,13 +61,13 @@ class _MyMainPageState extends State<MyMainPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: const Text("GSB extranet"),
+        title: Text("Ressources Relationnelles"),
       ),
       body: [
         Catalogue(),
         SignUp(),
         Login(),
-        FilterPage(),
+        FavorisPage(),
       ][_index],
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.white,
@@ -75,7 +82,7 @@ class _MyMainPageState extends State<MyMainPage> {
           BottomNavigationBarItem(icon: Icon(Icons.login), label: 'Catalogue'),
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Inscription'),
           BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Connexion'),
-          BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Test'),
+          BottomNavigationBarItem(icon: Icon(Icons.favorite), label: 'Mes favoris'),
         ],
       ),
     );

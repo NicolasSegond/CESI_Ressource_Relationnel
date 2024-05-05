@@ -3,7 +3,6 @@
 namespace App\ApiResource;
 
 use ApiPlatform\Doctrine\Orm\Filter\BooleanFilter;
-use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Doctrine\Orm\State\Options;
 use ApiPlatform\Metadata\ApiFilter;
@@ -46,8 +45,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
                         'application/merge-patch+json' => [
                             'schema' => [
                                 'type' => 'object',
-                                'properties' => [
-                                ],
+                                'properties' => [],
                             ],
                         ],
                     ],
@@ -82,28 +80,28 @@ use Symfony\Component\Serializer\Attribute\Groups;
 )]
 class RessourceAPI
 {
-    #[Groups(['ressource:read','commentaire:write', 'commentaire:read'])]
+    #[Groups(['ressource:read', 'commentaire:write', 'commentaire:read', 'progression:read'])]
     public ?int $id = null;
 
-    #[Groups(['ressource:read', 'ressource:write'])]
+    #[Groups(['ressource:read', 'ressource:write', 'progression:read'])]
     public ?string $titre = null;
 
-    #[Groups(['ressource:read', 'ressource:write'])]
+    #[Groups(['ressource:read', 'ressource:write', 'progression:read'])]
     public ?string $miniature = null;
 
-    #[Groups(['ressource:read', 'ressource:write'])]
+    #[Groups(['ressource:read', 'ressource:write', 'progression:read'])]
     public ?string $contenu = null;
 
-    #[Groups(['ressource:read', 'ressource:write'])]
+    #[Groups(['ressource:read', 'ressource:write', 'progression:read'])]
     public ?\DateTimeInterface $dateCreation = null;
 
-    #[Groups(['ressource:read', 'ressource:write'])]
+    #[Groups(['ressource:read', 'ressource:write', 'progression:read'])]
     public ?\DateTimeInterface $dateModification = null;
 
-    #[Groups(['ressource:read', 'ressource:write'])]
+    #[Groups(['ressource:read', 'ressource:write', 'progression:read'])]
     public ?int $nombreVue = null;
 
-    #[Groups(['ressource:read', 'ressource:write'])]
+    #[Groups(['ressource:read', 'ressource:write', 'progression:read'])]
     #[ApiFilter(SearchFilter::class, strategy: 'exact')]
     public ?UtilisateurAPI $proprietaire = null;
 

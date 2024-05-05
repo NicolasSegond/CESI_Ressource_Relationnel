@@ -249,20 +249,27 @@ String? getDateModification() {
     miniature = json['miniature'];
     contenu = json['contenu'];
     dateCreation = DateTime.parse(json['dateCreation']);
-    dateModification = DateTime.parse(json['dateModification']);
+    dateModification = json['dateModification'] != null ? DateTime.parse(json['dateModification']) : null;
     nombreVue = json['nombreVue'];
     proprietaire = Utilisateur.fromJson(json['proprietaire']);
-    statut = Statut.fromJson(json['statut']);
-    visibilite = Visibilite.fromJson(json['visibilite']);
-    typeDeRessource = TypeDeRessource.fromJson(json['typeDeRessource']);
-    for (var typeRelation in json['typeRelations']) {
-      typeRelations.add(TypeRelation.fromJson(typeRelation));
+    statut = json['statut'] != null ? Statut.fromJson(json['statut']) : null;
+    visibilite = json['visibilite'] != null ? Visibilite.fromJson(json['visibilite']) : null;
+    typeDeRessource = json['typeDeRessource'] != null ? TypeDeRessource.fromJson(json['typeDeRessource']) : null;
+    if(json['typeRelations'] != null){
+      for (var typeRelation in json['typeRelations']) {
+        typeRelations.add(TypeRelation.fromJson(typeRelation));
+      }
+    } else{
+      typeRelations = [];
     }
-    categorie = Categorie.fromJson(json['categorie']);
+    categorie = json['categorie'] != null ? Categorie.fromJson(json['categorie']) : null;
 
-    for (var commentaire in json['commentaires']) {
-      commentaires.add(Commentaire.fromJson(commentaire));
+    if(json['commentaires'] != null){
+      for (var commentaire in json['commentaires']) {
+        commentaires.add(Commentaire.fromJson(commentaire));
+      }
+    } else{
+      commentaires = [];
     }
-
   }
 }

@@ -42,8 +42,8 @@ class Progression {
 
   Progression.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    typeProgression = json['typeProgression'];
-    utilisateur = json['utilisateur'];
-    ressource = json['ressource'];
+    typeProgression = TypeProgression.fromJson(json['TypeProgression']);
+    utilisateur = Utilisateur.fromJson(json['Utilisateur']);
+    ressource = Ressource.fromJson(json['Ressource']);
   }
 }
