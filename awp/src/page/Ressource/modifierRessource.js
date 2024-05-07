@@ -1,23 +1,25 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import MonFormRessource from "../../composants/Ressource/MonFormRessource";
-import {redirect, useLoaderData, useNavigate, useParams} from 'react-router-dom'; // Importez useNavigate au lieu de useHistory
+import { redirect, useNavigate, useParams } from 'react-router-dom';
 import apiConfig from "../../utils/config";
 import { customFetch } from "../../utils/customFetch";
-import {getIdUser, getTokenDisconnected} from "../../utils/authentification";
-
+import { getIdUser, getTokenDisconnected } from "../../utils/authentification";
 
 function ModifierRessource() {
     const { id } = useParams();
     const [ressource, setRessource] = useState(null);
     const [error, setError] = useState(null);
-    const navigate = useNavigate(); // Utilisez useNavigate au lieu de useHistory
-    const [tags, setTags] = React.useState(null);
-    const [tagsID, setTagsID] = React.useState(null);
-    const [categorie, setCategorie] = React.useState('');
-    const [relation, setRelation] = React.useState([]);
-    const [typeRessource, setTypeRessource] = React.useState('');
-    const data = useLoaderData().data;
-    const options = [
+    const navigate = useNavigate();
+    const [tags, setTags] = useState(null);
+    const [tagsID, setTagsID] = useState(null);
+
+    const [categorie, setCategorie] = useState('');
+    const [relationTypes, setRelationTypes] = useState([]);
+
+    const [resourceTypes, setResourceTypes] = useState('');
+
+    const [options, setOptions] = useState(null);
+    const visibilite = [
         {id: 1, name: "Public"},
         {id: 2, name: "Prive"}
     ]
@@ -30,7 +32,17 @@ function ModifierRessource() {
                     throw new Error('Erreur lors de la récupération des données');
                 }
                 const data = await response.json();
+                console.log(data);
                 setRessource(data);
+
+                setCategorie(data.categorie.id);
+
+                setResourceTypes(data.typeDeRessource.id);
+
+
+
+
+
 
                 const userId = getIdUser(getTokenDisconnected());
                 if (data.proprietaire.id !== userId) {
@@ -45,19 +57,48 @@ function ModifierRessource() {
     }, [id]);
 
     useEffect(() => {
-        if (ressource && ressource.categories.id) {
-            setCategorie(ressource.categories.id);
+        const fetchOptions = async () => {
+            try {
+                const { data, error } = await customFetch({
+                    url: apiConfig.apiUrl + '/api/options',
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                }, true);
+
+                if (error && error.message && error.message.includes('DECONNEXION NECCESSAIRE')) {
+                    return redirect('/connexion');
+                }
+
+                setOptions(data);
+               // setCategorie(ressource.categorie.id);
+              //  console.log(ressource.categorie);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                // Gérer l'erreur
+            }
+        };
+
+        fetchOptions();
+    }, []);
+
+    useEffect(() => {
+        if (ressource) {
+            setTags(ressource.visibilite.libelle);
         }
     }, [ressource]);
 
     const handleChange = (content) => {
 
     };
+
     const handleSubmit = (content) => {
 
     };
+
     const handleRedirect = () => {
-        navigate('/'); // Utilisez navigate au lieu de history.push
+        navigate('/');
     };
 
     if (error) {
@@ -70,22 +111,31 @@ function ModifierRessource() {
         );
     }
 
-
-
     const handleCategorieChange = (value) => {
         setCategorie(value);
+
+    };
+
+    const handleRelationChange = (e) => {
+        if (e.target.value.length <= 3) {
+            setRelationTypes(e.target.value); // Assurez-vous que setRelationTypes met à jour un tableau
+        }
     }
-    const handleTypeChange = (value) => {
-        setTypeRessource(value);
+
+
+    const onDeleteRelation = (value) => {
+        setRelationTypes(
+            relationTypes.filter((item) => item !== value)
+        )
     }
+
+    const handleRessourceTypes = (value) => {
+        setResourceTypes(value);
+    };
+
     const handleTagClick = (value) => {
         setTagsID(value.id);
         setTags(value.name);
-    };
-
-    let onDeleteRelation;
-    const handleRelationChange = () => {
-
     };
 
     return (
@@ -116,7 +166,7 @@ function ModifierRessource() {
                                 label_select: "Visibilité de la ressource :",
                                 label: "Visibilité *",
                                 alignment: "droite",
-                                options: options,
+                                options: visibilite,
                                 value: tags,
                                 onChange: handleTagClick
                             },
@@ -126,7 +176,7 @@ function ModifierRessource() {
                                 name: "categorie",
                                 label_select: "Catégories de la ressource :",
                                 alignment: "droite",
-                                options: data.categories,
+                                options: options ? options.categories : [],
                                 value: categorie,
                                 onChange: handleCategorieChange,
                             },
@@ -135,31 +185,29 @@ function ModifierRessource() {
                                 label_select: "Type de relations :",
                                 label: "Relations * ",
                                 alignment: "droite",
-                                options: data.relationTypes,
+                                options: options ? options.relationTypes : [],
                                 name: "relations",
                                 nbElementMax: 3,
-                                value: relation,
+                                value: relationTypes,
                                 onChange: handleRelationChange,
                                 onDelete: onDeleteRelation,
                             },
                             {
                                 select_type: "select",
-                                label_select: "Type de la ressource :",
-                                label: "Type *",
-                                alignment: "droite",
-                                options: data.resourceTypes,
+                                label: "typeRessource *",
                                 name: "typeRessource",
-                                value: typeRessource,
-                                onChange: handleTypeChange,
+                                label_select: "Type de Ressource :",
+                                alignment: "droite",
+                                options: options ? options.resourceTypes : [],
+                                value: resourceTypes,
+                                onChange: handleRessourceTypes,
                             },
-
-
                             // Ajoutez d'autres champs de formulaire en fonction des données de la ressource
                         ]}
-                        initialValues={ressource} // Passez les données de la ressource comme valeurs initiales pour le formulaire
+                        initialValues={ressource}
                         onChange={handleChange}
                         onSubmit={handleSubmit}
-                        buttonText="Modifier la ressource" // Définissez le libellé du bouton de soumission
+                        buttonText="Modifier la ressource"
                     />
                 </div>
             ) : (
@@ -170,26 +218,3 @@ function ModifierRessource() {
 }
 
 export default ModifierRessource;
-
-export async function loader({}) {
-    try {
-        let {data, error} = await customFetch({
-            url: apiConfig.apiUrl + '/api/options',
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            }
-        }, true);
-
-        if (error && error.message && error.message.includes('DECONNEXION NECCESSAIRE')) {
-            return redirect('/connexion');
-        }
-
-        return {
-            data: data,
-        };
-    } catch (error) {
-        console.error('Error fetching data:', error);
-        return { error: error.message };
-    }
-}

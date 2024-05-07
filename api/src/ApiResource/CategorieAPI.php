@@ -47,6 +47,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
 )]
 class CategorieAPI
 {
+    #[Groups('ressource:read', 'ressource:write')]
     public ?int $id = null;
 
     #[Groups('ressource:read', 'ressource:write')]
