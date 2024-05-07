@@ -66,12 +66,12 @@ function Card({ id, imageUrl, title, description, vue, nom, prenom, date_creatio
                         <h2 className="card-title">{title}</h2>
                         <div className="modal-container"> {/* Conteneur pour l'icône de menu et la modal */}
                             <img src={Menu} alt={"voir plus logo"} onClick={(e) => {
-                                e.stopPropagation();
+                                e.preventDefault();
                                 toggleModal(description,e);
                             }} />
                             {isModalOpen && (
                                 <div className="modal" onClick={(e) => {
-                                    e.stopPropagation();
+                                    e.preventDefault()
                                     setIsModalOpen(false);
                                 }}>
                                     <a> Mettre en favoris la ressource </a>
