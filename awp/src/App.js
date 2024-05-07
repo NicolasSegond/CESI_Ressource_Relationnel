@@ -9,6 +9,7 @@ import AjoutRessource, {loader as AjoutLoader} from "./page/Ressource/ajoutResso
 import VerifCodeInscription from "./page/verifCodeInscription";
 import Forgottenpassword from "./page/forgottenpassword";
 import ListRessources, {loader as GetDefaultList} from "./page/Ressource/listRessources";
+import PageRessource from "./page/Ressource/pageRessource";
 
 function App() {
     const router = createBrowserRouter([
@@ -29,7 +30,11 @@ function App() {
                     path: '/ressource/lists',
                     element: <ListRessources/>,
                     loader: GetDefaultList
-                }
+                },
+                {
+                    path: 'ressources/:slug',
+                    element: <PageRessource />
+                },
             ],
         },
         {

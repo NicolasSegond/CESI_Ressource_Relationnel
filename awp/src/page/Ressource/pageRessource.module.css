@@ -1,0 +1,98 @@
+.page-container {
+    max-width: 2000px;
+    margin: auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    font-family: Arial, sans-serif;
+}
+
+.header {
+    color: #333;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.article-image {
+    width: 100%; /* La largeur de l'image est réglée à 100% de son conteneur */
+    max-width: 600px; /* Limite la largeur maximale de l'image à 600px */
+    height: auto; /* La hauteur s'ajuste automatiquement pour maintenir les proportions */
+    border-radius: 4px; /* Les coins de l'image sont arrondis */
+    display: block; /* Fait que l'image soit un bloc, évitant ainsi des problèmes de mise en page */
+    margin: 0 auto; /* Centre l'image horizontalement dans son conteneur */
+}
+.article-content img {
+    width: 100%;    /* Fait en sorte que l'image prenne 100% de la largeur du conteneur */
+    height: auto;   /* Maintient les proportions de l'image */
+    display: block; /* Assure que l'image ne garde pas d'espace blanc inutile en dessous */
+}
+
+.article-metadata {
+    margin-top: 10px;
+    font-size: 0.85em;
+    color: #666;
+}
+
+.article-metadata p {
+    display: flex;
+    align-items: center;
+    margin: 5px 0;
+}
+
+.article-metadata svg {
+    margin-right: 10px;
+    color: #4a90e2; /* Blue color for icons */
+    font-size: 1.2rem; /* Adjust the size of the icon */
+}
+
+
+.article-content {
+    margin-top: 20px;
+}
+
+.comment-section {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #f4f4f4;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.comment {
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: white;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.comment p {
+    margin: 5px 0;
+}
+
+.comment-date {
+    font-size: 0.85em;
+    color: #666;
+}
+
+.comment-input {
+    width: 100%;
+    height: 100px;
+    margin-top: 10px;
+    padding: 8px;
+}
+
+.submit-comment {
+    display: block;
+    margin-top: 10px;
+    padding: 8px 16px;
+    background-color: #4a90e2;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+
+

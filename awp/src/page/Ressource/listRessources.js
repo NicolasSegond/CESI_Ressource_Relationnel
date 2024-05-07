@@ -175,9 +175,9 @@ function ListRessources({}) {
             ) : (
                 <div>
                     {data.map(ressource => (
-
                         <CardRessource
                             key={ressource['@id']}
+                            id={ressource.id}
                             imageUrl={`http://127.0.0.1:8000/images/book/${ressource.miniature}`}
                             title={ressource.titre}
                             description={ressource.contenu}
