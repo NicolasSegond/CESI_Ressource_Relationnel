@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import Logo from "../../assets/logo.png";
-import { Link } from "react-router-dom";
+import {Link} from "react-router-dom";
 import IosShareIcon from '@mui/icons-material/IosShare';
 import StarIcon from '@mui/icons-material/Star';
 import DashboardIcon from '@mui/icons-material/Dashboard';
@@ -34,7 +34,7 @@ const SideBar = ({ isOpen, toggleSidebar, token }) => {
         { icon: <LibraryBooksIcon className={"icon"} />, texte: "Catalogue des ressources", chemin: "/ressource/lists" },
         { icon: <IosShareIcon className={"icon"} />, texte: "Fichiers partagés", chemin: "/inscription", tokenNecessaire: true },
         { icon: <StarIcon className={"icon"} />, texte: "Favoris", chemin: "/inscription", tokenNecessaire: true },
-        { icon: <IosShareIcon className={"icon"} />, texte: "Administration", chemin: "/inscription", tokenNecessaire: true, estAdmin: true },
+        { icon: <IosShareIcon className={"icon"} />, texte: "Administration", chemin: "/admin/dashboard", tokenNecessaire: true, estAdmin: true },
         { icon: <PersonIcon className={"icon"} />, texte: "Mon Profil", chemin: "/profile", tokenNecessaire: true, userRole: "ROLE_USER" },
         { icon: <ExitToAppIcon className={"icon"} />, texte: "Déconnexion", chemin: "/deconnexion", tokenNecessaire: true },
     ];

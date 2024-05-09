@@ -2,11 +2,12 @@
 
 namespace App\Controller;
 
+use App\Entity\Ressource;
+use App\Entity\Statut;
 use App\Repository\RessourceRepository;
 use App\Repository\UtilisateurRepository;
 use App\Service\EmailService;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\Statut;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -15,13 +16,129 @@ class RessourceController extends AbstractController
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private RessourceRepository $ressourceRepository,
-        private UtilisateurRepository $utilisateurRepository,
-        private EmailService $emailService
+        private RessourceRepository    $ressourceRepository,
+        private UtilisateurRepository  $utilisateurRepository,
+        private EmailService           $emailService
     )
     {
     }
 
+    public function dashboardAdmin(Request $request)
+    {
+        // Définir la localisation en français
+        setlocale(LC_TIME, 'fr_FR.utf8', 'fr_FR', 'fr');
+
+        // Récupérer les dates sélectionnées depuis la requête
+        // Valider et nettoyer les paramètres de date d'entrée
+        $data = $request->query->all();
+
+        $startDate = isset($data['dateCreation']['before']) ? $data['dateCreation']['after'] : null;
+        $endDate = isset($data['dateCreation']['after']) ? $data['dateCreation']['before'] : null;
+
+        $startDateObj = $startDate ? new \DateTimeImmutable($startDate) : new \DateTimeImmutable();
+        $endDateObj = $endDate ? new \DateTimeImmutable($endDate) : new \DateTimeImmutable();
+
+        $startDateObj = $startDateObj->format('Y-m-d');
+        $endDateObj = $endDateObj->format('Y-m-d');
+        // Récupérer la catégorie sélectionnée depuis la requête
+        $selectedCategory = $data['categorie'] ?? null;
+
+        // Requête SQL pour récupérer le nombre de ressources créées par mois
+        $queryBuilder = $this->entityManager->createQueryBuilder()
+            ->select("SUBSTRING(r.dateCreation, 6, 2) as moisCreation, COUNT(r.id) as count")
+            ->from(Ressource::class, 'r')
+            ->where("r.dateCreation BETWEEN :startDate AND :endDate")
+            ->setParameter("startDate", $startDateObj)
+            ->setParameter("endDate", $endDateObj);
+
+        // Filtrer par catégorie si elle est définie
+        if ($selectedCategory) {
+            $queryBuilder->andWhere("r.categorie = :category")
+                ->setParameter("category", $selectedCategory);
+        }
+
+        $query = $queryBuilder->groupBy("moisCreation")
+            ->orderBy("moisCreation", "ASC")
+            ->getQuery();
+
+        $result = $query->getResult();
+
+        // Convertir le numéro de mois en nom de mois en français
+        foreach ($result as &$row) {
+            $numMois = intval($row['moisCreation']);
+            $nomMois = strftime("%B", mktime(0, 0, 0, $numMois, 1));
+            $row['moisCreation'] = ucfirst($nomMois); // Met en majuscule la première lettre du mois
+        }
+
+        // Ajout de la récupération du nombre d'utilisateurs selon leur statut de vérification
+        $verifiedUsersCount = $this->utilisateurRepository->findBy(['verif' => 1]);
+        $unverifiedUsersCount = $this->utilisateurRepository->findBy(['verif' => 0]);
+        $pendingVerificationUsersCount = $this->utilisateurRepository->findBy(['verif' => 2]);
+
+        // Récupérer les ressources validées créées entre les deux dates
+        $ressourceValideQueryBuilder = $this->ressourceRepository->createQueryBuilder('r')
+            ->where('r.statut = :statut')
+            ->andWhere('r.dateCreation >= :startDate')
+            ->andWhere('r.dateCreation <= :endDate')
+            ->setParameter('statut', 1)
+            ->setParameter('startDate', $startDateObj)
+            ->setParameter('endDate', $endDateObj);
+
+        // Filtrer par catégorie si elle est définie
+        if ($selectedCategory) {
+            $ressourceValideQueryBuilder->andWhere('r.categorie = :category')
+                ->setParameter('category', $selectedCategory);
+        }
+
+        $ressourceValide = $ressourceValideQueryBuilder->getQuery()->getResult();
+
+        // Récupérer les ressources en attente créées entre les deux dates
+        $ressourceEnAttenteQueryBuilder = $this->ressourceRepository->createQueryBuilder('r')
+            ->where('r.statut = :statut')
+            ->andWhere('r.dateCreation >= :startDate')
+            ->andWhere('r.dateCreation <= :endDate')
+            ->setParameter('statut', 2)
+            ->setParameter('startDate', $startDateObj)
+            ->setParameter('endDate', $endDateObj);
+
+        // Filtrer par catégorie si elle est définie
+        if ($selectedCategory) {
+            $ressourceEnAttenteQueryBuilder->andWhere('r.categorie = :category')
+                ->setParameter('category', $selectedCategory);
+        }
+
+        $ressourceEnAttente = $ressourceEnAttenteQueryBuilder->getQuery()->getResult();
+
+        // Récupérer les ressources refusées créées entre les deux dates
+        $ressourceRefuseQueryBuilder = $this->ressourceRepository->createQueryBuilder('r')
+            ->where('r.statut = :statut')
+            ->andWhere('r.dateCreation >= :startDate')
+            ->andWhere('r.dateCreation <= :endDate')
+            ->setParameter('statut', 3)
+            ->setParameter('startDate', $startDateObj)
+            ->setParameter('endDate', $endDateObj);
+
+        // Filtrer par catégorie si elle est définie
+        if ($selectedCategory) {
+            $ressourceRefuseQueryBuilder->andWhere('r.categorie = :category')
+                ->setParameter('category', $selectedCategory);
+        }
+
+        $ressourceRefuse = $ressourceRefuseQueryBuilder->getQuery()->getResult();
+
+        $response = [
+            'ressources' => $result,
+            'verifier' => count($verifiedUsersCount),
+            'non_verifier' => count($unverifiedUsersCount),
+            'bannis' => count($pendingVerificationUsersCount),
+            'ressource_valide' => count($ressourceValide),
+            'ressource_en_attente' => count($ressourceEnAttente),
+            'ressource_refuse' => count($ressourceRefuse)
+        ];
+
+
+        return $this->json($response);
+    }
 
     public function voir(Request $request)
     {
@@ -59,17 +176,17 @@ class RessourceController extends AbstractController
 
         $ressource = $this->ressourceRepository->find($request->attributes->get('id'));
 
-        if(!$ressource){
+        if (!$ressource) {
             throw new HttpException(404, "La ressource n'existe pas");
         }
 
         // Charger l'utilisateur correspondant à l'identifiant
         $utilisateur = $this->utilisateurRepository->find($id_utilisateur);
 
-        if($utilisateur){
+        if ($utilisateur) {
             // Ajouter l'utilisateur à la ressource
             $ressource->removeVoirRessource($utilisateur);
-        } else{
+        } else {
             throw new HttpException(404, "L'utilisateur n'existe pas");
         }
 

@@ -1,93 +1,383 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
+import Chart from 'chart.js/auto';
+import {Gauge, gaugeClasses} from '@mui/x-charts/Gauge';
 import {customFetch} from '../../utils/customFetch.js';
+import DataTable from "../../composants/Administration/Gestion/Ressource/dataTable";
+import apiConfig from "../../utils/config";
 import './Dashboard_admin.css';
-import EditIcon from '@mui/icons-material/Edit';
-import BlockIcon from '@mui/icons-material/Block';
-import ClearIcon from '@mui/icons-material/Clear';
+import {DateRange} from 'react-date-range';
+import 'react-date-range/dist/styles.css';
+import 'react-date-range/dist/theme/default.css';
+import CircularProgress from '@mui/material/CircularProgress';
+import TriComponent from "../../composants/Ressource/TriComponent";
+import {redirect, useLoaderData} from "react-router-dom";
 
 const DashboardAdmin = () => {
-    const [data, setData] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [page, setPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
-    const [sortDirection, setSortDirection] = useState('asc');
+        const [loading, setLoading] = useState(true);
+        const [totalRessources, setTotalRessources] = useState(null);
+        const [dataRessourceByVue, setDataRessourceByVue] = useState([]);
+        const [totalRessourcesNonValider, setTotalRessourcesNonValider] = useState(null);
+        const [totalUtilisateurs, setTotalUtilisateurs] = useState(null);
+        const [showCalendar, setShowCalendar] = useState(false);
+        const [selectedDateRange, setSelectedDateRange] = useState([
+            {
+                startDate: new Date(new Date().getFullYear(), 0, 1),
+                endDate: new Date(new Date().getFullYear(), 11, 31),
+                key: 'selection'
+            }
+        ]);
+        const [dataStatistique, setDataStatistique] = useState(null);
+        const userChartRef = useRef(null);
+        const ressourceChartRef = useRef(null);
+        const { options } = useLoaderData();
+        const [selectedCategory, setSelectedCategory] = useState(null);
+        const [selectedTypeRelation, setSelectedTypeRelation] = useState(null);
+        const [selectedTypeRessource, setSelectedTypeRessource] = useState(null);
+
+        const formatDate = (date) => {
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}-${month}-${year}`;
+        };
+
 
     useEffect(() => {
         const fetchData = async () => {
-            setLoading(true);
+            console.log("Fetching data...");
             try {
-                const response = await customFetch({url: `http://127.0.0.1:8000/api/ressources?page=${page}&statut=1`});
-                let fetchedData = response.data['hydra:member'];
+                let vueUrl = `${apiConfig.apiUrl}/api/ressources?page=1&order%5BnombreVue%5D=desc&dateCreation%5Bbefore%5D=${formatDate(selectedDateRange[0].endDate)}&dateCreation%5Bafter%5D=${formatDate(selectedDateRange[0].startDate)}`;
+                let nonValiderUrl = `${apiConfig.apiUrl}/api/ressources?statut=2&dateCreation%5Bbefore%5D=${formatDate(selectedDateRange[0].endDate)}&dateCreation%5Bafter%5D=${formatDate(selectedDateRange[0].startDate)}`;
+                let ressourceParMoisUrl = `${apiConfig.apiUrl}/api/dashboard_admin/ressourcesByMonth?dateCreation%5Bbefore%5D=${formatDate(selectedDateRange[0].endDate)}&dateCreation%5Bafter%5D=${formatDate(selectedDateRange[0].startDate)}`;
 
-                // Sort data by date
-                fetchedData.sort((a, b) => {
-                    const dateA = new Date(a.dateCreation);
-                    const dateB = new Date(b.dateCreation);
-                    return sortDirection === 'asc' ? dateA - dateB : dateB - dateA;
-                });
+                if (selectedCategory) {
+                    vueUrl += `&categorie=${selectedCategory}`;
+                    nonValiderUrl += `&categorie=${selectedCategory}`;
+                    ressourceParMoisUrl += `&categorie=${selectedCategory}`;
+                }
 
-                setData(fetchedData);
+                if (selectedTypeRelation) {
+                    vueUrl += `&typeRelations=${selectedTypeRelation}`;
+                    nonValiderUrl += `&typeRelations=${selectedTypeRelation}`;
+                    ressourceParMoisUrl += `&typeRelations=${selectedTypeRelation}`;
+                }
 
-                const lastPageUrl = response.data['hydra:view'] ? response.data['hydra:view']['hydra:last'] : null;
-                const totalPages = lastPageUrl ? extractTotalPages(lastPageUrl) : 1;
-                setTotalPages(totalPages); // Assuming 5 items per page
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            } finally {
+                if (selectedTypeRessource) {
+                    vueUrl += `&typeDeRessource=${selectedTypeRessource}`;
+                    nonValiderUrl += `&typeDeRessource=${selectedTypeRessource}`;
+                    ressourceParMoisUrl += `&typeDeRessource=${selectedTypeRessource}`;
+                }
+
+                const [vueData, nonValiderData, ressourceParMois, utilisateurData] = await Promise.all([
+                    customFetch({ url: vueUrl, method: 'GET', headers: { 'Content-Type': 'application/json' } }, true),
+                    customFetch({ url: nonValiderUrl, method: 'GET', headers: { 'Content-Type': 'application/json' } }, true),
+                    customFetch({ url: ressourceParMoisUrl, method: 'GET', headers: { 'Content-Type': 'application/json' } }, true),
+                    customFetch({ url: `${apiConfig.apiUrl}/api/utilisateurs`, method: 'GET', headers: { 'Content-Type': 'application/json' } }, true)
+                ]);
+
                 setLoading(false);
+
+                if (vueData && vueData.data) {
+                    setDataRessourceByVue(vueData.data['hydra:member']);
+                    setTotalRessources(vueData.data['hydra:totalItems']);
+                }
+
+                if (nonValiderData && nonValiderData.data) {
+                    setTotalRessourcesNonValider(nonValiderData.data['hydra:totalItems']);
+                }
+
+                if (utilisateurData && utilisateurData.data) {
+                    setTotalUtilisateurs(utilisateurData.data['hydra:totalItems']);
+                }
+
+                if (ressourceParMois && ressourceParMois.data) {
+                    setDataStatistique(ressourceParMois.data);
+                }
+
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                setLoading(false); // Handle error by setting loading to false
             }
         };
 
-        fetchData();
-    }, [page, sortDirection]);
+        setLoading(true);
+        fetchData(); // Initial call
+    }, [selectedDateRange, selectedCategory, selectedTypeRelation, selectedTypeRessource]);
 
-    const handlePageChange = (event, value) => {
-        setPage(value);
-    };
 
-    const handleSortChange = () => {
-        setSortDirection((prevDirection) => (prevDirection === 'asc' ? 'desc' : 'asc'));
-    };
+    useEffect(() => {
+            // Créer le pie chart pour le nombre d'utilisateurs
+            if (dataStatistique && userChartRef.current) {
+                // Destroy previous chart instance if exists
+                if (userChartRef.current.chart) {
+                    userChartRef.current.chart.destroy();
+                }
 
-    const extractTotalPages = (url) => {
-        const match = url.match(/page=(\d+)$/);
-        if (match && match[1]) {
-            return parseInt(match[1]);
-        }
-        return 1;
-    };
+                const ctx = userChartRef.current.getContext('2d');
+                userChartRef.current.chart = new Chart(ctx, {
+                    type: 'pie',
+                    width: 400,
+                    height: 400,
+                    data: {
+                        labels: ['Utilisateurs vérifiés', 'Utilisateurs non vérifiés', 'Utilisateurs bannis'],
+                        datasets: [{
+                            label: 'Nombre d\'utilisateurs',
+                            data: [dataStatistique['verifier'], dataStatistique['non_verifier'], dataStatistique['bannis']],
+                            backgroundColor: ['#36A2EB', '#FF6384', '#FFCE56']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+            }
+        }, [dataStatistique]);
 
-    const columns = [
-        {key: 'id', label: 'ID', sortable: true},
-        {key: 'titre', label: 'Titre', sortable: false},
-        {key: 'contenu', label: 'Contenu', sortable: false},
-        {key: 'dateCreation', label: 'Date de création', sortable: true},
-    ];
+        useEffect(() => {
+            // Créer le pie chart pour le nombre de ressources
+            if (dataStatistique && ressourceChartRef.current) {
+                // Destroy previous chart instance if exists
+                if (ressourceChartRef.current.chart) {
+                    ressourceChartRef.current.chart.destroy();
+                }
 
-    const actions = [
-        {label: 'Modifier', icon: <EditIcon/>, onClick: ''},
-        {label: 'Mettre en attente', icon: <BlockIcon/>, onClick: ''}, // Assurez-vous de fournir la fonction onClick appropriée
-        {label: 'Refuser', icon: <ClearIcon/>, onClick: ''} // Assurez-vous de fournir la fonction onClick appropriée
-    ];
+                const ctx = ressourceChartRef.current.getContext('2d');
+                ressourceChartRef.current.chart = new Chart(ctx, {
+                    type: 'pie',
+                    width: 400,
+                    height: 400,
+                    data: {
+                        labels: ['Ressources valides', 'Ressources en attente', 'Ressources refusées'],
+                        datasets: [{
+                            label: 'Nombre de ressources',
+                            data: [dataStatistique['ressource_valide'], dataStatistique['ressource_en_attente'], dataStatistique['ressource_refuse']],
+                            backgroundColor: ['#36A2EB', '#FF6384', '#FFCE56']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+            }
+        }, [dataStatistique]);
 
-    return (
-        <>
-            <div className={"containerstat"}>
-                <div className={"block-stat"}>
+        const dataParMois = dataStatistique ? dataStatistique['ressources'] : [];
 
+        console.log('dataParMois:', dataParMois);
+
+        useEffect(() => {
+            if (dataParMois.length > 0) {
+                const labels = dataParMois.map(item => item.moisCreation);
+                const data = dataParMois.map(item => item.count);
+
+                const ctx = document.getElementById('lineChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Nombre de ressources créées par mois',
+                            data: data,
+                            borderColor: 'rgb(75, 192, 192)',
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            pointRadius: 5,
+                            pointBackgroundColor: 'rgb(75, 192, 192)',
+                            tension: 0.1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.1)', // Couleur des lignes verticales
+                                    borderColor: 'transparent', // Couleur de la bordure des lignes verticales
+                                    tickLength: 0, // Longueur des lignes de la grille des x
+                                    borderDash: [3, 3] // Style de trait pour les lignes verticales
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false
+                            }
+                        },
+                        elements: {
+                            point: {
+                                radius: 5
+                            }
+                        }
+                    }
+                });
+
+            }
+        }, [dataStatistique]);
+
+        const handleShowCalendar = () => {
+            setShowCalendar(!showCalendar);
+        };
+
+        const handleSelect = (ranges) => {
+            setSelectedDateRange([ranges.selection]);
+            // You can use ranges.selection.startDate and ranges.selection.endDate to filter your data
+        };
+
+        const handleCategoryChange = (category) => {
+            setSelectedCategory(category);
+        };
+
+        const handleTypeRelationChange = (typeRelation) => {
+            setSelectedTypeRelation(typeRelation);
+        };
+
+        const handleTypeRessourceChange = (typeRessource) => {
+            setSelectedTypeRessource(typeRessource);
+        };
+
+        const columns = [
+            { label: 'Titre', field: 'titre' },
+            { label: 'Date de création', field: 'dateCreation', renderDate: true },
+            { label: 'Nombre de vue', field: 'nombreVue' },
+            { label: 'Propriétaire', render: row => `${row.proprietaire.nom} ${row.proprietaire.prenom}` },
+        ];
+
+        return (
+            <div className="dashboard-container">
+                <div className={"filter-container"}>
+                    <button className="calendar-button" onClick={handleShowCalendar}>
+                        {showCalendar ? 'Cacher le calendrier' : 'Afficher le calendrier'}
+                    </button>
+                    {showCalendar && (
+                        <div className="date-range-picker">
+                            <DateRange
+                                editableDateInputs={true}
+                                onChange={handleSelect}
+                                moveRangeOnFirstSelection={false}
+                                ranges={selectedDateRange}
+                            />
+                        </div>
+                    )}
+                    <TriComponent
+                        label="Catégories"
+                        categories={options.categories || []}
+                        onChangeTri={handleCategoryChange}
+                        aucunActif={true}
+                    />
+                    <TriComponent
+                        label="Type de relations"
+                        categories={options.relationTypes || []}
+                        onChangeTri={handleTypeRelationChange}
+                        aucunActif={true}
+                    />
+                    <TriComponent
+                        label="Type de ressources"
+                        categories={options.resourceTypes || []}
+                        onChangeTri={handleTypeRessourceChange}
+                        aucunActif={true}
+                    />
                 </div>
-                <div className={"block-stat"}>
-
+                <div className="containerstat">
+                    <div className="block-stat">
+                        <div className="title-stat">Nombre de ressources :</div>
+                        <div className="nb-ressources">
+                            {loading ? (
+                                <CircularProgress />
+                            ) : (
+                                <Gauge width={200} height={200} value={totalRessources} valueMin={0}
+                                       valueMax={totalRessources} />
+                            )}
+                        </div>
+                    </div>
+                    <div className="block-stat">
+                        <div className="title-stat">Nombre de ressources non validées :</div>
+                        <div className="chart">
+                            {loading ? (
+                                <CircularProgress />
+                            ) : (
+                                <Gauge
+                                    value={totalRessourcesNonValider}
+                                    startAngle={-110}
+                                    endAngle={110}
+                                    valueMax={totalRessources}
+                                    width={250}
+                                    height={250}
+                                    sx={{
+                                        [`& .${gaugeClasses.valueText}`]: {
+                                            fontSize: 30,
+                                            transform: 'translate(0px, 0px)',
+                                        },
+                                    }}
+                                    text={({ value, valueMax }) => `${value} / ${valueMax}`}
+                                />
+                            )}
+                        </div>
+                    </div>
+                    <div className="block-stat">
+                        <div className="title-stat">Nombre d'utilisateurs :</div>
+                        <div className={"chart"}>
+                            {loading ? (
+                                <CircularProgress />
+                            ) : (
+                                <canvas ref={userChartRef} width="400" height="250"></canvas>
+                            )}
+                        </div>
+                    </div>
+                    <div className="block-stat">
+                        <div className="title-stat">Nombre de ressources créées par mois :</div>
+                        <div className="chart">
+                            {loading ? (
+                                <CircularProgress />
+                            ) : (
+                                <div className="chart">
+                                    <canvas id="lineChart" width="600" height="300"></canvas>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                    <div className="block-stat">
+                        <div className="title-stat">Nombres de ressources  :</div>
+                        <div className="chart">
+                            {loading ? (
+                                <CircularProgress />
+                            ) : (
+                                <canvas ref={ressourceChartRef} width="400" height="250"></canvas>
+                            )}
+                        </div>
+                    </div>
                 </div>
-                <div className={"block-stat"}>
-
-                </div>
-                <div className={"block-stat"}>
-
+                <div className="datatable">
+                    <h2>Ressources les plus vues : </h2>
+                    <DataTable data={dataRessourceByVue} loading={loading} columns={columns} />
                 </div>
             </div>
-        </>
-    );
-};
+        );
+    };
 
-export default DashboardAdmin;
+    export default DashboardAdmin;
+
+    export async function loader() {
+        let {data, error} = await customFetch({
+            url: `${apiConfig.apiUrl}/api/options`,
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+        }, true);
+
+        if (error && error.message && error.message.includes('DECONNEXION NECCESSAIRE')) {
+            return redirect('/connexion');
+        }
+
+        return {
+            options: data,
+        };
+    }

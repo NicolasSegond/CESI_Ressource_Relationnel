@@ -3,6 +3,8 @@
 namespace App\ApiResource;
 
 use ApiPlatform\Doctrine\Orm\Filter\BooleanFilter;
+use ApiPlatform\Doctrine\Orm\Filter\DateFilter;
+use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Doctrine\Orm\State\Options;
 use ApiPlatform\Metadata\ApiFilter;
@@ -24,6 +26,9 @@ use Symfony\Component\Serializer\Attribute\Groups;
     operations: [
         new GetCollection(),
         new Get(),
+        new GetCollection(
+            uriTemplate: '/ressources/validees',
+        ),
         new Post(),
         new Delete(
             controller: RessourceController::class . '::delete',
@@ -65,6 +70,26 @@ use Symfony\Component\Serializer\Attribute\Groups;
     stateOptions: new Options(entityClass: Ressource::class),
 )]
 #[ApiResource(
+    shortName: 'DashboardAdmin',
+    operations: [
+        new GetCollection(
+            uriTemplate: '/dashboard_admin/ressourcesByMonth',
+            controller: RessourceController::class . '::dashboardAdmin',
+        ),
+        new Get(),
+    ],
+    normalizationContext: [
+        'groups' => ['ressource:read']
+    ],
+    denormalizationContext: [
+        'groups' => ['ressource:write']
+    ],
+    paginationItemsPerPage: 5,
+    provider: EntityToDtoStateProvider::class,
+    processor: DtoToEntityStateProcessor::class,
+    stateOptions: new Options(entityClass: Ressource::class),
+)]
+#[ApiResource(
     shortName: 'VoirRessource',
     operations: [
         new Post(uriTemplate: '/voir_ressources/{id}/voir', controller: RessourceController::class . '::voir'),
@@ -93,12 +118,14 @@ class RessourceAPI
     public ?string $contenu = null;
 
     #[Groups(['ressource:read', 'ressource:write', 'progression:read'])]
+    #[ApiFilter(DateFilter::class, properties: ['dateCreation'])]
     public ?\DateTimeInterface $dateCreation = null;
 
     #[Groups(['ressource:read', 'ressource:write', 'progression:read'])]
     public ?\DateTimeInterface $dateModification = null;
 
     #[Groups(['ressource:read', 'ressource:write', 'progression:read'])]
+    #[ApiFilter(OrderFilter::class, properties: ['nombreVue'])]
     public ?int $nombreVue = null;
 
     #[Groups(['ressource:read', 'ressource:write', 'progression:read'])]

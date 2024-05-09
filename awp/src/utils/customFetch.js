@@ -1,4 +1,4 @@
-import { addBearerToTheHeader, getToken, getTokenExpiration, refreshToken } from "./authentification";
+import {addBearerToTheHeader, getToken, getTokenExpiration, refreshToken} from "./authentification";
 
 let refreshTokenVar = undefined;
 
@@ -40,7 +40,6 @@ export async function customFetch(parametres, connecter = true) {
         reponse.statusCode = res.status;
 
         data = await res.json();
-        console.log("data", data);
         reponse.data = data;
 
         if (!res.ok) {
