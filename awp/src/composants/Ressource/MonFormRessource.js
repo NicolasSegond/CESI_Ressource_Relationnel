@@ -111,7 +111,8 @@ const MyForm = ({formData, onChange, onSubmit, buttonText, buttonDisabled}) => {
                                                         {selected.map((value) => (
                                                             <Chip
                                                                 key={value}
-                                                                label={field.options.find(option => option.id === value).name}
+                                                                label={(field.options.find(option => option.id === value) ?? { name: '' }).name}
+
                                                                 onDelete={() => field.onDelete(value)}
                                                                 deleteIcon={
                                                                     <CancelIcon
