@@ -389,7 +389,7 @@ class _CatalogueState extends State<Catalogue> {
                                           ),
                                           child: Image(
                                             image: NetworkImage(
-                                                "http://127.0.0.1:8000/images/book/" +
+                                                "${ApiConfig.apiUrl}/images/book/" +
                                                     album.getMiniature()!),
                                             height: 100,
                                             width: MediaQuery.of(context)
