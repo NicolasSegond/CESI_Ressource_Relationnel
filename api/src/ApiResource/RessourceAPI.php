@@ -68,7 +68,29 @@ use Symfony\Component\Serializer\Attribute\Groups;
     shortName: 'VoirRessource',
     operations: [
         new Post(uriTemplate: '/voir_ressources/{id}/voir', controller: RessourceController::class . '::voir'),
-        new Delete(uriTemplate: '/voir_ressources/{id}/voir', controller: RessourceController::class . '::nePlusVoir'),
+        new Delete(
+            uriTemplate: '/voir_ressources/{id}/voir',
+            controller: RessourceController::class . '::nePlusVoir',
+            openapiContext: [
+                'summary' => 'Ne plus voir une ressource',
+                'description' => 'Ne plus voir une ressource en la retirant de la liste des ressources vues.',
+                'requestBody' => [
+                    'content' => [
+                        'application/merge-patch+json' => [
+                            'schema' => [
+                                'type' => 'object',
+                                'properties' => [
+                                    'utilisateur_id' => [
+                                        'type' => 'string',
+                                        'description' => 'L\'email de l\'utilisateur qui retire la ressource de sa liste de vues.',
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ),
     ],
     denormalizationContext: [
         'groups' => ['voirressource:write']

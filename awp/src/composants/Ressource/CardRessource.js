@@ -1,8 +1,11 @@
-import React, { useState, useMemo } from 'react';
+import React, {useMemo, useRef, useState} from 'react';
 import './CardRessource.css';
 import Vu from "../../assets/vue.png";
 import Com from "../../assets/commentaire.png";
 import Menu from "../../assets/menu.png";
+import {Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField} from "@mui/material";
+import {customFetch} from "../../utils/customFetch";
+import apiConfig from "../../utils/config";
 
 function couleurAleatoire() {
     return '#' + Math.floor(Math.random() * 16777215).toString(16);
@@ -31,11 +34,16 @@ function formatDelai(date) {
     }
 }
 
-function Card({ imageUrl, title, description, vue, nom, prenom, date_creation, visibilite, typeRessource, typeRelations, categorie, nbCommentaire }) {
+function Card({ idRessource, imageUrl, title, description, proprietaire, vue, nom, prenom, date_creation, visibilite, typeRessource, typeRelations, categorie, nbCommentaire, voirRessource, idUser, userRoles }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isModalPartagerOpen, setIsModalPartagerOpen] = useState(false);
     const [modalContent, setModalContent] = useState(""); // Contenu du modal spécifique à chaque ressource
     const [color] = useState(useMemo(() => couleurAleatoire(), [])); // Calcul de la couleur une seule fois
     const [uniqueModalContent, setUniqueModalContent] = useState(""); // Contenu modal unique pour chaque ressource
+    const personnesPartageState = useState([]); // Utiliser un nom de variable différent pour l'état
+    const personnesPartage = personnesPartageState[0]; // Récupérer le tableau
+    const setPersonnesPartage = personnesPartageState[1]; // Récupérer la fonction pour mettre à jour le tableau
+    const personneInputRef = useRef(""); // Créer un ref pour l'entrée de texte
 
     const typeRelationLabels = typeRelations.map(typeRelation => (
         <span key={typeRelation['@id']} className="typeRelation">{typeRelation.libelle}</span>
@@ -48,6 +56,104 @@ function Card({ imageUrl, title, description, vue, nom, prenom, date_creation, v
         setUniqueModalContent(content); // Stocker le contenu modal unique pour cette ressource
     };
 
+    const personnesPartageMemo = useMemo(() => {
+        const personnes = [];
+        voirRessource.forEach(personne => {
+            personnes.push(`${personne.email}`);
+        });
+        return personnes;
+    }, [voirRessource]);
+
+    const handleClose = () => {
+        setIsModalPartagerOpen(false);
+    }
+
+    const handleOpenModalPartager = () => {
+        setIsModalPartagerOpen(true);
+    }
+
+    const ajouterPersonne = async () => {
+        let url = apiConfig.apiUrl + '/api/voir_ressources/' + idRessource + '/voir';
+
+        // Convertir la valeur de l'élément de texte en tableau
+        const voirRessourceArray = [personneInputRef.current.value];
+
+        const { data, error } = await customFetch({
+            url: url,
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                voirRessource: voirRessourceArray,
+            })
+        }, true);
+
+        if (error) {
+            console.error('Erreur lors de la récupération des ressources:', error);
+        } else {
+            handleClose();
+            window.location.reload();
+        }
+    }
+
+    const supprimerPersonne = async (personne) => {
+        let url = apiConfig.apiUrl + '/api/voir_ressources/' + idRessource + '/voir';
+
+        const {data, error} = await customFetch({
+            url: url,
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                utilisateur_id: personne,
+            })
+        }, true);
+
+        if (error) {
+            console.error('Erreur lors de la récupération des ressources:', error);
+        } else {
+            handleClose();
+            window.location.reload();
+        }
+    }
+
+    const DialogPartager = () => {
+        return (
+            <Dialog
+                open={isModalPartagerOpen}
+                onClose={handleClose}
+                aria-describedby="alert-dialog-slide-description"
+            >
+                <DialogTitle>{"Partager avec"}</DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-slide-description">
+                        <TextField
+                            label="Ajouter une personne"
+                            variant="outlined"
+                            inputRef={personneInputRef} // Attacher le ref à l'entrée de texte
+                            sx={{ marginTop: 1}}
+                        />
+                        {/* Liste des personnes avec les boutons pour ajouter/supprimer */}
+                        {personnesPartageMemo.map((personne, index) => (
+                            <div key={index}>
+                                <span>{personne}</span>
+                                <Button onClick={() => supprimerPersonne(personne)}>Supprimer</Button>
+                            </div>
+                        ))}
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    {/* Bouton pour ajouter une personne */}
+                    <Button onClick={ajouterPersonne}>Ajouter</Button>
+                    {/* Bouton pour fermer le modal */}
+                    <Button onClick={handleClose}>Fermer</Button>
+                </DialogActions>
+            </Dialog>
+        );
+    }
+
     return (
         <div className="card">
             <img src={imageUrl} alt={title} className="card-image" />
@@ -55,10 +161,15 @@ function Card({ imageUrl, title, description, vue, nom, prenom, date_creation, v
                 <div className={"card-header"}>
                     <h2 className="card-title">{title}</h2>
                     <div className="modal-container"> {/* Conteneur pour l'icône de menu et la modal */}
+                        {idUser && (
                         <img src={Menu} alt={"voir plus logo"} onClick={() => toggleModal(description)} />
+                        )}
                         {isModalOpen && (
                             <div className="modal" onClick={() => setIsModalOpen(false)}>
                                 <a> Mettre en favoris la ressource </a>
+                                { proprietaire.id == idUser && (
+                                    <a onClick={handleOpenModalPartager}> Partager la ressource </a>
+                                )}
                             </div>
                         )}
                     </div>
@@ -71,7 +182,7 @@ function Card({ imageUrl, title, description, vue, nom, prenom, date_creation, v
                     </div>
                     <div className="description">
                         <div className="info">
-                            <div className={"pdp-utilisateur"} style={{backgroundColor: color}}> {nom[0].toUpperCase()} {prenom[0].toUpperCase()}</div>
+                            <div className={"pdp-utilisateur"} style={{ backgroundColor: color }}> {nom[0].toUpperCase()} {prenom[0].toUpperCase()}</div>
                             <div className={"info-utilisateur"}>
                                 <p>{nom} {prenom}</p>
                                 <p>{delai}</p>
@@ -79,17 +190,18 @@ function Card({ imageUrl, title, description, vue, nom, prenom, date_creation, v
                         </div>
                         <div className="logo-container">
                             <div className="card-logo">
-                                <img src={Vu} alt={"Vues"}/>
+                                <img src={Vu} alt={"Vues"} />
                                 <p>{vue} Vues</p>
                             </div>
                             <div className="card-logo">
-                                <img src={Com} alt={"Commentaires"}/>
+                                <img src={Com} alt={"Commentaires"} />
                                 <p>{nbCommentaire} Commentaires</p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+            <DialogPartager/>
         </div>
     );
 }

@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, {useEffect, useState} from 'react';
 import Pagination from "../../composants/General/PaginationGlobal";
 import CardRessource from "../../composants/Ressource/CardRessource";
-import { customFetch } from "../../utils/customFetch";
-import { useLoaderData } from "react-router-dom";
+import {customFetch} from "../../utils/customFetch";
+import {useLoaderData} from "react-router-dom";
 import TriComponent from "../../composants/Ressource/TriComponent";
-import { getIdUser, getTokenDisconnected } from "../../utils/authentification";
+import {getIdUser, getRolesUser, getTokenDisconnected} from "../../utils/authentification";
 import styles from './listRessources.module.css';
 
 function ListRessources({ }) {
@@ -17,6 +17,19 @@ function ListRessources({ }) {
     const [currentPage, setCurrentPage] = useState(1);
     const token = getTokenDisconnected();
     const connectUser = token ? getIdUser(token) : null;
+    const [userRoles, setUserRoles] = useState([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            if (token && connectUser) {
+                const rolesUser = await getRolesUser(connectUser);
+                setUserRoles(rolesUser);
+            }
+        };
+
+        fetchData();
+
+    }, []);
 
     const visibilite = [
         { libelle: 'Public', id: 1 },
@@ -174,12 +187,13 @@ function ListRessources({ }) {
             ) : (
                 <div>
                     {data.map(ressource => (
-
                         <CardRessource
                             key={ressource['@id']}
+                            idRessource={ressource['id']}
                             imageUrl={`http://127.0.0.1:8000/images/book/${ressource.miniature}`}
                             title={ressource.titre}
                             description={ressource.contenu}
+                            proprietaire = {ressource.proprietaire}
                             vue = {ressource.nombreVue}
                             nom = {ressource.proprietaire.nom}
                             prenom = {ressource.proprietaire.prenom}
@@ -189,6 +203,9 @@ function ListRessources({ }) {
                             typeRelations ={ressource.typeRelations}
                             categorie = {ressource.categorie.nom}
                             nbCommentaire = {ressource.commentaires.length}
+                            voirRessource = {ressource.voirRessource}
+                            idUser = {connectUser}
+                            userRoles = {userRoles}
                         />
                     ))}
                     <br /><br />
