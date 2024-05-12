@@ -12,6 +12,7 @@ import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:ressources_re_mobile/utilities/customFetch.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../utilities/apiConfig.dart';
 
 
 
@@ -86,7 +87,7 @@ class _Ressources_pageState extends State<Ressources_page> {
     });
     try {
       final response = await http.get(
-        Uri.parse('http://127.0.0.1:8000/api/ressources/$idRessource'),
+        Uri.parse('${ApiConfig.apiUrl}/api/ressources/$idRessource'),
         headers: {'Content-Type': 'application/json'},
       );
 
@@ -116,7 +117,7 @@ class _Ressources_pageState extends State<Ressources_page> {
 
   Future<void> fetchCommentaires() async {
     final response = await customFetch({
-      'url': 'http://127.0.0.1:8000/api/commentaires/${uneRessource!.getId()}/ressources?page=${indexPage}&order%5Bdate%5D=desc',
+      'url': '${ApiConfig.apiUrl}/api/commentaires/${uneRessource!.getId()}/ressources?page=${indexPage}&order%5Bdate%5D=desc',
       'method': 'GET',
       'headers': {
         'Content-Type': 'application/json',
@@ -176,7 +177,7 @@ class _Ressources_pageState extends State<Ressources_page> {
     };
 
     var response = await http.post(
-      Uri.parse('http://127.0.0.1:8000/api/commentaires'),
+      Uri.parse('${ApiConfig.apiUrl}/api/commentaires'),
       headers: <String, String>{
         'Content-Type': 'application/ld+json',
       },
@@ -226,7 +227,7 @@ Widget build(BuildContext context) {
               alignment: Alignment.topLeft,
               children: [
                 Image(
-                  image: NetworkImage("http://127.0.0.1:8000/images/book/" + (uneRessource?.getMiniature() ?? '')),
+                  image: NetworkImage("${ApiConfig.apiUrl}/images/book/" + (uneRessource?.getMiniature() ?? '')),
                   height: 220,
                   width: MediaQuery.of(context).size.width,
                   fit: BoxFit.cover,
@@ -562,7 +563,7 @@ Widget build(BuildContext context) {
                                   itemCount: uneRessource?.fichiers?.length ?? 0,
                                   itemBuilder: (context, index) {
                                     // Construction de l'URL du fichier
-                                    String url = 'http://127.0.0.1:8000/images/book/${uneRessource?.fichiers?[index]?.nom}';
+                                    String url = '${ApiConfig.apiUrl}/images/book/${uneRessource?.fichiers?[index]?.nom}';
                                     Uri uri = Uri.parse(url); // Convertit la chaîne de caractères en objet Uri
                                     return ListTile(
                                       leading: Icon(Icons.attach_file), // Icône pour chaque fichier
