@@ -72,22 +72,22 @@ class Ressource {
     this.dateCreation = dateCreation;
   }
 
-String? getDateModification() {
-  if (dateModification != null) {
-    Duration difference = DateTime.now().difference(dateModification!);
-    if (difference.inDays == 0) {
-      return 'Modifié aujourd\'hui';
-    } else if (difference.inDays == 1) {
-      return 'Modifié hier';
-    } else if (difference.inDays < 30) {
-      return 'Modifié il y a ${difference.inDays} jours';
+  String? getDateModification() {
+    if (dateModification != null) {
+      Duration difference = DateTime.now().difference(dateModification!);
+      if (difference.inDays == 0) {
+        return 'Modifié aujourd\'hui';
+      } else if (difference.inDays == 1) {
+        return 'Modifié hier';
+      } else if (difference.inDays < 30) {
+        return 'Modifié il y a ${difference.inDays} jours';
+      } else {
+        return 'Modifié le ' + DateFormat('dd-MM-yyyy').format(dateModification!);
+      }
     } else {
-      return 'Modifié le ' + DateFormat('dd-MM-yyyy').format(dateModification!);
+      return null;
     }
-  } else {
-    return null;
   }
-}
 
 
   void setDateModification(DateTime dateModification) {
@@ -243,26 +243,51 @@ String? getDateModification() {
     this.miniature = miniature;
   }
 
-  Ressource.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    titre = json['titre'];
-    miniature = json['miniature'];
-    contenu = json['contenu'];
-    dateCreation = DateTime.parse(json['dateCreation']);
-    dateModification = DateTime.parse(json['dateModification']);
-    nombreVue = json['nombreVue'];
-    proprietaire = Utilisateur.fromJson(json['proprietaire']);
-    statut = Statut.fromJson(json['statut']);
-    visibilite = Visibilite.fromJson(json['visibilite']);
-    typeDeRessource = TypeDeRessource.fromJson(json['typeDeRessource']);
-    for (var typeRelation in json['typeRelations']) {
-      typeRelations.add(TypeRelation.fromJson(typeRelation));
-    }
-    categorie = Categorie.fromJson(json['categorie']);
+    Ressource.fromJson(Map<String, dynamic> json) {
+      id = json['id'];
+      titre = json['titre'];
+      miniature = json['miniature'];
+      contenu = json['contenu'];
+      dateCreation = json['dateCreation'] != null ? DateTime.parse(json['dateCreation']) : null;
+      dateModification = json['dateModification'] != null ? DateTime.parse(json['dateModification']) : null;
+      nombreVue = json['nombreVue'];
+      proprietaire = json['proprietaire'] != null ? Utilisateur.fromJson(json['proprietaire']) : null;
+      statut = json['statut'] != null ? Statut.fromJson(json['statut']) : null;
+      visibilite = json['visibilite'] != null ? Visibilite.fromJson(json['visibilite']) : null;
+      typeDeRessource = json['typeDeRessource'] != null ? TypeDeRessource.fromJson(json['typeDeRessource']) : null;
+      
+      if (json['typeRelations'] != null) {
+        for (var typeRelationJson in json['typeRelations']) {
+          typeRelations.add(TypeRelation.fromJson(typeRelationJson));
+        }
+      }
+      
+      categorie = json['categorie'] != null ? Categorie.fromJson(json['categorie']) : null;
+      
+      if (json['commentaires'] != null) {
+        for (var commentaireJson in json['commentaires']) {
+          commentaires.add(Commentaire.fromJson(commentaireJson));
+        }
+      }
 
-    for (var commentaire in json['commentaires']) {
-      commentaires.add(Commentaire.fromJson(commentaire));
-    }
+      if (json['progressions'] != null) {
+        for (var progressionJson in json['progressions']) {
+          progressions.add(Progression.fromJson(progressionJson));
+        }
+      }
 
+      if (json['voirRessources'] != null) {
+        for (var voirRessourceJson in json['voirRessources']) {
+          voirRessources.add(VoirRessource.fromJson(voirRessourceJson));
+        }
+      }
+
+      if (json['fichiers'] != null) {
+        for (var fichierJson in json['fichiers']) {
+          fichiers.add(Fichier.fromJson(fichierJson));
+        }
+      }
   }
+
+
 }

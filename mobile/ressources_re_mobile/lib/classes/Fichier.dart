@@ -49,9 +49,14 @@ class Fichier {
 
   Fichier.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    ressource = json['ressource'];
     nom = json['nom'];
     size = json['size'];
-    date = json['date'];
+    date = json['date'] != null ? DateTime.parse(json['date']) : null;
+    
+    // Vérifiez si 'ressource' est null avant de créer l'objet Ressource correspondant
+    ressource = json['ressource'] != null ? Ressource.fromJson(json['ressource']) : null;
   }
+
+
+
 }

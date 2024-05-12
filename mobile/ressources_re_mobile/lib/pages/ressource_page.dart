@@ -11,6 +11,8 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:ressources_re_mobile/utilities/customFetch.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 
 
 class Ressources_page extends StatefulWidget {
@@ -42,6 +44,15 @@ class _Ressources_pageState extends State<Ressources_page> {
       remainingCharacters = maxLength - value.length; // Mettre à jour le nombre de caractères restants
     });
   }
+
+  void _launchUrl(Uri url) async {
+    if (await canLaunchUrl(url)) { // Utilisez canLaunchUrl pour vérifier si l'URL peut être ouverte
+      await launchUrl(url); // Utilisez launchUrl au lieu de launch
+    } else {
+      throw 'Could not launch $url'; // Gère les erreurs si l'URL ne peut pas être ouverte
+    }
+  }
+
 
   @override
   void initState() {
@@ -530,10 +541,55 @@ Widget build(BuildContext context) {
                                 ),
                               ),
                             ),
+                            Padding(
+                              padding: EdgeInsets.fromLTRB(0, 16, 0, 0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Fichiers",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18,
+                                      color: Color.fromRGBO(3, 152, 158, 1),
+                                    ),
+                                  ),
+                                  SizedBox(height: 8),
+                                  // Liste des fichiers dans une ListView
+                                 ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: NeverScrollableScrollPhysics(),
+                                  itemCount: uneRessource?.fichiers?.length ?? 0,
+                                  itemBuilder: (context, index) {
+                                    // Construction de l'URL du fichier
+                                    String url = 'http://127.0.0.1:8000/images/book/${uneRessource?.fichiers?[index]?.nom}';
+                                    Uri uri = Uri.parse(url); // Convertit la chaîne de caractères en objet Uri
+                                    return ListTile(
+                                      leading: Icon(Icons.attach_file), // Icône pour chaque fichier
+                                      title: Text(
+                                        uneRessource?.fichiers?[index]?.nom ?? '',
+                                        style: TextStyle(
+                                          color: Colors.blue, // Couleur de lien
+                                          decoration: TextDecoration.underline, // Souligner le texte
+                                        ),
+                                      ),
+                                      onTap: () {
+                                        _launchUrl(uri);
+                                        // Ouvrir le fichier en cliquant sur son nom
+                                        // Ouverture du fichier (vous pouvez utiliser la bibliothèque url_launcher)
+                                      },
+                                       
+                                      );
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
                           ],
                         ),
                       ),
                     ),
+                    
                   ),
                 ),
               ],
