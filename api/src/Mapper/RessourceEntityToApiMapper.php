@@ -4,6 +4,7 @@ namespace App\Mapper;
 
 use App\ApiResource\CategorieAPI;
 use App\ApiResource\CommentaireAPI;
+use App\ApiResource\ProgressionAPI;
 use App\ApiResource\RessourceAPI;
 use App\ApiResource\StatutAPI;
 use App\ApiResource\TypeDeRessourceAPI;
@@ -11,6 +12,7 @@ use App\ApiResource\TypeRelationAPI;
 use App\ApiResource\UtilisateurAPI;
 use App\ApiResource\VisibiliteAPI;
 use App\Entity\Commentaire;
+use App\Entity\Progression;
 use App\Entity\Ressource;
 use App\Entity\TypeRelation;
 use App\Entity\Utilisateur;
@@ -93,6 +95,12 @@ class RessourceEntityToApiMapper implements MapperInterface
                 MicroMapperInterface::MAX_DEPTH => 3,
             ]);
         }, $entity->getCommentaires()->getValues());
+
+        $dto->progressions = array_map(function (Progression $progression) {
+            return $this->microMapper->map($progression, ProgressionAPI::class, [
+                MicroMapperInterface::MAX_DEPTH => 1,
+            ]);
+        }, $entity->getProgressions()->getValues());
 
         $dto->voirRessource = array_map(function (Utilisateur $utilisateur) {
             return $this->microMapper->map($utilisateur, UtilisateurAPI::class, [

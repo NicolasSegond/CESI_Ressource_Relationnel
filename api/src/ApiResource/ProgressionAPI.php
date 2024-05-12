@@ -23,20 +23,21 @@ use Symfony\Component\Serializer\Attribute\Groups;
     normalizationContext: [
         'groups' => ['progression:read']
     ],
+    paginationItemsPerPage: 5,
     provider: EntityToDtoStateProvider::class, # GET, GET collection
     processor: DtoToEntityStateProcessor::class, # POST, PUT, PATCH
     stateOptions: new Options(entityClass: Progression::class),
 )]
 class ProgressionAPI
 {
-    #[Groups(['progression:read'])]
+    #[Groups(['progression:read', 'ressource:read'] )]
     public ?int $id = null;
 
-    #[Groups(['progression:read'])]
+    #[Groups(['progression:read', 'ressource:read'])]
     #[ApiFilter(SearchFilter::class, strategy: "exact")]
     public ?TypeProgressionAPI $TypeProgression = null;
 
-    #[Groups(['progression:read'])]
+    #[Groups(['progression:read', 'ressource:read'])]
     #[ApiFilter(SearchFilter::class, strategy: "exact")]
     public ?UtilisateurAPI $Utilisateur = null;
 

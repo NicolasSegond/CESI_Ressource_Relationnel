@@ -118,6 +118,44 @@ function Card({ idRessource, imageUrl, title, description, proprietaire, vue, no
             window.location.reload();
         }
     }
+    const [isFavorited, setIsFavorited] = useState(false); // État pour gérer si la ressource est en favoris ou non
+
+    const mettreEnFavoris = async () => {
+        try {
+            const { data, error } = await customFetch({
+                url: `${apiConfig.apiUrl}/api/progressions`, // Utiliser l'ID dans l'URL
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/ld+json',
+                },
+                body: JSON.stringify({
+                    TypeProgression: '/api/type_progressions/1', // Assurez-vous d'utiliser le bon ID de type de progression
+                    Utilisateur: `/api/utilisateurs/${idUser}`, // Remplacez idUser par l'ID de l'utilisateur actuel
+                    Ressource: `/api/ressources/${idRessource}`, // Remplacez idRessource par l'ID de la ressource actuelle
+                })
+            }, true);
+
+            if (error) {
+                console.error('Erreur lors de la mise en favoris de la ressource:', error);
+            } else {
+                // Mettre à jour l'état pour refléter que la ressource est maintenant en favoris
+                setIsFavorited(true);
+                // Afficher un message de succès ou effectuer d'autres actions si nécessaire
+            }
+        } catch (error) {
+            console.error('Erreur lors de la mise en favoris de la ressource:', error);
+        }
+    };
+
+    const retirerDesFavoris = async () => {
+        try {
+            // Effectuez l'appel pour retirer la ressource des favoris ici
+            // Mettre à jour l'état pour refléter que la ressource n'est plus en favoris
+            setIsFavorited(false);
+        } catch (error) {
+            console.error('Erreur lors du retrait de la ressource des favoris:', error);
+        }
+    };
 
     const DialogPartager = () => {
         return (
@@ -162,14 +200,14 @@ function Card({ idRessource, imageUrl, title, description, proprietaire, vue, no
                     <h2 className="card-title">{title}</h2>
                     <div className="modal-container"> {/* Conteneur pour l'icône de menu et la modal */}
                         {idUser && (
-                        <img src={Menu} alt={"voir plus logo"} onClick={() => toggleModal(description)} />
+                            <img src={Menu} alt={"voir plus logo"} onClick={() => toggleModal(description)} />
                         )}
                         {isModalOpen && (
                             <div className="modal" onClick={() => setIsModalOpen(false)}>
-                                <a> Mettre en favoris la ressource </a>
-                                { proprietaire.id == idUser && (
-                                    <a onClick={handleOpenModalPartager}> Partager la ressource </a>
-                                )}
+                                {/* Utilisez isFavorited pour afficher le bon libellé du bouton */}
+                                <a onClick={isFavorited ? retirerDesFavoris : mettreEnFavoris}>
+                                    {isFavorited ? "Retirer des favoris" : "Mettre en favoris la ressource"}
+                                </a>
                             </div>
                         )}
                     </div>

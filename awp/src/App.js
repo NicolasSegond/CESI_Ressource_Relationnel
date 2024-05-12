@@ -12,6 +12,8 @@ import ListRessources, {loader as GetDefaultList} from "./page/Ressource/listRes
 import Admin from "./page/Administration/RootAdmin";
 import AdminDashboard from "./page/Administration/DashboardAdmin";
 import GestionAdmin from "./page/Administration/Gestion/GestionAdmin";
+import ListFavorie from "./composants/Dashboard/ListTypeProgression";
+import Dashboard from "./page/DashBoardUser/Dashboard";
 
 function App() {
     const router = createBrowserRouter([
@@ -32,6 +34,11 @@ function App() {
                     path: '/ressource/lists',
                     element: <ListRessources/>,
                     loader: GetDefaultList
+                },
+                {
+                    path: '/DashBoard',
+                    element: <Dashboard/>,
+                    loader: AjoutLoader
                 },
                 {
                     path: '/admin',
