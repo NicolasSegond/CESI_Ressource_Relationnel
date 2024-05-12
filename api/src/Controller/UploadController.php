@@ -230,6 +230,6 @@ class UploadController extends AbstractController
         // Flush tous les changements une fois que toutes les images ont été traitées
         $entityManager->flush();
 
-        return $this->json(['message' => 'Files uploaded successfully'], Response::HTTP_CREATED);
+        return $this->json(['message' => 'Files uploaded successfully Upload EDIT'], Response::HTTP_CREATED);
     }
 }

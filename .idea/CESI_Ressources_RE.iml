@@ -79,7 +79,6 @@
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/symfony/stopwatch" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/symfony/string" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/symfony/translation-contracts" />
-      <excludeFolder url="file://$MODULE_DIR$/api/vendor/symfony/twig-bridge" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/symfony/twig-bundle" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/symfony/validator" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/symfony/var-dumper" />
@@ -87,7 +86,6 @@
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/symfony/web-link" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/symfony/yaml" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/symfonycasts/micro-mapper" />
-      <excludeFolder url="file://$MODULE_DIR$/api/vendor/twig/twig" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/webmozart/assert" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/willdurand/negotiation" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/gesdinet/jwt-refresh-token-bundle" />

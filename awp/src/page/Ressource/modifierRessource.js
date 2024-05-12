@@ -198,9 +198,6 @@ function ModifierRessource() {
                 requestBody.miniature = miniature.current.files[0].name;
                 formData.append('miniature[]', miniature.current.files[0]); // Ajouter la miniature au FormData
             }
-            else {
-                formData.append('miniature[]', ressource.miniature);
-            }
 
             // Vérifier si de nouvelles pièces jointes ont été ajoutées
             const files = piece_jointes.current.files;
