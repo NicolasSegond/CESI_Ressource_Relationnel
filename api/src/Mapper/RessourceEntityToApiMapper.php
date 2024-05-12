@@ -4,6 +4,7 @@ namespace App\Mapper;
 
 use App\ApiResource\CategorieAPI;
 use App\ApiResource\CommentaireAPI;
+use App\ApiResource\FichierAPI;
 use App\ApiResource\RessourceAPI;
 use App\ApiResource\StatutAPI;
 use App\ApiResource\TypeDeRessourceAPI;
@@ -11,9 +12,11 @@ use App\ApiResource\TypeRelationAPI;
 use App\ApiResource\UtilisateurAPI;
 use App\ApiResource\VisibiliteAPI;
 use App\Entity\Commentaire;
+use App\Entity\Fichier;
 use App\Entity\Ressource;
 use App\Entity\TypeRelation;
 use App\Entity\Utilisateur;
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfonycasts\MicroMapper\AsMapper;
 use Symfonycasts\MicroMapper\MapperInterface;
 use Symfonycasts\MicroMapper\MicroMapperInterface;
@@ -99,6 +102,17 @@ class RessourceEntityToApiMapper implements MapperInterface
                 MicroMapperInterface::MAX_DEPTH => 1,
             ]);
         }, $entity->getVoirRessource()->getValues());
+
+        // Transformez les éléments du tableau en utilisant array_map
+        $fichierAPIs = array_map(function (Fichier $fichier) {
+            return $this->microMapper->map($fichier, FichierAPI::class, [
+                MicroMapperInterface::MAX_DEPTH => 1,
+            ]);
+        }, $entity->getFichiers()->toArray());
+        $fichierCollection = new ArrayCollection($fichierAPIs);
+        $dto->fichiers = $fichierCollection;
+
+
 
         // Retourne l'API Utilisateur mise à jour.
         return $dto;

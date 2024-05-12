@@ -16,6 +16,7 @@ use App\Controller\RessourceController;
 use App\Entity\Ressource;
 use App\State\DtoToEntityStateProcessor;
 use App\State\EntityToDtoStateProvider;
+use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Serializer\Attribute\Groups;
 
 
@@ -138,4 +139,7 @@ class RessourceAPI
 
     #[Groups(['ressource:read'])]
     public array $progressions = [];
+
+    #[Groups(['ressource:read', 'ressource:write'])]
+    public Collection $fichiers;
 }
