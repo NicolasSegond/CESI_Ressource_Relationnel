@@ -1,3 +1,10 @@
+Version 1.0.3 - 13 mai 2024
+
+- Page favoris et mise de côté
+- Fix bug
+- Flutter : Contenu d'une ressource
+- React : Dashboard Administrateur
+
 Version 1.0.2 - 29 avril 2024
 
 - Liste des ressources react et flutter
