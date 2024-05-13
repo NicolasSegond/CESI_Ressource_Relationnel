@@ -3,7 +3,6 @@
 import 'package:ressources_re_mobile/classes/Commentaire.dart';
 import 'package:ressources_re_mobile/classes/Progression.dart';
 import 'package:ressources_re_mobile/classes/Ressource.dart';
-import 'package:ressources_re_mobile/classes/VoirRessource.dart';
 
 class Utilisateur {
   int? id;
@@ -17,7 +16,6 @@ class Utilisateur {
   List<Ressource> proprietaireRessource = [];
   List<Commentaire> commentaires = [];
   List<Progression> progressions = [];
-  List<VoirRessource> voirRessources = [];
 
   Utilisateur();
 
@@ -142,25 +140,6 @@ class Utilisateur {
     if (this.progressions.remove(progression)) {
       if (progression.getUtilisateur() == this) {
         progression.setUtilisateur(null);
-      }
-    }
-  }
-
-  List<VoirRessource> getVoirRessources() {
-    return voirRessources;
-  }
-
-  void addVoirRessource(VoirRessource voirRessource) {
-    if (!this.voirRessources.contains(voirRessource)) {
-      this.voirRessources.add(voirRessource);
-      voirRessource.setUtilisateur(this);
-    }
-  }
-
-  void removeVoirRessource(VoirRessource voirRessource) {
-    if (this.voirRessources.remove(voirRessource)) {
-      if (voirRessource.getUtilisateur() == this) {
-        voirRessource.setUtilisateur(null);
       }
     }
   }

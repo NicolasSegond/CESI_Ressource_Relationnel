@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ressources_re_mobile/classes/Ressource.dart';
+import 'package:ressources_re_mobile/classes/Utilisateur.dart';
 import 'package:ressources_re_mobile/utilities/authentification.dart';
 import 'package:ressources_re_mobile/utilities/customFetch.dart';
 import 'package:ressources_re_mobile/utilities/apiConfig.dart';
@@ -42,7 +43,7 @@ class ModalOptions extends StatelessWidget {
   }
 
   void addToMiseDeCote(BuildContext context) async{
-Map<String, dynamic> response = await customFetchPost({
+    Map<String, dynamic> response = await customFetchPost({
       'url': ApiConfig.apiUrl + '/api/progressions',
       'method': 'POST',
       'headers': {
@@ -69,7 +70,6 @@ Map<String, dynamic> response = await customFetchPost({
       );
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -181,6 +181,37 @@ Map<String, dynamic> response = await customFetchPost({
                       ),
                     ),
                   ),
+                  SizedBox(height: 16),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.3),
+                          spreadRadius: 2,
+                          blurRadius: 5,
+                          offset: Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: TextButton(
+                      onPressed: () {
+                        Navigator.pop(dialogContext);
+                        _showShareResourceDialog(context); // Call function to show dialog
+                      },
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all<Color>(
+                            Colors.transparent),
+                      ),
+                      child: Text(
+                        'Partager la ressource',
+                        style: TextStyle(
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             );
@@ -189,4 +220,139 @@ Map<String, dynamic> response = await customFetchPost({
       },
     );
   }
+
+  
+  void _showShareResourceDialog(BuildContext context) {
+    List<String> selectedPeople = [];
+    TextEditingController personController = TextEditingController();
+
+    List<Utilisateur> voirRessources = ressource?.getVoirRessources() ?? [];
+
+    print('Ressources: ' + (ressource?.getVoirRessources()?.toString() ?? ''));
+
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text('Partager la ressource'),
+              content: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text('Choisissez les personnes à partager la ressource avec:'),
+                    SizedBox(height: 10),
+                    TextFormField(
+                      controller: personController,
+                      decoration: InputDecoration(
+                        labelText: 'Nom de la personne',
+                        hintText: 'Entrez le nom de la personne',
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Text('Personnes sélectionnées:'),
+                    SizedBox(height: 5),
+                    Wrap(
+                      spacing: 8.0,
+                      runSpacing: 4.0,
+                      children: [
+                        for (Utilisateur user in voirRessources)
+                          Chip(
+                            label: Text(user?.getEmail() ?? 'Email inconnu'),
+                            onDeleted: () async {
+                              await _supprimerPartager(user?.getEmail());
+                            },
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              actions: <Widget>[
+                TextButton(
+                   onPressed: () async {
+                    String person = personController.text.trim();
+                    if (person.isNotEmpty) {
+                      List<String> peopleList = [person];
+                      
+                      // Appeler la fonction pour ajouter les personnes sélectionnées
+                      await _ajouterPartager(context, ressource!, peopleList);
+                      Navigator.of(dialogContext).pop();
+                    }
+                  },
+                  child: Text('Ajouter'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(dialogContext).pop();
+                  },
+                  child: Text('Fermer'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
 }
+
+  Future<void> _supprimerPartager(BuildContext context, String userEmail) async {
+    Map<String, dynamic> requestBody = {
+      'voirRessource': userEmail,
+    };
+
+    Map<String, dynamic> response = await customFetchPost({
+      'url': ApiConfig.apiUrl + '/api/voir_ressources/${ressource.id}/voir',
+      'method': 'DELETE',
+      'headers': {
+        'Content-Type': 'application/json',
+      },
+      'body': jsonEncode(requestBody),
+    }, connecter: true);
+
+    if (response['error'] != '') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erreur : ' + response['error']),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Partage de la ressource effectué avec succès'),
+        ),
+      );
+    }
+  }
+  
+
+  Future<void> _ajouterPartager(BuildContext context, Ressource ressource, List<String> selectedPeople) async {
+    Map<String, dynamic> requestBody = {
+      'voirRessource': selectedPeople,
+    };
+
+    Map<String, dynamic> response = await customFetchPost({
+      'url': ApiConfig.apiUrl + '/api/voir_ressources/${ressource.id}/voir',
+      'method': 'POST',
+      'headers': {
+        'Content-Type': 'application/json',
+      },
+      'body': jsonEncode(requestBody),
+    }, connecter: true);
+
+    if (response['error'] != '') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erreur : ' + response['error']),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Partage de la ressource effectué avec succès'),
+        ),
+      );
+    }
+  }

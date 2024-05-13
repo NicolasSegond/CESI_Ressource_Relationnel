@@ -49,6 +49,8 @@ Future<Map<String, dynamic>> customFetch(Map<String, dynamic> parameters, {bool 
     data = res.body;
     response['data'] = data;
 
+    print(res.statusCode);
+
     if (res.statusCode != 200) {
       var responseData = jsonDecode(data);
 
@@ -143,7 +145,7 @@ Future<Map<String, dynamic>> customFetchPost(Map<String, dynamic> parameters, {b
     data = res.body;
     response['data'] = data;
 
-    if (res.statusCode != 201) {
+    if (res.statusCode != 200) {
       var responseData = jsonDecode(data);
 
       // Récupérer le code d'erreur s'il existe
@@ -174,7 +176,7 @@ Future<Map<String, dynamic>> customFetchPost(Map<String, dynamic> parameters, {b
         data = res.body;
         response['data'] = data;
 
-        if (res.statusCode != 201) {
+        if (res.statusCode != 200) {
           modifiedError = Exception('DECONNEXION NECESSAIRE - Token expiré même après rafraîchissement. ');
         }
       }

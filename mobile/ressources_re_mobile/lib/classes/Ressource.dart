@@ -26,7 +26,7 @@ class Ressource {
   Categorie? categorie;
   List<Commentaire> commentaires = [];
   List<Progression> progressions = [];
-  List<VoirRessource> voirRessources = [];
+  List<Utilisateur> voirRessources = [];
   List<Fichier> fichiers = [];
 
   Ressource();
@@ -197,23 +197,18 @@ String? getDateModification() {
     }
   }
 
-  List<VoirRessource> getVoirRessources() {
+  List<Utilisateur> getVoirRessources() {
     return voirRessources;
   }
 
-  void addVoirRessource(VoirRessource voirRessource) {
+  void addVoirRessource(Utilisateur voirRessource) {
     if (!voirRessources.contains(voirRessource)) {
       voirRessources.add(voirRessource);
-      voirRessource.setRessource(this);
     }
   }
 
-  void removeVoirRessource(VoirRessource voirRessource) {
-    if (voirRessources.remove(voirRessource)) {
-      if (voirRessource.getRessource() == this) {
-        voirRessource.setRessource(null);
-      }
-    }
+  void removeVoirRessource(Utilisateur voirRessource) {
+    voirRessources.remove(voirRessource);
   }
 
   List<Fichier> getFichiers() {
@@ -263,6 +258,14 @@ String? getDateModification() {
       typeRelations = [];
     }
     categorie = json['categorie'] != null ? Categorie.fromJson(json['categorie']) : null;
+
+    if(json['voirRessource'] != null){
+      for (var voirRessource in json['voirRessource']) {
+        voirRessources.add(Utilisateur.fromJson(voirRessource));
+      }
+    } else{
+      voirRessources = [];
+    }
 
     if(json['commentaires'] != null){
       for (var commentaire in json['commentaires']) {
