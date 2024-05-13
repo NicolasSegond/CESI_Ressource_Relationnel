@@ -161,7 +161,7 @@ class _CatalogueState extends State<Catalogue> {
       if(tokens != null){
         final id = await getIdUser(tokens!);
 
-      // Mettre à jour l'ID de l'utilisateur dans l'état de la page
+        // Mettre à jour l'ID de l'utilisateur dans l'état de la page
       setState(() {
         userId = id;
       });
@@ -293,13 +293,15 @@ class _CatalogueState extends State<Catalogue> {
                             hydraView.id == '') {
                           return Row(
                             children: [
-                              Expanded(
-                                child: MoreButton(
-                                  currentPage: currentPage,
-                                  fetchAlbum: fetchAlbum,
-                                  updatePage: updatePage,
+                              if (hydraView.id != hydraView.last ||
+                                  hydraView.id == '')
+                                Expanded(
+                                  child: MoreButton(
+                                    currentPage: currentPage,
+                                    fetchAlbum: fetchAlbum,
+                                    updatePage: updatePage,
+                                  ),
                                 ),
-                              ),
                               if (index == albums.length - 1 &&
                                   hydraView.first != hydraView.id)
                                 Expanded(
@@ -338,9 +340,7 @@ class _CatalogueState extends State<Catalogue> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => Ressources_page(
-                                  uneRessource: album,
-                                ),
+                                builder: (context) => Ressources_page(idRessource: album.getId()),
                               ),
                             );
                           },
@@ -389,7 +389,7 @@ class _CatalogueState extends State<Catalogue> {
                                           ),
                                           child: Image(
                                             image: NetworkImage(
-                                                "http://127.0.0.1:8000/images/book/" +
+                                                "${ApiConfig.apiUrl}/images/book/" +
                                                     album.getMiniature()!),
                                             height: 100,
                                             width: MediaQuery.of(context)

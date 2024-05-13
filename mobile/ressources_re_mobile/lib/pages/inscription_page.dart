@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import '../utilities/apiConfig.dart';
 
 class SignUp extends StatefulWidget {
   @override
@@ -131,7 +132,7 @@ class _SignUpState extends State<SignUp> {
       String body = jsonEncode(formData);
       try {
         var response = await http.post(
-          Uri.parse('http://127.0.0.1:8000/api/utilisateurs'),
+          Uri.parse('${ApiConfig.apiUrl}/api/utilisateurs'),
           headers: <String, String>{
             'Content-Type': 'application/ld+json',
           },

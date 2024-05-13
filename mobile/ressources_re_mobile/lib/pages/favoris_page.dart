@@ -185,7 +185,7 @@ class _FavorisPageState extends State<FavorisPage> {
                                           context,
                                           MaterialPageRoute(
                                             builder: (context) =>
-                                              Ressources_page(uneRessource: ressource),
+                                              Ressources_page(idRessource: ressource?.getId()),
                                           ),
                                         );
                                       },
@@ -275,7 +275,7 @@ class _FavorisPageState extends State<FavorisPage> {
                                           context,
                                           MaterialPageRoute(
                                             builder: (context) =>
-                                              Ressources_page(uneRessource: ressource),
+                                              Ressources_page(idRessource: ressource?.getId()),
                                           ),
                                         );
                                       },
