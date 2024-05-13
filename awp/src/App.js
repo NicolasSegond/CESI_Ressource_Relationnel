@@ -9,6 +9,7 @@ import AjoutRessource, {loader as AjoutLoader} from "./page/Ressource/ajoutResso
 import VerifCodeInscription from "./page/verifCodeInscription";
 import Forgottenpassword from "./page/forgottenpassword";
 import ListRessources, {loader as GetDefaultList} from "./page/Ressource/listRessources";
+import PageRessource from "./page/Ressource/pageRessource";
 import Admin from "./page/Administration/RootAdmin";
 import AdminDashboard from "./page/Administration/DashboardAdmin";
 import GestionAdmin from "./page/Administration/Gestion/GestionAdmin";
@@ -32,6 +33,10 @@ function App() {
                     path: '/ressource/lists',
                     element: <ListRessources/>,
                     loader: GetDefaultList
+                },
+                {
+                    path: 'ressources/:slug',
+                    element: <PageRessource />
                 },
                 {
                     path: '/admin',
