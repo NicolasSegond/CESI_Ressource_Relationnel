@@ -48,7 +48,8 @@ class Ressource
     #[ORM\ManyToOne(inversedBy: 'Ressource')]
     private ?TypeDeRessource $typeDeRessource = null;
 
-    #[ORM\ManyToMany(targetEntity: TypeRelation::class, mappedBy: 'Ressource', cascade: ['persist'], orphanRemoval: true)]
+
+    #[ORM\ManyToMany(targetEntity: TypeRelation::class, mappedBy: 'Ressource', cascade: ['persist'])]
     private Collection $typeRelations;
 
     #[ORM\ManyToOne(inversedBy: 'Ressource')]

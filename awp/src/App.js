@@ -13,6 +13,7 @@ import PageRessource from "./page/Ressource/pageRessource";
 import Admin from "./page/Administration/RootAdmin";
 import AdminDashboard, {loader as AdminDashboardLoader} from "./page/Administration/DashboardAdmin";
 import GestionAdmin from "./page/Administration/Gestion/GestionAdmin";
+import ModifierRessource from "./page/Ressource/modifierRessource"; // Importez le composant pour la modification de la ressource
 
 function App() {
     const router = createBrowserRouter([
@@ -34,6 +35,10 @@ function App() {
                     element: <ListRessources/>,
                     loader: GetDefaultList
                 },
+                {
+                    path: '/modifressource/:id', // Chemin pour modifier une ressource
+                    element: <ModifierRessource/>,
+                }, // Définition de la route pour modifier une ressource
                 {
                     path: 'ressources/:slug',
                     element: <PageRessource />
@@ -81,6 +86,5 @@ function App() {
         </div>
     );
 }
-
 
 export default App;

@@ -26,6 +26,11 @@ use Symfony\Component\Serializer\Attribute\Groups;
             inputFormats: ['multipart' => ['multipart/form-data']],
             controller: 'App\Controller\UploadController::uploadFiles',
         ),
+        new Post(
+            uriTemplate: '/uploadsEdit',
+            inputFormats: ['multipart' => ['multipart/form-data']],
+            controller: 'App\Controller\UploadController::uploadFilesEdit',
+        ),
     ],
     normalizationContext: ['groups' => ['upload:read']],
     denormalizationContext: ['groups' => ['upload:write']]

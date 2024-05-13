@@ -23,6 +23,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
 )]
 class VisibiliteAPI
 {
+    #[Groups('ressource:read', 'ressource:write')]
     public ?int $id = null;
 
     #[Groups('ressource:read', 'ressource:write')]

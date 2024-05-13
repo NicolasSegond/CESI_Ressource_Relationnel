@@ -32,7 +32,7 @@ const MyForm = ({formData, onChange, onSubmit, buttonText, buttonDisabled}) => {
                             {field.select_type === 'text' && (
                                 <>
                                     <p className={"ajout-label"}>{field.label}</p>
-                                    <input required type={"text"} className={"textfield-ajout"} name={field.name} ref={field.ref}/>
+                                    <input required type={"text"} className={"textfield-ajout"} name={field.name} ref={field.ref} defaultValue={field.value}/>
                                 </>
                             )}
                             {field.select_type === 'textarea' && (
@@ -111,7 +111,8 @@ const MyForm = ({formData, onChange, onSubmit, buttonText, buttonDisabled}) => {
                                                         {selected.map((value) => (
                                                             <Chip
                                                                 key={value}
-                                                                label={field.options.find(option => option.id === value).name}
+                                                                label={(field.options.find(option => option.id === value) ?? { name: '' }).name}
+
                                                                 onDelete={() => field.onDelete(value)}
                                                                 deleteIcon={
                                                                     <CancelIcon

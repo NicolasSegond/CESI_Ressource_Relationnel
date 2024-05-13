@@ -189,6 +189,10 @@ function ListRessources({ }) {
                             typeRelations ={ressource.typeRelations}
                             categorie = {ressource.categorie.nom}
                             nbCommentaire = {ressource.commentaires.length}
+                            proprietaireId = {ressource.proprietaire.id}
+                            connectUserId = {connectUser}
+                            resourceId = {ressource.id}
+
                         />
                     ))}
                     <br /><br />
