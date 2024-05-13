@@ -10,10 +10,10 @@ import 'dart:convert';
 class ModalOptions extends StatelessWidget {
   final int? currentUser;
   final Ressource? ressource;
-  final Future<List<Ressource>> Function() fetchAlbum; // Modifiez cette ligne
+  final Function() onShareOrUnshare;
 
   ModalOptions(
-      {required this.fetchAlbum,
+      {required this.onShareOrUnshare,
       required this.currentUser,
       required this.ressource});
 
@@ -269,7 +269,8 @@ class ModalOptions extends StatelessWidget {
                             label: Text(user?.getEmail() ?? 'Email inconnu'),
                             onDeleted: () async {
                               await _supprimerPartager(context, ressource!,
-                                  user?.getEmail(), fetchAlbum);
+                                  user?.getEmail());
+                              onShareOrUnshare();
                               Navigator.of(dialogContext).pop();
                             },
                           ),
@@ -287,7 +288,8 @@ class ModalOptions extends StatelessWidget {
 
                       // Appeler la fonction pour ajouter les personnes sélectionnées
                       await _ajouterPartager(
-                          context, ressource!, peopleList, fetchAlbum);
+                          context, ressource!, peopleList);
+                      onShareOrUnshare();
                       Navigator.of(dialogContext).pop();
                     }
                   },
@@ -309,7 +311,7 @@ class ModalOptions extends StatelessWidget {
 }
 
 Future<void> _supprimerPartager(BuildContext context, Ressource ressource,
-    String? userEmail, Function fetchAlbum) async {
+    String? userEmail) async {
   Map<String, dynamic> requestBody = {
     'utilisateur_id': userEmail,
   };
@@ -338,7 +340,7 @@ Future<void> _supprimerPartager(BuildContext context, Ressource ressource,
 }
 
 Future<void> _ajouterPartager(BuildContext context, Ressource ressource,
-    List<String> selectedPeople, Function fetchAlbum) async {
+    List<String> selectedPeople) async {
   Map<String, dynamic> requestBody = {
     'voirRessource': selectedPeople,
   };

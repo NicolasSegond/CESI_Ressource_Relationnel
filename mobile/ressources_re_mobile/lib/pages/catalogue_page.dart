@@ -57,6 +57,10 @@ class _CatalogueState extends State<Catalogue> {
     fetchData();
   }
 
+  void _refreshPage() {
+    setState(() {});
+  }
+
   void updatePage(int newPage) {
     setState(() {
       currentPage = newPage;
@@ -468,7 +472,7 @@ class _CatalogueState extends State<Catalogue> {
                                                             const Alignment(
                                                                 0.8, -0.8),
                                                         child: ModalOptions(
-                                                            fetchAlbum: fetchAlbum,
+                                                            onShareOrUnshare: _refreshPage,
                                                             currentUser: userId,
                                                             ressource: album
                                                         ),
