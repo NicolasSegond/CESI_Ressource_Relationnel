@@ -11,7 +11,7 @@ import Forgottenpassword from "./page/forgottenpassword";
 import ListRessources, {loader as GetDefaultList} from "./page/Ressource/listRessources";
 import PageRessource from "./page/Ressource/pageRessource";
 import Admin from "./page/Administration/RootAdmin";
-import AdminDashboard from "./page/Administration/DashboardAdmin";
+import AdminDashboard, {loader as AdminDashboardLoader} from "./page/Administration/DashboardAdmin";
 import GestionAdmin from "./page/Administration/Gestion/GestionAdmin";
 
 function App() {
@@ -44,7 +44,8 @@ function App() {
                     children: [
                         {
                             path: '/admin/dashboard',
-                            element: <AdminDashboard/>
+                            element: <AdminDashboard/>,
+                            loader: AdminDashboardLoader
                         },
                         {
                             path: '/admin/gestion',

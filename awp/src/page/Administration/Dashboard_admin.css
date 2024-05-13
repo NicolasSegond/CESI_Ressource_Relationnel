@@ -1,21 +1,93 @@
+/* Conteneur principal du tableau de bord */
+.dashboard-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px auto;
+    max-width: 1500px;
+}
+
+/* Conteneur des blocs statistiques */
 .containerstat {
     display: flex;
-    flex-direction: row;
+    flex-wrap: wrap;
     justify-content: space-between;
-    margin-top: 20px;
+    gap: 20px;
+    width: 100%;
+}
+
+.filter-container{
+    display:flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+}
+
+/* Bloc statistique individuel */
+.block-stat {
+    padding: 20px;
+    border-radius: 10px;
+    background-color: #f5f5f5; /* Utilisation d'une couleur de fond plus douce */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Légère augmentation de l'ombre pour un aspect plus prononcé */
+    width: calc(45% - 20px);
+
+    /* Ajustement pour une mise en page responsive */
+    flex: 1 1 400px;
     margin-bottom: 20px;
 }
 
-.block-stat {
-    width: 30%;
-    height: 200px;
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    margin: 0 20px;
+/* Pour le dernier bloc statistique sur une ligne */
+.block-stat:last-child {
+    width: 100%; /* Lorsqu'il est sur une seule colonne, occupe toute la largeur */
 }
 
-.datatable {
-    margin: 10px 0;
-    width: auto !important;
+/* Titre du bloc statistique */
+.title-stat {
+    font-size: 1.2rem; /* Utilisation d'une taille de police légèrement plus grande */
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #333; /* Couleur de texte plus foncée pour une meilleure lisibilité */
 }
+
+/* Nombre de ressources */
+.nb-ressources {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem; /* Taille de police plus grande pour attirer l'attention */
+    font-weight: bold;
+    height: 100%;
+    color: #4caf50; /* Couleur de texte verte pour indiquer une métrique positive */
+}
+
+/* Graphique */
+.chart {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-width: 100%; /* Ajuster la largeur maximale du graphique à 100% */
+    overflow: hidden; /* Cacher tout débordement du graphique */
+}
+
+/* Tableau de données */
+.datatable {
+    width: 100%;
+    max-width: 1200px;
+    margin: 20px auto;
+}
+
+.calendar-button {
+    padding: 10px 20px;
+    margin-bottom: 5px;
+    background-color: #1AA4C8; /* Couleur de fond */
+    color: white; /* Couleur du texte */
+    border: none; /* Supprimer la bordure */
+    border-radius: 5px; /* Coins arrondis */
+    cursor: pointer; /* Curseur au survol */
+    transition: background-color 0.3s; /* Animation de transition */
+}
+
+.calendar-button:hover {
+    background-color: rgba(26, 164, 200, 0.55); /* Couleur de fond au survol */
+}
+

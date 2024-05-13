@@ -16,6 +16,9 @@ const DataTable = ({data, loading, columns, renderActions}) => {
         });
     };
 
+    // Vérifie si la fonction renderActions est fournie et s'il y a des actions à rendre
+    const hasActions = renderActions && data.some(row => renderActions(row));
+
     return (
         <TableContainer component={Paper}>
             <Table aria-label="generic table">
@@ -24,13 +27,14 @@ const DataTable = ({data, loading, columns, renderActions}) => {
                         {columns.map((column, index) => (
                             <TableCell key={index}>{column.label}</TableCell>
                         ))}
-                        <TableCell>Actions</TableCell>
+                        {hasActions && <TableCell>Actions</TableCell>}
                     </TableRow>
                 </TableHead>
                 <TableBody>
                     {loading ? (
                         <TableRow>
-                            <TableCell colSpan={columns.length + 1}>Chargement en cours...</TableCell>
+                            <TableCell colSpan={hasActions ? columns.length + 1 : columns.length}>Chargement en
+                                cours...</TableCell>
                         </TableRow>
                     ) : (
                         data.map(row => (
@@ -47,7 +51,7 @@ const DataTable = ({data, loading, columns, renderActions}) => {
                                     </TableCell>
 
                                 ))}
-                                <TableCell>{renderActions ? renderActions(row) : ''}</TableCell>
+                                {hasActions && <TableCell>{renderActions(row)}</TableCell>}
                             </TableRow>
                         ))
                     )}
