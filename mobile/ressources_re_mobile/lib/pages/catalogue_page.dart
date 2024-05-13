@@ -335,14 +335,7 @@ class _CatalogueState extends State<Catalogue> {
                         final album = albums[index];
                         return GestureDetector(
                           onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => Ressources_page(
-                                  uneRessource: album,
-                                ),
-                              ),
-                            );
+                            Navigator.pushReplacementNamed(context, '/connexion');
                           },
                           child: Container(
                             margin: const EdgeInsets.all(10),
@@ -475,8 +468,10 @@ class _CatalogueState extends State<Catalogue> {
                                                             const Alignment(
                                                                 0.8, -0.8),
                                                         child: ModalOptions(
+                                                            fetchAlbum: fetchAlbum,
                                                             currentUser: userId,
-                                                            ressource: album),
+                                                            ressource: album
+                                                        ),
                                                       ),
                                                     ),
                                                   ],

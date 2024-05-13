@@ -3,27 +3,32 @@ import 'package:ressources_re_mobile/classes/Ressource.dart';
 import 'package:ressources_re_mobile/classes/Utilisateur.dart';
 import 'package:ressources_re_mobile/utilities/authentification.dart';
 import 'package:ressources_re_mobile/utilities/customFetch.dart';
+import 'package:ressources_re_mobile/pages/catalogue_page.dart';
 import 'package:ressources_re_mobile/utilities/apiConfig.dart';
 import 'dart:convert';
 
 class ModalOptions extends StatelessWidget {
   final int? currentUser;
   final Ressource? ressource;
+  final Future<List<Ressource>> Function() fetchAlbum; // Modifiez cette ligne
 
-  ModalOptions({required this.currentUser, required this.ressource});
+  ModalOptions(
+      {required this.fetchAlbum,
+      required this.currentUser,
+      required this.ressource});
 
-   // Fonction pour effectuer la requête et afficher une alerte en fonction du résultat
+  // Fonction pour effectuer la requête et afficher une alerte en fonction du résultat
   void addToFavorites(BuildContext context) async {
     Map<String, dynamic> response = await customFetchPost({
       'url': ApiConfig.apiUrl + '/api/progressions',
       'method': 'POST',
       'headers': {
         'Content-Type': 'application/json',
-      }, 
+      },
       'body': jsonEncode({
-        'TypeProgression' : 'api/type_progressions/1',
-        'Utilisateur' : 'api/utilisateurs/' + currentUser.toString(),
-        'Ressource' : 'api/ressources/' + ressource!.id.toString()
+        'TypeProgression': 'api/type_progressions/1',
+        'Utilisateur': 'api/utilisateurs/' + currentUser.toString(),
+        'Ressource': 'api/ressources/' + ressource!.id.toString()
       })
     }, connecter: true);
 
@@ -34,7 +39,7 @@ class ModalOptions extends StatelessWidget {
         ),
       );
     } else {
-       ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Ajout de la ressource en favoris avec succès'),
         ),
@@ -42,17 +47,17 @@ class ModalOptions extends StatelessWidget {
     }
   }
 
-  void addToMiseDeCote(BuildContext context) async{
+  void addToMiseDeCote(BuildContext context) async {
     Map<String, dynamic> response = await customFetchPost({
       'url': ApiConfig.apiUrl + '/api/progressions',
       'method': 'POST',
       'headers': {
         'Content-Type': 'application/json',
-      }, 
+      },
       'body': jsonEncode({
-        'TypeProgression' : 'api/type_progressions/2',
-        'Utilisateur' : 'api/utilisateurs/' + currentUser.toString(),
-        'Ressource' : 'api/ressources/' + ressource!.id.toString()
+        'TypeProgression': 'api/type_progressions/2',
+        'Utilisateur': 'api/utilisateurs/' + currentUser.toString(),
+        'Ressource': 'api/ressources/' + ressource!.id.toString()
       })
     }, connecter: true);
 
@@ -63,7 +68,7 @@ class ModalOptions extends StatelessWidget {
         ),
       );
     } else {
-       ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Ressource mise de côté avec succès'),
         ),
@@ -198,7 +203,8 @@ class ModalOptions extends StatelessWidget {
                     child: TextButton(
                       onPressed: () {
                         Navigator.pop(dialogContext);
-                        _showShareResourceDialog(context); // Call function to show dialog
+                        _showShareResourceDialog(
+                            context); // Call function to show dialog
                       },
                       style: ButtonStyle(
                         backgroundColor: MaterialStateProperty.all<Color>(
@@ -221,7 +227,6 @@ class ModalOptions extends StatelessWidget {
     );
   }
 
-  
   void _showShareResourceDialog(BuildContext context) {
     List<String> selectedPeople = [];
     TextEditingController personController = TextEditingController();
@@ -241,7 +246,8 @@ class ModalOptions extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text('Choisissez les personnes à partager la ressource avec:'),
+                    Text(
+                        'Choisissez les personnes à partager la ressource avec:'),
                     SizedBox(height: 10),
                     TextFormField(
                       controller: personController,
@@ -261,7 +267,9 @@ class ModalOptions extends StatelessWidget {
                           Chip(
                             label: Text(user?.getEmail() ?? 'Email inconnu'),
                             onDeleted: () async {
-                              await _supprimerPartager(user?.getEmail());
+                              await _supprimerPartager(context, ressource!,
+                                  user?.getEmail(), fetchAlbum);
+                              Navigator.of(dialogContext).pop();
                             },
                           ),
                       ],
@@ -271,13 +279,14 @@ class ModalOptions extends StatelessWidget {
               ),
               actions: <Widget>[
                 TextButton(
-                   onPressed: () async {
+                  onPressed: () async {
                     String person = personController.text.trim();
                     if (person.isNotEmpty) {
                       List<String> peopleList = [person];
-                      
+
                       // Appeler la fonction pour ajouter les personnes sélectionnées
-                      await _ajouterPartager(context, ressource!, peopleList);
+                      await _ajouterPartager(
+                          context, ressource!, peopleList, fetchAlbum);
                       Navigator.of(dialogContext).pop();
                     }
                   },
@@ -298,61 +307,61 @@ class ModalOptions extends StatelessWidget {
   }
 }
 
-  Future<void> _supprimerPartager(BuildContext context, String userEmail) async {
-    Map<String, dynamic> requestBody = {
-      'voirRessource': userEmail,
-    };
+Future<void> _supprimerPartager(BuildContext context, Ressource ressource,
+    String? userEmail, Function fetchAlbum) async {
+  Map<String, dynamic> requestBody = {
+    'utilisateur_id': userEmail,
+  };
 
-    Map<String, dynamic> response = await customFetchPost({
-      'url': ApiConfig.apiUrl + '/api/voir_ressources/${ressource.id}/voir',
-      'method': 'DELETE',
-      'headers': {
-        'Content-Type': 'application/json',
-      },
-      'body': jsonEncode(requestBody),
-    }, connecter: true);
+  Map<String, dynamic> response = await customFetchDelete({
+    'url': ApiConfig.apiUrl + '/api/voir_ressources/${ressource.id}/voir',
+    'headers': {
+      'Content-Type': 'application/json',
+    },
+    'body': jsonEncode(requestBody),
+  }, connecter: true);
 
-    if (response['error'] != '') {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Erreur : ' + response['error']),
-        ),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Partage de la ressource effectué avec succès'),
-        ),
-      );
-    }
+  if (response['error'] != '') {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Erreur : ' + response['error']),
+      ),
+    );
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Partage de la ressource effectué avec succès'),
+      ),
+    );
   }
-  
+}
 
-  Future<void> _ajouterPartager(BuildContext context, Ressource ressource, List<String> selectedPeople) async {
-    Map<String, dynamic> requestBody = {
-      'voirRessource': selectedPeople,
-    };
+Future<void> _ajouterPartager(BuildContext context, Ressource ressource,
+    List<String> selectedPeople, Function fetchAlbum) async {
+  Map<String, dynamic> requestBody = {
+    'voirRessource': selectedPeople,
+  };
 
-    Map<String, dynamic> response = await customFetchPost({
-      'url': ApiConfig.apiUrl + '/api/voir_ressources/${ressource.id}/voir',
-      'method': 'POST',
-      'headers': {
-        'Content-Type': 'application/json',
-      },
-      'body': jsonEncode(requestBody),
-    }, connecter: true);
+  Map<String, dynamic> response = await customFetchPost({
+    'url': ApiConfig.apiUrl + '/api/voir_ressources/${ressource.id}/voir',
+    'method': 'POST',
+    'headers': {
+      'Content-Type': 'application/json',
+    },
+    'body': jsonEncode(requestBody),
+  }, connecter: true);
 
-    if (response['error'] != '') {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Erreur : ' + response['error']),
-        ),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Partage de la ressource effectué avec succès'),
-        ),
-      );
-    }
+  if (response['error'] != '') {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Erreur : ' + response['error']),
+      ),
+    );
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Partage de la ressource effectué avec succès'),
+      ),
+    );
   }
+}
