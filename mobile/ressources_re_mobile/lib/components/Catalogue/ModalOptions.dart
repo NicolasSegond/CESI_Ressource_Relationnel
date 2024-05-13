@@ -187,37 +187,38 @@ class ModalOptions extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 16),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(8),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.3),
-                          spreadRadius: 2,
-                          blurRadius: 5,
-                          offset: Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: TextButton(
-                      onPressed: () {
-                        Navigator.pop(dialogContext);
-                        _showShareResourceDialog(
-                            context); // Call function to show dialog
-                      },
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all<Color>(
-                            Colors.transparent),
+                  if (currentUser == ressource?.getProprietaire()?.getId())
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.3),
+                            spreadRadius: 2,
+                            blurRadius: 5,
+                            offset: Offset(0, 2),
+                          ),
+                        ],
                       ),
-                      child: Text(
-                        'Partager la ressource',
-                        style: TextStyle(
-                          color: Colors.black,
+                      child: TextButton(
+                        onPressed: () {
+                          Navigator.pop(dialogContext);
+                          _showShareResourceDialog(
+                              context); // Call function to show dialog
+                        },
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all<Color>(
+                              Colors.transparent),
+                        ),
+                        child: Text(
+                          'Partager la ressource',
+                          style: TextStyle(
+                            color: Colors.black,
+                          ),
                         ),
                       ),
                     ),
-                  ),
                 ],
               ),
             );
