@@ -206,6 +206,7 @@ function ListRessources({ }) {
                             voirRessource = {ressource.voirRessource}
                             idUser = {connectUser}
                             userRoles = {userRoles}
+                            progressions={ressource.progressions}
                         />
                     ))}
                     <br /><br />

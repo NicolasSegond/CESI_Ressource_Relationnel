@@ -34,7 +34,7 @@ function formatDelai(date) {
     }
 }
 
-function Card({ idRessource, imageUrl, title, description, proprietaire, vue, nom, prenom, date_creation, visibilite, typeRessource, typeRelations, categorie, nbCommentaire, voirRessource, idUser, userRoles }) {
+function Card({ idRessource, imageUrl, title, description, proprietaire, vue, nom, prenom, date_creation, visibilite, typeRessource, typeRelations, categorie, nbCommentaire, voirRessource, idUser, userRoles, progressions }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isModalPartagerOpen, setIsModalPartagerOpen] = useState(false);
     const [modalContent, setModalContent] = useState(""); // Contenu du modal spécifique à chaque ressource
@@ -118,9 +118,13 @@ function Card({ idRessource, imageUrl, title, description, proprietaire, vue, no
             window.location.reload();
         }
     }
-    const [isFavorited, setIsFavorited] = useState(false); // État pour gérer si la ressource est en favoris ou non
+    const isFavorited = progressions.some(progression => progression.TypeProgression === "/api/type_progressions/1" && progression.Utilisateur.id === idUser);
+    const isMiseDeCote = progressions.some(progression => progression.TypeProgression === "/api/type_progressions/2" && progression.Utilisateur.id === idUser);
 
-    const mettreEnFavoris = async () => {
+    const mettreEnProgression = async (idTypeProgression) => {
+        console.log(idTypeProgression);
+        console.log(idUser);
+        console.log(idRessource);
         try {
             const { data, error } = await customFetch({
                 url: `${apiConfig.apiUrl}/api/progressions`, // Utiliser l'ID dans l'URL
@@ -129,33 +133,23 @@ function Card({ idRessource, imageUrl, title, description, proprietaire, vue, no
                     'Content-Type': 'application/ld+json',
                 },
                 body: JSON.stringify({
-                    TypeProgression: '/api/type_progressions/1', // Assurez-vous d'utiliser le bon ID de type de progression
-                    Utilisateur: `/api/utilisateurs/${idUser}`, // Remplacez idUser par l'ID de l'utilisateur actuel
-                    Ressource: `/api/ressources/${idRessource}`, // Remplacez idRessource par l'ID de la ressource actuelle
+                    TypeProgression: `/api/type_progressions/${idTypeProgression}`, // Utiliser l'ID du type de progression correspondant
+                    Utilisateur: `/api/utilisateurs/${idUser}`, // Remplacer idUser par l'ID de l'utilisateur actuel
+                    Ressource: `/api/ressources/${idRessource}`, // Remplacer idRessource par l'ID de la ressource actuelle
                 })
             }, true);
 
             if (error) {
-                console.error('Erreur lors de la mise en favoris de la ressource:', error);
+                console.error('Erreur lors de la mise en progression de la ressource:', error);
             } else {
-                // Mettre à jour l'état pour refléter que la ressource est maintenant en favoris
-                setIsFavorited(true);
                 // Afficher un message de succès ou effectuer d'autres actions si nécessaire
             }
         } catch (error) {
-            console.error('Erreur lors de la mise en favoris de la ressource:', error);
+            console.error('Erreur lors de la mise en progression de la ressource:', error);
         }
     };
 
-    const retirerDesFavoris = async () => {
-        try {
-            // Effectuez l'appel pour retirer la ressource des favoris ici
-            // Mettre à jour l'état pour refléter que la ressource n'est plus en favoris
-            setIsFavorited(false);
-        } catch (error) {
-            console.error('Erreur lors du retrait de la ressource des favoris:', error);
-        }
-    };
+
 
     const DialogPartager = () => {
         return (
@@ -198,16 +192,19 @@ function Card({ idRessource, imageUrl, title, description, proprietaire, vue, no
             <div className="card-content">
                 <div className={"card-header"}>
                     <h2 className="card-title">{title}</h2>
-                    <div className="modal-container"> {/* Conteneur pour l'icône de menu et la modal */}
+                    <div className="modal-container">
                         {idUser && (
-                            <img src={Menu} alt={"voir plus logo"} onClick={() => toggleModal(description)} />
+                            <img src={Menu} alt={"voir plus logo"} onClick={() => toggleModal(description)}/>
                         )}
                         {isModalOpen && (
                             <div className="modal" onClick={() => setIsModalOpen(false)}>
-                                {/* Utilisez isFavorited pour afficher le bon libellé du bouton */}
-                                <a onClick={isFavorited ? retirerDesFavoris : mettreEnFavoris}>
+                                <a onClick={() => mettreEnProgression(isFavorited ? 1 : 2)}>
                                     {isFavorited ? "Retirer des favoris" : "Mettre en favoris la ressource"}
                                 </a>
+                                <a onClick={() => mettreEnProgression(isMiseDeCote ? 1 : 2)}>
+                                    {isMiseDeCote ? "Enlever de côté" : "Mettre de côté la ressource"}
+                                </a>
+
                             </div>
                         )}
                     </div>
@@ -220,7 +217,8 @@ function Card({ idRessource, imageUrl, title, description, proprietaire, vue, no
                     </div>
                     <div className="description">
                         <div className="info">
-                            <div className={"pdp-utilisateur"} style={{ backgroundColor: color }}> {nom[0].toUpperCase()} {prenom[0].toUpperCase()}</div>
+                            <div className={"pdp-utilisateur"}
+                                 style={{backgroundColor: color}}> {nom[0].toUpperCase()} {prenom[0].toUpperCase()}</div>
                             <div className={"info-utilisateur"}>
                                 <p>{nom} {prenom}</p>
                                 <p>{delai}</p>

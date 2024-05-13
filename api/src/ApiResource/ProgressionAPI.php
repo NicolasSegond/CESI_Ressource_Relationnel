@@ -6,8 +6,11 @@ use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Doctrine\Orm\State\Options;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
+use App\Controller\ProgressionController;
+use App\Controller\RessourceController;
 use App\Entity\Progression;
 use App\State\DtoToEntityStateProcessor;
 use App\State\EntityToDtoStateProvider;
@@ -19,6 +22,15 @@ use Symfony\Component\Serializer\Attribute\Groups;
     operations: [
         new GetCollection(),
         new Post(),
+        new Delete(),
+        new Delete(
+            uriTemplate: "/progression/delete",
+            controller: ProgressionController::class,
+            security: "is_granted('ROLE_USER')", // Définissez le chemin de suppression
+            input: Progression::class,  // Spécifiez le type d'entrée attendu
+            output: false // Indiquez que cette opération ne retourne pas de réponse
+        ),
+
     ],
     normalizationContext: [
         'groups' => ['progression:read']
