@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, {useMemo, useState} from 'react';
 import './CardRessource.css';
 import Vu from "../../assets/vue.png";
 import Com from "../../assets/commentaire.png";
@@ -40,7 +40,7 @@ function slugify(text) {
         .replace(/-+$/, '');            // Trim - from end of text
 }
 
-function Card({ imageUrl, title, description, vue, nom, prenom, date_creation, visibilite, typeRessource, typeRelations, categorie, nbCommentaire, proprietaireId, connectUserId, resourceId }) {
+function Card({ id, imageUrl, title, description, vue, nom, prenom, date_creation, visibilite, typeRessource, typeRelations, categorie, nbCommentaire, proprietaireId, connectUserId, resourceId }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalContent, setModalContent] = useState(""); // Contenu du modal spécifique à chaque ressource
     const [color] = useState(useMemo(() => couleurAleatoire(), [])); // Calcul de la couleur une seule fois
