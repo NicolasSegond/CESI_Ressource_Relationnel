@@ -23,14 +23,6 @@ use Symfony\Component\Serializer\Attribute\Groups;
         new GetCollection(),
         new Post(),
         new Delete(),
-        new Delete(
-            uriTemplate: "/progression/delete",
-            controller: ProgressionController::class,
-            security: "is_granted('ROLE_USER')", // Définissez le chemin de suppression
-            input: Progression::class,  // Spécifiez le type d'entrée attendu
-            output: false // Indiquez que cette opération ne retourne pas de réponse
-        ),
-
     ],
     normalizationContext: [
         'groups' => ['progression:read']

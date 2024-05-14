@@ -1,14 +1,14 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import Pagination from "../../composants/General/PaginationGlobal";
 import CardRessource from "../../composants/Ressource/CardRessource";
-import {customFetch} from "../../utils/customFetch";
-import {useLoaderData} from "react-router-dom";
+import { customFetch } from "../../utils/customFetch";
+import { useLoaderData } from "react-router-dom";
 import TriComponent from "../../composants/Ressource/TriComponent";
-import {getIdUser, getRolesUser, getTokenDisconnected} from "../../utils/authentification";
+import { getIdUser, getRolesUser, getTokenDisconnected } from "../../utils/authentification";
 import styles from './listRessources.module.css';
+import { Snackbar } from '@mui/material';
 
 function ListRessources({ }) {
-
     const [data, setData] = useState([]);
     const [tri, setTri] = useState({});
     const { options } = useLoaderData(); // Utiliser les options récupérées du loader
@@ -18,6 +18,7 @@ function ListRessources({ }) {
     const token = getTokenDisconnected();
     const connectUser = token ? getIdUser(token) : null;
     const [userRoles, setUserRoles] = useState([]);
+    const [alertMessage, setAlertMessage] = useState(null); // State pour gérer le message de l'alerte
 
     useEffect(() => {
         const fetchData = async () => {
@@ -150,6 +151,11 @@ function ListRessources({ }) {
         return 1;
     };
 
+    // Fonction pour afficher un message d'alerte
+    const showAlertMessage = (message) => {
+        setAlertMessage(message);
+    };
+
     return (
         <div className={styles['container']}>
             <h1>Ressources:</h1>
@@ -193,26 +199,34 @@ function ListRessources({ }) {
                             imageUrl={`http://127.0.0.1:8000/images/book/${ressource.miniature}`}
                             title={ressource.titre}
                             description={ressource.contenu}
-                            proprietaire = {ressource.proprietaire}
-                            vue = {ressource.nombreVue}
-                            nom = {ressource.proprietaire.nom}
-                            prenom = {ressource.proprietaire.prenom}
-                            date_creation = {ressource.dateCreation}
-                            visibilite = {ressource.visibilite.libelle}
-                            typeRessource = {ressource.typeDeRessource.libelle}
-                            typeRelations ={ressource.typeRelations}
-                            categorie = {ressource.categorie.nom}
-                            nbCommentaire = {ressource.commentaires.length}
-                            voirRessource = {ressource.voirRessource}
-                            idUser = {connectUser}
-                            userRoles = {userRoles}
+                            proprietaire={ressource.proprietaire}
+                            vue={ressource.nombreVue}
+                            nom={ressource.proprietaire.nom}
+                            prenom={ressource.proprietaire.prenom}
+                            date_creation={ressource.dateCreation}
+                            visibilite={ressource.visibilite.libelle}
+                            typeRessource={ressource.typeDeRessource.libelle}
+                            typeRelations={ressource.typeRelations}
+                            categorie={ressource.categorie.nom}
+                            nbCommentaire={ressource.commentaires.length}
+                            voirRessource={ressource.voirRessource}
+                            idUser={connectUser}
+                            userRoles={userRoles}
                             progressions={ressource.progressions}
+                            showAlertMessage={showAlertMessage} // Passer la fonction pour afficher l'alerte au composant enfant
                         />
                     ))}
                     <br /><br />
                     <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
                 </div>
             )}
+            {/* Affichage de l'alerte */}
+            <Snackbar
+                open={!!alertMessage}
+                autoHideDuration={6000}
+                onClose={() => setAlertMessage(null)}
+                message={alertMessage}
+            />
         </div>
     );
 }
