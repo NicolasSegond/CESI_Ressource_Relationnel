@@ -60,30 +60,30 @@ class _FavorisPageState extends State<FavorisPage> {
   }
 
   void _fetchData() async {
-      Map<String, dynamic> response = await customFetch({
-        'url': ApiConfig.apiUrl + '/api/progressions?TypeProgression=1&Utilisateur=' + userId.toString(),
-        'method': 'GET',
-        'headers': {
-          'Content-Type': 'application/json',
-        }, 
-      }, connecter: true);
+    Map<String, dynamic> response = await customFetch({
+      'url': ApiConfig.apiUrl + '/api/progressions?TypeProgression=1&Utilisateur=' + userId.toString(),
+      'method': 'GET',
+      'headers': {
+        'Content-Type': 'application/json',
+      },
+    }, connecter: true);
 
-      print(response['error']);
+    print(response['error']);
 
-      if (response['error'] == '') {
-        final dynamic result = json.decode(response['data']);
-        final List<dynamic> members = result['hydra:member'];
+    if (response['error'] == '') {
+      final dynamic result = json.decode(response['data']);
+      final List<dynamic> members = result['hydra:member'];
 
-        setState(() {
-          _ressources = members.map((e) => Progression.fromJson(e)).toList();
-        });
+      setState(() {
+        _ressources = members.map((e) => Progression.fromJson(e)).toList();
+      });
+    } else {
+      if (response['error'].contains("DECONNEXION NECESSAIRE")) {
+        Navigator.pushReplacementNamed(context, '/connexion');
       } else {
-        if(response['error'].contains("DECONNEXION NECCESSAIRE")){
-          Navigator.pushReplacementNamed(context, '/connexion');
-        } else {
-          throw Exception('Failed to load data');
-        }
+        throw Exception('Failed to load data');
       }
+    }
   }
 
   Future<void> _fetchMiseDeCote() async {
@@ -93,7 +93,7 @@ class _FavorisPageState extends State<FavorisPage> {
         'method': 'GET',
         'headers': {
           'Content-Type': 'application/json',
-        }, 
+        },
       }, connecter: true);
 
       if (response['error'] == '') {
@@ -149,61 +149,52 @@ class _FavorisPageState extends State<FavorisPage> {
                         ),
                       ),
                     ),
-                    _ressources.isNotEmpty
-                      ? SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: SingleChildScrollView(
-                            scrollDirection: Axis.vertical,
-                            child: DataTable(
-                              headingRowColor: MaterialStateColor.resolveWith((states) => Colors.blue),
-                              dataRowColor: MaterialStateColor.resolveWith((states) => Colors.white),
-                              columns: [
-                                DataColumn(
+                    Expanded(
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.vertical,
+                          child: DataTable(
+                            headingRowColor: MaterialStateColor.resolveWith((states) => Colors.blue),
+                            dataRowColor: MaterialStateColor.resolveWith((states) => Colors.white),
+                            columns: [
+                              DataColumn(
                                   label: Text('ID',
-                                    style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)
-                                  )
-                                ),
-                                DataColumn(
+                                      style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white))),
+                              DataColumn(
                                   label: Text('Titre',
-                                    style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)
-                                  )
-                                ),
-                                DataColumn(
+                                      style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white))),
+                              DataColumn(
                                   label: Text('Date de création',
-                                    style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)
-                                  )
-                                ),
-                              ],
-                              rows: _ressources.map((progression) {
-                                final ressource = progression.ressource;
-                                return DataRow(cells: [
-                                  DataCell(Text(ressource?.getId()?.toString() ?? '')),
-                                  DataCell(
-                                    GestureDetector(
-                                      onTap: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                              Ressources_page(idRessource: ressource?.getId()),
-                                          ),
-                                        );
-                                      },
-                                      child: Text(ressource?.getTitre() ?? '',
-                                        style: TextStyle(
-                                          color: Colors.blue,
-                                          decoration: TextDecoration.underline
+                                      style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white))),
+                            ],
+                            rows: _ressources.map((progression) {
+                              final ressource = progression.ressource;
+                              return DataRow(cells: [
+                                DataCell(Text(ressource?.getId()?.toString() ?? '')),
+                                DataCell(
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => Ressources_page(idRessource: ressource?.getId()),
                                         ),
-                                      ),
+                                      );
+                                    },
+                                    child: Text(
+                                      ressource?.getTitre() ?? '',
+                                      style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
                                     ),
                                   ),
-                                  DataCell(Text(ressource?.getDateCreation() ?? '')),
-                                ]);
-                              }).toList(),
-                            ),
+                                ),
+                                DataCell(Text(ressource?.getDateCreation() ?? '')),
+                              ]);
+                            }).toList(),
                           ),
-                        )
-                      : Center(child: CircularProgressIndicator()),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -239,61 +230,52 @@ class _FavorisPageState extends State<FavorisPage> {
                         ),
                       ),
                     ),
-                    _miseDeCote.isNotEmpty
-                      ? SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: SingleChildScrollView(
-                            scrollDirection: Axis.vertical,
-                            child: DataTable(
-                              headingRowColor: MaterialStateColor.resolveWith((states) => Colors.blue),
-                              dataRowColor: MaterialStateColor.resolveWith((states) => Colors.white),
-                              columns: [
-                                DataColumn(
+                    Expanded(
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.vertical,
+                          child: DataTable(
+                            headingRowColor: MaterialStateColor.resolveWith((states) => Colors.blue),
+                            dataRowColor: MaterialStateColor.resolveWith((states) => Colors.white),
+                            columns: [
+                              DataColumn(
                                   label: Text('ID',
-                                    style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)
-                                  )
-                                ),
-                                DataColumn(
+                                      style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white))),
+                              DataColumn(
                                   label: Text('Titre',
-                                    style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)
-                                  )
-                                ),
-                                DataColumn(
+                                      style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white))),
+                              DataColumn(
                                   label: Text('Date de création',
-                                    style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)
-                                  )
-                                ),
-                              ],
-                              rows: _miseDeCote.map((progression) {
-                                final ressource = progression.ressource;
-                                return DataRow(cells: [
-                                  DataCell(Text(ressource?.getId()?.toString() ?? '')),
-                                  DataCell(
-                                    GestureDetector(
-                                      onTap: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                              Ressources_page(idRessource: ressource?.getId()),
-                                          ),
-                                        );
-                                      },
-                                      child: Text(ressource?.getTitre() ?? '',
-                                        style: TextStyle(
-                                          color: Colors.blue,
-                                          decoration: TextDecoration.underline
+                                      style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white))),
+                            ],
+                            rows: _miseDeCote.map((progression) {
+                              final ressource = progression.ressource;
+                              return DataRow(cells: [
+                                DataCell(Text(ressource?.getId()?.toString() ?? '')),
+                                DataCell(
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => Ressources_page(idRessource: ressource?.getId()),
                                         ),
-                                      ),
+                                      );
+                                    },
+                                    child: Text(
+                                      ressource?.getTitre() ?? '',
+                                      style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
                                     ),
                                   ),
-                                  DataCell(Text(ressource?.getDateCreation() ?? '')),
-                                ]);
-                              }).toList(),
-                            ),
+                                ),
+                                DataCell(Text(ressource?.getDateCreation() ?? '')),
+                              ]);
+                            }).toList(),
                           ),
-                        )
-                      : Center(child: CircularProgressIndicator()),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
