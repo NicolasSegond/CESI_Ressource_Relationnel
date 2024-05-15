@@ -8,6 +8,7 @@ import 'package:ressources_re_mobile/utilities/customFetch.dart';
 import 'package:ressources_re_mobile/utilities/apiConfig.dart';
 import 'package:ressources_re_mobile/pages/ressource_page.dart';
 import 'package:ressources_re_mobile/pages/connexion_page.dart';
+import 'package:ressources_re_mobile/classes/HydraView.dart';
 
 void main() {
   runApp(MyApp());
@@ -32,7 +33,16 @@ class _FavorisPageState extends State<FavorisPage> {
   List<Progression> _miseDeCote = [];
   List<Ressource> _ressourcesEnAttente = [];
   int? userId;
-  int? currentPage = 1;
+  int currentPageFavoris = 1;
+  int currentPageMDC = 1;
+  int currentPageAttente = 1;
+  HydraView hydraViewFavoris = HydraView(id: '', first: '', last: '');
+  HydraView hdyraViewMDC = HydraView(id: '', first: '', last: '');
+  HydraView hydraViewAttente = HydraView(id: '', first: '', last: '');
+  int totalPagesFavoris = 1;
+  int totalPagesMDC = 1;
+  int totalPagesAttente = 1;
+
 
   @override
   void initState() {
@@ -51,7 +61,7 @@ class _FavorisPageState extends State<FavorisPage> {
     try {
       final tokens = await getToken();
       if (tokens != null) {
-        final id = await getIdUser(tokens!);
+        final id = await getIdUser(tokens);
         setState(() {
           userId = id;
         });
@@ -64,36 +74,42 @@ class _FavorisPageState extends State<FavorisPage> {
   void _fetchData() async {
     try {
       Map<String, dynamic> response = await customFetch({
-        'url': '${ApiConfig.apiUrl}/api/progressions?TypeProgression=1&Utilisateur=$userId',
+        'url': '${ApiConfig.apiUrl}/api/progressions?TypeProgression=1&page=$currentPageFavoris&Utilisateur=$userId',
         'method': 'GET',
         'headers': {
           'Content-Type': 'application/json',
         },
       }, connecter: true);
 
-      if (response['error'] == '') {
+      if (response.containsKey('error') && response['error'] == '') {
         final dynamic result = json.decode(response['data']);
         final List<dynamic> members = result['hydra:member'];
 
         setState(() {
           _ressources = members.map((e) => Progression.fromJson(e)).toList();
+          hydraViewFavoris = HydraView.fromJson(result['hydra:view']);
+          String lastPageUrl = hydraViewFavoris.last;
+          List<String> parts = lastPageUrl.split("page=");
+          totalPagesFavoris = int.tryParse(parts.last) ?? 1;
         });
+
       } else {
-        if (response['error'].contains("DECONNEXION NECESSAIRE")) {
+        if (response.containsKey('error') && response['error'].contains("DECONNEXION NECESSAIRE")) {
           Navigator.pushReplacementNamed(context, '/connexion');
         } else {
-          throw Exception('Failed to load data');
+          throw Exception('Échec du chargement des données');
         }
       }
     } catch (e) {
-      print('Error fetching data: $e');
+      print('Erreur lors de la récupération des données: $e');
     }
   }
+
 
   Future<void> _fetchMiseDeCote() async {
     try {
       Map<String, dynamic> response = await customFetch({
-        'url': '${ApiConfig.apiUrl}/api/progressions?TypeProgression=2&Utilisateur=$userId',
+        'url': '${ApiConfig.apiUrl}/api/progressions?TypeProgression=2&page=$currentPageMDC&Utilisateur=$userId',
         'method': 'GET',
         'headers': {
           'Content-Type': 'application/json',
@@ -106,9 +122,13 @@ class _FavorisPageState extends State<FavorisPage> {
 
         setState(() {
           _miseDeCote = members.map((e) => Progression.fromJson(e)).toList();
+          hdyraViewMDC = HydraView.fromJson(result['hydra:view']);
+          String lastPageUrl = hdyraViewMDC.last;
+          List<String> parts = lastPageUrl.split("page=");
+          totalPagesMDC = int.tryParse(parts.last) ?? 1;
         });
       } else {
-        throw Exception('Failed to load data');
+        throw Exception('Failed to load mise de côté');
       }
     } catch (e) {
       print('Error fetching mise de côté: $e');
@@ -118,7 +138,7 @@ class _FavorisPageState extends State<FavorisPage> {
   Future<void> _fetchRessourceEnAttente() async {
     try {
       Map<String, dynamic> response = await customFetch({
-        'url': '${ApiConfig.apiUrl}/api/ressources?page=$currentPage&statut=2&proprietaire=$userId',
+        'url': '${ApiConfig.apiUrl}/api/ressources?page=$currentPageAttente&statut=2&proprietaire=$userId',
         'method': 'GET',
         'headers': {
           'Content-Type': 'application/json',
@@ -131,6 +151,10 @@ class _FavorisPageState extends State<FavorisPage> {
 
         setState(() {
           _ressourcesEnAttente = members.map((e) => Ressource.fromJson(e)).toList();
+          hydraViewAttente = HydraView.fromJson(result['hydra:view']);
+          String lastPageUrl = hydraViewAttente.last;
+          List<String> parts = lastPageUrl.split("page=");
+          totalPagesAttente = int.tryParse(parts.last) ?? 1;
         });
       } else {
         throw Exception('Failed to load resources en attente');
@@ -138,6 +162,63 @@ class _FavorisPageState extends State<FavorisPage> {
     } catch (e) {
       print('Error fetching resources en attente: $e');
     }
+  }
+
+  void _deleteRessource(int ressourceId) async {
+    try {
+      await customFetchDelete({
+        'url': '${ApiConfig.apiUrl}/api/progressions/$ressourceId',
+        'headers': {
+          'Content-Type': 'application/json',
+        },
+      }, connecter: true);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Suppression de la ressource en favorite avec succès'),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erreur lors de la suppression'),
+        ),
+      );
+    }
+  }
+
+  void _modifyRessource(Ressource ressource) {
+    // Ajoutez votre logique de modification ici
+    // Par exemple, naviguez vers une page de modification avec les détails de la ressource
+    /*
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ModifyRessourcePage(ressource: ressource),
+      ),
+    );
+    */
+  }
+
+  void fetchPageFavoris(int page) {
+    setState(() {
+      currentPageFavoris = page;
+      _fetchData();
+    });
+  }
+
+  void fetchPageMDC(int page) {
+    setState(() {
+      currentPageMDC = page;
+      _fetchMiseDeCote();
+    });
+  }
+
+  void fetchPageAttente(int page) {
+    setState(() {
+      currentPageAttente = page;
+      _fetchRessourceEnAttente();
+    });
   }
 
   @override
@@ -197,6 +278,9 @@ class _FavorisPageState extends State<FavorisPage> {
                                   DataColumn(
                                       label: Text('Date de création',
                                           style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white))),
+                                  DataColumn(
+                                      label: Text('Action',
+                                          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white))),
                                 ],
                                 rows: _ressources.map((progression) {
                                   final ressource = progression.ressource;
@@ -219,6 +303,14 @@ class _FavorisPageState extends State<FavorisPage> {
                                       ),
                                     ),
                                     DataCell(Text(ressource?.getDateCreation() ?? '')),
+                                    DataCell(
+                                      IconButton(
+                                        icon: Icon(Icons.delete),
+                                        onPressed: () {
+                                          _deleteRessource(ressource!.getId()!);
+                                        },
+                                      ),
+                                    ),
                                   ]);
                                 }).toList(),
                               ),
@@ -226,6 +318,20 @@ class _FavorisPageState extends State<FavorisPage> {
                           ),
                         )
                       : Center(child: CircularProgressIndicator()),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          IconButton(
+                            icon: Icon(Icons.arrow_back),
+                            onPressed: currentPageFavoris > 1 ? () => fetchPageFavoris(currentPageFavoris - 1) : null,
+                          ),
+                          Text('$currentPageFavoris / $totalPagesFavoris'),
+                          IconButton(
+                            icon: Icon(Icons.arrow_forward),
+                            onPressed: currentPageFavoris < totalPagesFavoris ? () => fetchPageFavoris(currentPageFavoris + 1) : null,
+                          ),
+                        ],
+                      ),
                 ],
               ),
             ),
@@ -250,8 +356,9 @@ class _FavorisPageState extends State<FavorisPage> {
                   Padding(
                     padding: EdgeInsets.all(8),
                     child: Text(
-                      'Mes Mises de Côté',
-                      style: TextStyle(
+                      'Mises de Côté',
+                     
+style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
@@ -277,6 +384,9 @@ class _FavorisPageState extends State<FavorisPage> {
                                   DataColumn(
                                       label: Text('Date de création',
                                           style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white))),
+                                  DataColumn(
+                                      label: Text('Action',
+                                          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white))),
                                 ],
                                 rows: _miseDeCote.map((progression) {
                                   final ressource = progression.ressource;
@@ -299,6 +409,14 @@ class _FavorisPageState extends State<FavorisPage> {
                                       ),
                                     ),
                                     DataCell(Text(ressource?.getDateCreation() ?? '')),
+                                    DataCell(
+                                      IconButton(
+                                        icon: Icon(Icons.delete),
+                                        onPressed: () {
+                                          _deleteRessource(progression.getId()!);
+                                        },
+                                      ),
+                                    ),
                                   ]);
                                 }).toList(),
                               ),
@@ -306,6 +424,20 @@ class _FavorisPageState extends State<FavorisPage> {
                           ),
                         )
                       : Center(child: CircularProgressIndicator()),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          IconButton(
+                            icon: Icon(Icons.arrow_back),
+                            onPressed: currentPageMDC > 1 ? () => fetchPageMDC(currentPageMDC - 1) : null,
+                          ),
+                          Text('$currentPageMDC / $totalPagesMDC'),
+                          IconButton(
+                            icon: Icon(Icons.arrow_forward),
+                            onPressed: currentPageMDC < totalPagesMDC ? () => fetchPageMDC(currentPageMDC + 1) : null,
+                          ),
+                        ],
+                      ),
                 ],
               ),
             ),
@@ -357,6 +489,9 @@ class _FavorisPageState extends State<FavorisPage> {
                                   DataColumn(
                                       label: Text('Date de création',
                                           style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white))),
+                                  DataColumn(
+                                      label: Text('Action',
+                                          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white))),
                                 ],
                                 rows: _ressourcesEnAttente.map((ressource) {
                                   return DataRow(cells: [
@@ -378,6 +513,14 @@ class _FavorisPageState extends State<FavorisPage> {
                                       ),
                                     ),
                                     DataCell(Text(ressource.getDateCreation() ?? '')),
+                                    DataCell(
+                                      IconButton(
+                                        icon: Icon(Icons.edit),
+                                        onPressed: () {
+                                          _modifyRessource(ressource);
+                                        },
+                                      ),
+                                    ),
                                   ]);
                                 }).toList(),
                               ),
@@ -385,6 +528,20 @@ class _FavorisPageState extends State<FavorisPage> {
                           ),
                         )
                       : Center(child: CircularProgressIndicator()),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          IconButton(
+                            icon: Icon(Icons.arrow_back),
+                            onPressed: currentPageAttente > 1 ? () => fetchPageAttente(currentPageAttente - 1) : null,
+                          ),
+                          Text('$currentPageAttente / $totalPagesAttente'),
+                          IconButton(
+                            icon: Icon(Icons.arrow_forward),
+                            onPressed: currentPageAttente < totalPagesAttente ? () => fetchPageAttente(currentPageAttente + 1) : null,
+                          ),
+                        ],
+                      ),
                 ],
               ),
             ),
