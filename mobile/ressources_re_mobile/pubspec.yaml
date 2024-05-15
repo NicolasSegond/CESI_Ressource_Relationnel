@@ -44,6 +44,7 @@ dependencies:
   #Rating bar lib
   flutter_rating_bar: ^4.0.0
   url_launcher: ^6.2.6
+  flutter_charts: ^0.5.2
 
 dev_dependencies:
   flutter_test:
