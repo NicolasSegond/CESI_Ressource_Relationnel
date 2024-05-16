@@ -1,21 +1,19 @@
-import React, {useState, useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import Container from '@mui/material/Container';
 import MenuIcon from '@mui/icons-material/Menu';
-import {
-    Avatar,
-    Menu,
-    Toolbar,
-} from "@mui/material";
+import {Avatar, Menu, Toolbar,} from "@mui/material";
 import {Box} from "@mui/system";
 import {Link, useLocation} from "react-router-dom";
 import PersonIcon from '@mui/icons-material/Person';
 import LogoMinistere from "../../assets/logoMinistere.png";
+import {getIdUser} from "../../utils/authentification";
 
 function ResponsiveAppBar({toggleSidebar, token}) {
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
     const location = useLocation();
     const path = location.pathname;
     const [anchorEl, setAnchorEl] = useState(null);
+    const idUser = getIdUser(token);
 
     useEffect(() => {
         const handleResize = () => {
@@ -75,7 +73,7 @@ function ResponsiveAppBar({toggleSidebar, token}) {
                             open={Boolean(anchorEl)}
                             onClose={handleClose}
                         >
-                            <Link to={"/"} className={"menu_item"} onClick={handleClose}>Profil</Link>
+                            <Link to={"/utilisateur/profil/" + idUser} className={"menu_item"} onClick={handleClose}>Profil</Link>
                             <Link to={"/"} className={"menu_item"} onClick={handleClose}>Paramètres</Link>
                         </Menu>
                     </>
