@@ -10,6 +10,7 @@ import {Delete as DeleteIcon, Edit as EditIcon} from "@mui/icons-material";
 import ClearIcon from "@mui/icons-material/Clear";
 import CheckIcon from "@mui/icons-material/Check";
 import TriComponent from "../../../composants/Ressource/TriComponent";
+import StopCircleIcon from '@mui/icons-material/StopCircle';
 
 const GestionRessources = () => {
     const [data, setData] = useState([]);
@@ -246,6 +247,32 @@ const GestionRessources = () => {
         }
     };
 
+    const handleSuspendre = async (row) => {
+        const url = apiConfig.apiUrl + '/api/ressources/' + row.id + '/refuser';
+
+        const {data, error} = await customFetch({
+            url: url,
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/merge-patch+json',
+            },
+            body: JSON.stringify({message: 'Ressource suspendue par un administrateur car elle ne respectait pas le réglement de la plateforme, aucun retour en arrière n\'est possible.'})
+        }, true);
+
+        if (!error) {
+            setSeverity('success');
+            setMessage('La ressource a bien été suspendue');
+            setAlertOpen(true);
+            fetchData(); // Rafraîchit les données après le rejet
+            handleCloseModal(); // Ferme le modal après le rejet
+        } else {
+            setSeverity('error');
+            setMessage('Erreur lors de la modification de la ressource : ' + (error.message || 'Erreur inconnue'));
+            setAlertOpen(true);
+            handleCloseModal(); // Ferme le modal en cas d'erreur
+        }
+    };
+
     const getVisibilityClass = (visibility) => {
         switch (visibility) {
             case 'Public':
@@ -296,6 +323,12 @@ const GestionRessources = () => {
             icon: <DeleteIcon/>,
             tooltip: "Supprimer la ressource",
             onClick: handleDelete
+        },
+        {
+            label: "Suspendre",
+            icon: <StopCircleIcon/>,
+            tooltip: "Suspendre la ressource",
+            onClick: handleSuspendre
         }
     ];
 
@@ -310,7 +343,7 @@ const GestionRessources = () => {
             ));
         } else {
             return actions
-                .filter(action => action.label === 'Modifier' || action.label === 'Supprimer')
+                .filter(action => action.label === 'Modifier' || action.label === 'Supprimer' || action.label === 'Suspendre')
                 .map((action, index) => (
                     <Tooltip title={action.tooltip} key={index}>
                         <IconButton aria-label={action.label} onClick={() => action.onClick(row)}>

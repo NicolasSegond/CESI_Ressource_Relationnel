@@ -539,7 +539,7 @@ class RessourceController extends AbstractController
                                     <tr>
                                         <td>
                                             <h1>Refus de votre ressource</h1>
-                                            <p>Votre ressource intitulée "<strong>' . $ressource->getTitre() . '</strong>" a été refusée par l\'administrateur.</p>
+                                            <p>Votre ressource intitulée "<strong>' . $ressource->getTitre() . '</strong>" a été refusée ou suspendu par l\'administrateur.</p>
                                             <p>Nous vous informons que votre ressource a été refusée par l\'administrateur du site car elle ne respectait pas les règles pour la publication d\'une ressource. C\'est à dire pour ces raisons : <strong>' . $message . ' </strong> Si vous avez des questions, n\'hésitez pas à nous contacter.</p>
                                             <p>Cordialement,<br>L\'équipe de gestion</p>
                                         </td>
