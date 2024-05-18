@@ -4,7 +4,7 @@
     padding: 20px;
     background-color: #f9f9f9;
     border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     font-family: Arial, sans-serif;
 }
 
@@ -23,9 +23,10 @@
     display: block; /* Fait que l'image soit un bloc, évitant ainsi des problèmes de mise en page */
     margin: 0 auto; /* Centre l'image horizontalement dans son conteneur */
 }
+
 .article-content img {
-    width: 100%;    /* Fait en sorte que l'image prenne 100% de la largeur du conteneur */
-    height: auto;   /* Maintient les proportions de l'image */
+    width: 100%; /* Fait en sorte que l'image prenne 100% de la largeur du conteneur */
+    height: auto; /* Maintient les proportions de l'image */
     display: block; /* Assure que l'image ne garde pas d'espace blanc inutile en dessous */
 }
 
@@ -57,7 +58,7 @@
     padding: 20px;
     background-color: #f4f4f4;
     border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .comment {
@@ -65,7 +66,7 @@
     padding: 10px;
     background-color: white;
     border-radius: 4px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .comment p {
@@ -92,6 +93,12 @@
     color: white;
     border: none;
     cursor: pointer;
+}
+
+.attachment {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
 }
 
 
