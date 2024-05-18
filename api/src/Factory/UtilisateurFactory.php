@@ -70,6 +70,7 @@ final class UtilisateurFactory extends ModelFactory
                     $user,
                     $user->getPassword()
                 ));
+                $user->setVerif($user->getVerif());
             })
             ;
     }
