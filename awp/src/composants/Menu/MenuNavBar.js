@@ -1,19 +1,19 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import Container from '@mui/material/Container';
 import MenuIcon from '@mui/icons-material/Menu';
-import {Avatar, Menu, Toolbar,} from "@mui/material";
-import {Box} from "@mui/system";
-import {Link, useLocation} from "react-router-dom";
+import { Avatar, Menu, Toolbar, } from "@mui/material";
+import { Box } from "@mui/system";
+import { Link, useLocation } from "react-router-dom";
 import PersonIcon from '@mui/icons-material/Person';
 import LogoMinistere from "../../assets/logoMinistere.png";
-import {getIdUser} from "../../utils/authentification";
+import { getIdUser } from "../../utils/authentification";
 
-function ResponsiveAppBar({toggleSidebar, token}) {
+function ResponsiveAppBar({ toggleSidebar, token }) {
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
     const location = useLocation();
     const path = location.pathname;
     const [anchorEl, setAnchorEl] = useState(null);
-    const idUser = getIdUser(token);
+    const idUser = token ? getIdUser(token) : null;
 
     useEffect(() => {
         const handleResize = () => {
@@ -48,24 +48,24 @@ function ResponsiveAppBar({toggleSidebar, token}) {
 
     return (
         <Container maxWidth="auto" className={"navbar"}>
-            <Toolbar style={{padding: 0, margin: 0}}>
+            <Toolbar style={{ padding: 0, margin: 0 }}>
                 {
                     windowWidth > 900 && (
-                        <MenuIcon className={"bouton-hamburger"} style={{fontSize: "40px"}} onClick={toggleSidebar}/>
+                        <MenuIcon className={"bouton-hamburger"} style={{ fontSize: "40px" }} onClick={toggleSidebar} />
                     )}
                 {windowWidth < 900 && token && token.token && ( // Correction ici, vérifiez si token est défini et s'il a une propriété token
-                    <MenuIcon className={"bouton-hamburger"} style={{fontSize: "40px"}} onClick={toggleSidebar}/>
+                    <MenuIcon className={"bouton-hamburger"} style={{ fontSize: "40px" }} onClick={toggleSidebar} />
                 )}
-                <img src={LogoMinistere} alt="logo" className={"logoMinistere"}/>
+                <img src={LogoMinistere} alt="logo" className={"logoMinistere"} />
                 <div className={"title_container"}>
                     <div className={"title_page"}>{getPageTitle()}</div>
                     <div className={"title_bienvenue"}> Bienvenue</div>
                 </div>
-                <Box sx={{flexGrow: 1}}/>
+                <Box sx={{ flexGrow: 1 }} />
                 {token && token.token && (
                     <>
                         <Link to={"/ressource/ajout"} className={"btn_creer"}> + Créer</Link>
-                        <Avatar className={"avatar"} onClick={handleClick}><PersonIcon/></Avatar>
+                        <Avatar className={"avatar"} onClick={handleClick}><PersonIcon /></Avatar>
                         <Menu
                             id="simple-menu"
                             anchorEl={anchorEl}
@@ -79,7 +79,7 @@ function ResponsiveAppBar({toggleSidebar, token}) {
                     </>
                 )}
                 {windowWidth < 900 && !token && (
-                    <MenuIcon className={"bouton-hamburger"} style={{fontSize: "40px"}} onClick={toggleSidebar}/>
+                    <MenuIcon className={"bouton-hamburger"} style={{ fontSize: "40px" }} onClick={toggleSidebar} />
                 )}
             </Toolbar>
         </Container>

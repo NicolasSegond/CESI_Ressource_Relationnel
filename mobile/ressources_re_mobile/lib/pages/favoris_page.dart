@@ -78,7 +78,7 @@ class _FavorisPageState extends State<FavorisPage> {
         _ressources = members.map((e) => Progression.fromJson(e)).toList();
       });
     } else {
-      if (response['error'].contains("DECONNEXION NECESSAIRE")) {
+      if (response['error'].contains("DECONNEXION NECCESSAIRE")) {
         Navigator.pushReplacementNamed(context, '/connexion');
       } else {
         throw Exception('Failed to load data');
