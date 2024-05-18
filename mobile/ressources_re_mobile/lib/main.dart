@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:floating_bottom_navigation_bar/floating_bottom_navigation_bar.dart';
 import 'package:ressources_re_mobile/pages/catalogue_page.dart';
 import 'package:ressources_re_mobile/pages/inscription_page.dart';
 import 'package:ressources_re_mobile/pages/favoris_page.dart';
 import 'package:ressources_re_mobile/pages/connexion_page.dart';
+import 'package:ressources_re_mobile/pages/ajout_ressource_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -25,6 +25,7 @@ class MyApp extends StatelessWidget {
         '/inscription': (context) => const MyMainPage(title: "Inscription", initialIndex: 1),
         '/connexion': (context) => const MyMainPage(title: "Connexion", initialIndex: 2),
         '/favoris': (context) => const MyMainPage(title: "Mes favoris", initialIndex: 3),
+        '/ajoutRessource': (context) => const MyMainPage(title: "Ajouter Ressource", initialIndex: 4)
       },
       initialRoute: '/',
     );
@@ -68,6 +69,7 @@ class _MyMainPageState extends State<MyMainPage> {
         SignUp(),
         Login(),
         FavorisPage(),
+        AjoutRessourcePage(),
       ][_index],
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.white,
@@ -83,6 +85,7 @@ class _MyMainPageState extends State<MyMainPage> {
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Inscription'),
           BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Connexion'),
           BottomNavigationBarItem(icon: Icon(Icons.favorite), label: 'Mes favoris'),
+          BottomNavigationBarItem(icon: Icon(Icons.login), label: 'ajoutRessource')
         ],
       ),
     );
