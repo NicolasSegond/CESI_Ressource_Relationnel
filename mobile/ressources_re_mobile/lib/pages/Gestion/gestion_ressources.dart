@@ -28,18 +28,45 @@ class GestionRessources extends StatefulWidget {
 class _GestionRessourcesState extends State<GestionRessources> {
   late Future<List<dynamic>> futureRessources;
   List<dynamic> ressources = [];
+  List<dynamic> statuts = [];
+  String? _selectedStatutId;
   int _currentPage = 1;
   int _totalPages = 1;
 
   @override
   void initState() {
     super.initState();
-    futureRessources = fetchRessources(_currentPage);
+    fetchStatuts();
+    futureRessources = fetchRessources(_currentPage, _selectedStatutId);
   }
 
-  Future<List<dynamic>> fetchRessources(int page) async {
+  Future<void> fetchStatuts() async {
     Map<String, dynamic> response = await customFetch({
-      'url': ApiConfig.apiUrl + '/api/ressources?page=$page',
+      'url': ApiConfig.apiUrl + '/api/statuts?page=1',
+      'method': 'GET',
+      'headers': {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (response['error'] == '') {
+      final dynamic result = json.decode(response['data']);
+      setState(() {
+        statuts = result['hydra:member'];
+      });
+    } else {
+      throw Exception('Failed to load statuts');
+    }
+  }
+
+  Future<List<dynamic>> fetchRessources(int page, String? statutId) async {
+    String url = ApiConfig.apiUrl + '/api/ressources?page=$page';
+    if (statutId != null && statutId.isNotEmpty) {
+      url += '&statut=$statutId';
+    }
+
+    Map<String, dynamic> response = await customFetch({
+      'url': url,
       'method': 'GET',
       'headers': {
         'Content-Type': 'application/json',
@@ -87,7 +114,7 @@ class _GestionRessourcesState extends State<GestionRessources> {
 
     if (response['error'] == '') {
       setState(() {
-        futureRessources = fetchRessources(_currentPage);
+        futureRessources = fetchRessources(_currentPage, _selectedStatutId);
       });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Ressource supprimée avec succès !')),
@@ -109,7 +136,7 @@ class _GestionRessourcesState extends State<GestionRessources> {
 
     if (response['error'] == '') {
       setState(() {
-        futureRessources = fetchRessources(_currentPage);
+        futureRessources = fetchRessources(_currentPage, _selectedStatutId);
       });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Ressource acceptée avec succès !')),
@@ -131,7 +158,7 @@ class _GestionRessourcesState extends State<GestionRessources> {
 
     if (response['error'] == '') {
       setState(() {
-        futureRessources = fetchRessources(_currentPage);
+        futureRessources = fetchRessources(_currentPage, _selectedStatutId);
       });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Ressource refusée avec succès !')),
@@ -153,7 +180,7 @@ class _GestionRessourcesState extends State<GestionRessources> {
 
     if (response['error'] == '') {
       setState(() {
-        futureRessources = fetchRessources(_currentPage);
+        futureRessources = fetchRessources(_currentPage, _selectedStatutId);
       });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Ressource suspendue avec succès !')),
@@ -246,7 +273,7 @@ class _GestionRessourcesState extends State<GestionRessources> {
     if (_currentPage > 1) {
       setState(() {
         _currentPage--;
-        futureRessources = fetchRessources(_currentPage);
+        futureRessources = fetchRessources(_currentPage, _selectedStatutId);
       });
     }
   }
@@ -255,7 +282,7 @@ class _GestionRessourcesState extends State<GestionRessources> {
     if (_currentPage < _totalPages) {
       setState(() {
         _currentPage++;
-        futureRessources = fetchRessources(_currentPage);
+        futureRessources = fetchRessources(_currentPage, _selectedStatutId);
       });
     }
   }
@@ -270,6 +297,22 @@ class _GestionRessourcesState extends State<GestionRessources> {
         padding: const EdgeInsets.all(10.0),
         child: Column(
           children: [
+            DropdownButton<String>(
+              hint: Text("Sélectionnez un statut"),
+              value: _selectedStatutId,
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedStatutId = newValue;
+                  futureRessources = fetchRessources(_currentPage, _selectedStatutId);
+                });
+              },
+              items: statuts.map<DropdownMenuItem<String>>((dynamic statut) {
+                return DropdownMenuItem<String>(
+                  value: statut['id'].toString(),
+                  child: Text(statut['nomStatut']),
+                );
+              }).toList(),
+            ),
             Expanded(
               child: FutureBuilder<List<dynamic>>(
                 future: futureRessources,
