@@ -13,6 +13,8 @@ import PageRessource from "./page/Ressource/pageRessource";
 import Admin from "./page/Administration/RootAdmin";
 import AdminDashboard, {loader as AdminDashboardLoader} from "./page/Administration/DashboardAdmin";
 import GestionAdmin from "./page/Administration/Gestion/GestionAdmin";
+import ListFavorie from "./composants/Dashboard/ListTypeProgression";
+import Dashboard from "./page/DashBoardUser/Dashboard";
 import ModifierRessource from "./page/Ressource/modifierRessource"; // Importez le composant pour la modification de la ressource
 
 function App() {
@@ -34,6 +36,11 @@ function App() {
                     path: '/',
                     element: <ListRessources/>,
                     loader: GetDefaultList
+                },
+                {
+                    path: '/DashBoard',
+                    element: <Dashboard/>,
+                    loader: AjoutLoader
                 },
                 {
                     path: '/modifressource/:id', // Chemin pour modifier une ressource

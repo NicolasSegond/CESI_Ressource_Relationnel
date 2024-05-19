@@ -57,6 +57,10 @@ class _CatalogueState extends State<Catalogue> {
     fetchData();
   }
 
+  void _refreshPage() {
+    setState(() {});
+  }
+
   void updatePage(int newPage) {
     setState(() {
       currentPage = newPage;
@@ -103,8 +107,6 @@ class _CatalogueState extends State<Catalogue> {
 
   Future<List<Ressource>> fetchAlbum() async {
     String url = buildUrlWithFilters(selectedFilters);
-
-    print(url);
 
     Map<String, dynamic> response = await customFetch({
       'url': url,
@@ -475,8 +477,10 @@ class _CatalogueState extends State<Catalogue> {
                                                             const Alignment(
                                                                 0.8, -0.8),
                                                         child: ModalOptions(
+                                                            onShareOrUnshare: _refreshPage,
                                                             currentUser: userId,
-                                                            ressource: album),
+                                                            ressource: album
+                                                        ),
                                                       ),
                                                     ),
                                                   ],

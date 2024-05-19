@@ -41,7 +41,7 @@ class TypeProgression {
   }
 
   TypeProgression.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    libelle = json['libelle'];
+    id = json['id']!= null ? json['id'] : null;
+    libelle = json['libelle'] != null ? json['libelle'] : null;
   }
 }

@@ -6,6 +6,7 @@ use App\Entity\Ressource;
 use App\Entity\Statut;
 use App\Repository\RessourceRepository;
 use App\Repository\UtilisateurRepository;
+use App\Repository\VisibiliteRepository;
 use App\Service\EmailService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -16,9 +17,10 @@ class RessourceController extends AbstractController
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private RessourceRepository    $ressourceRepository,
-        private UtilisateurRepository  $utilisateurRepository,
-        private EmailService           $emailService
+        private RessourceRepository $ressourceRepository,
+        private UtilisateurRepository $utilisateurRepository,
+        private VisibiliteRepository $visibiliteRepository,
+        private EmailService $emailService
     )
     {
     }
@@ -150,9 +152,13 @@ class RessourceController extends AbstractController
 
         $ressource = $this->ressourceRepository->find($request->attributes->get('id'));
 
+        $visibilite =  $this->visibiliteRepository->findOneBy(['id' => '3']);
+
+        $ressource->setVisibilite($visibilite);
+
         foreach ($voirRessourceIds as $userId) {
             // Charger l'utilisateur correspondant à l'identifiant
-            $utilisateur = $this->utilisateurRepository->find($userId);
+            $utilisateur = $this->utilisateurRepository->findOneBy(['email' => $userId]);
 
             if ($utilisateur) {
                 // Ajouter l'utilisateur à la ressource
@@ -168,26 +174,32 @@ class RessourceController extends AbstractController
         return $this->json($voirRessourceIds);
     }
 
+
     public function nePlusVoir(Request $request)
     {
+        $data = json_decode($request->getContent(), true);
 
-        // Récupérer la valeur de la clé "nePlusVoirRessource" du tableau JSON décodé
-        $id_utilisateur = $request->query->get('utilisateur_id');
+        $id_utilisateur = $data['utilisateur_id'];
 
         $ressource = $this->ressourceRepository->find($request->attributes->get('id'));
 
-        if (!$ressource) {
+        if(!$ressource){
             throw new HttpException(404, "La ressource n'existe pas");
         }
 
         // Charger l'utilisateur correspondant à l'identifiant
-        $utilisateur = $this->utilisateurRepository->find($id_utilisateur);
+        $utilisateur = $this->utilisateurRepository->findOneBy(['email' => $id_utilisateur]);
 
-        if ($utilisateur) {
+        if($utilisateur){
             // Ajouter l'utilisateur à la ressource
             $ressource->removeVoirRessource($utilisateur);
-        } else {
+        } else{
             throw new HttpException(404, "L'utilisateur n'existe pas");
+        }
+
+        if($ressource->getVoirRessource()->isEmpty()){
+            $visibilite =  $this->visibiliteRepository->findOneBy(['id' => '2']);
+            $ressource->setVisibilite($visibilite);
         }
 
         // Enregistrer les modifications

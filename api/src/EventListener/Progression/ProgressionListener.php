@@ -7,6 +7,7 @@ use App\ApiResource\ProgressionAPI;
 use App\Entity\Progression;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\ViewEvent;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
@@ -30,6 +31,13 @@ class ProgressionListener implements EventSubscriberInterface
     public function prePersist(ViewEvent $event): void
     {
         $entity = $event->getControllerResult();
+        $request = $event->getRequest();
+
+        // Vérifie le type de requête HTTP
+        if ($request->getMethod() === Request::METHOD_DELETE) {
+            // Ne pas effectuer de vérification pour l'opération DELETE
+            return;
+        }
 
         if (!$entity instanceof ProgressionAPI) {
             return;

@@ -18,8 +18,6 @@ const Root = (roles) => {
         console.log("isOpen", isOpen)
     };
 
-    console.log("roles", roles);
-
     return (
         <Grid container spacing={1} width={"100vw"} className={"grid-container"}>
             {/* Barre latérale à gauche */}

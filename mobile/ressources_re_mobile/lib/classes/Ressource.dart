@@ -26,7 +26,7 @@ class Ressource {
   Categorie? categorie;
   List<Commentaire> commentaires = [];
   List<Progression> progressions = [];
-  List<VoirRessource> voirRessources = [];
+  List<Utilisateur> voirRessources = [];
   List<Fichier> fichiers = [];
 
   Ressource();
@@ -197,23 +197,18 @@ class Ressource {
     }
   }
 
-  List<VoirRessource> getVoirRessources() {
+  List<Utilisateur> getVoirRessources() {
     return voirRessources;
   }
 
-  void addVoirRessource(VoirRessource voirRessource) {
+  void addVoirRessource(Utilisateur voirRessource) {
     if (!voirRessources.contains(voirRessource)) {
       voirRessources.add(voirRessource);
-      voirRessource.setRessource(this);
     }
   }
 
-  void removeVoirRessource(VoirRessource voirRessource) {
-    if (voirRessources.remove(voirRessource)) {
-      if (voirRessource.getRessource() == this) {
-        voirRessource.setRessource(null);
-      }
-    }
+  void removeVoirRessource(Utilisateur voirRessource) {
+    voirRessources.remove(voirRessource);
   }
 
   List<Fichier> getFichiers() {
@@ -264,28 +259,26 @@ class Ressource {
 
         categorie = json['categorie'] != null ? Categorie.fromJson(json['categorie']) : null;
 
-        if (json['commentaires'] != null) {
-          for (var commentaireJson in json['commentaires']) {
-            commentaires.add(Commentaire.fromJson(commentaireJson));
-          }
-        }
-
-        if (json['progressions'] != null) {
-          for (var progressionJson in json['progressions']) {
-            progressions.add(Progression.fromJson(progressionJson));
-          }
-        }
-
-        if (json['voirRessources'] != null) {
-          for (var voirRessourceJson in json['voirRessources']) {
-            voirRessources.add(VoirRessource.fromJson(voirRessourceJson));
-          }
-        }
-
         if (json['fichiers'] != null) {
           for (var fichierJson in json['fichiers']) {
             fichiers.add(Fichier.fromJson(fichierJson));
           }
+        }
+
+        if(json['voirRessource'] != null){
+          for (var voirRessource in json['voirRessource']) {
+            voirRessources.add(Utilisateur.fromJson(voirRessource));
+          }
+        } else{
+          voirRessources = [];
+        }
+
+        if(json['commentaires'] != null){
+          for (var commentaire in json['commentaires']) {
+            commentaires.add(Commentaire.fromJson(commentaire));
+          }
+        } else{
+          commentaires = [];
         }
   }
 }

@@ -1,28 +1,42 @@
-import React, { useState, useEffect } from 'react';
+import React, {useEffect, useState} from 'react';
 import Pagination from "../../composants/General/PaginationGlobal";
 import CardRessource from "../../composants/Ressource/CardRessource";
-import { customFetch } from "../../utils/customFetch";
-import { useLoaderData } from "react-router-dom";
+import {customFetch} from "../../utils/customFetch";
+import {useLoaderData} from "react-router-dom";
 import TriComponent from "../../composants/Ressource/TriComponent";
-import { getIdUser, getTokenDisconnected } from "../../utils/authentification";
+import {getIdUser, getRolesUser, getTokenDisconnected} from "../../utils/authentification";
 import styles from './listRessources.module.css';
+import {Snackbar} from '@mui/material';
 
-function ListRessources({ }) {
-
+function ListRessources({}) {
     const [data, setData] = useState([]);
     const [tri, setTri] = useState({});
-    const { options } = useLoaderData(); // Utiliser les options récupérées du loader
+    const {options} = useLoaderData(); // Utiliser les options récupérées du loader
     const [loading, setLoading] = useState(true);
     const [totalPages, setTotalPages] = useState(1); // Initialisation du nombre total de pages à 1
     const [currentPage, setCurrentPage] = useState(1);
     const token = getTokenDisconnected();
     const connectUser = token ? getIdUser(token) : null;
+    const [userRoles, setUserRoles] = useState([]);
+    const [alertMessage, setAlertMessage] = useState(null); // State pour gérer le message de l'alerte
+
+    useEffect(() => {
+        const fetchData = async () => {
+            if (token && connectUser) {
+                const rolesUser = await getRolesUser(connectUser);
+                setUserRoles(rolesUser);
+            }
+        };
+
+        fetchData();
+
+    }, []);
 
     const visibilite = [
-        { libelle: 'Public', id: 1 },
-        { libelle: 'Privé', id: 2 },
-        { libelle: 'Partage', id: 3 },
-        { libelle: 'Mes Ressources', id: 4 }
+        {libelle: 'Public', id: 1},
+        {libelle: 'Privé', id: 2},
+        {libelle: 'Partage', id: 3},
+        {libelle: 'Mes Ressources', id: 4}
     ];
 
     const [selectedVisibilite, setSelectedVisibilite] = useState(null);
@@ -42,7 +56,7 @@ function ListRessources({ }) {
 
     const handleChangeTri = (field, value) => {
         if (value !== undefined) {
-            setTri({ ...tri, [field]: value });
+            setTri({...tri, [field]: value});
             // Effectuez ici l'action appropriée en fonction des nouveaux critères de tri
         }
     };
@@ -72,12 +86,11 @@ function ListRessources({ }) {
                 if (selectedVisibilite !== 4) {
                     url += `&visibilite=${selectedVisibilite}`;
                 }
-            }
-            else {
+            } else {
                 url += `&visibilite=1`;
             }
 
-            const { data, error } = await customFetch({
+            const {data, error} = await customFetch({
                 url: url,
                 method: 'GET',
                 headers: {
@@ -137,10 +150,15 @@ function ListRessources({ }) {
         return 1;
     };
 
+    // Fonction pour afficher un message d'alerte
+    const showAlertMessage = (message) => {
+        setAlertMessage(message);
+    };
+
     return (
         <div className={styles['container']}>
             <h1>Ressources:</h1>
-            <br />
+            <br/>
             <div className={styles['container-filtre']}>
                 <TriComponent
                     label="Catégories"
@@ -168,7 +186,7 @@ function ListRessources({ }) {
                     defautSelect={1}
                 />}
             </div>
-            <br /><br />
+            <br/><br/>
             {loading ? (
                 <p>Chargement des ressources...</p>
             ) : (
@@ -176,34 +194,44 @@ function ListRessources({ }) {
                     {data.map(ressource => (
                         <CardRessource
                             key={ressource['@id']}
-                            id={ressource.id}
+                            id={ressource['id']}
                             imageUrl={`http://127.0.0.1:8000/images/book/${ressource.miniature}`}
                             title={ressource.titre}
                             description={ressource.contenu}
-                            vue = {ressource.nombreVue}
-                            nom = {ressource.proprietaire.nom}
-                            prenom = {ressource.proprietaire.prenom}
-                            date_creation = {ressource.dateCreation}
-                            visibilite = {ressource.visibilite.libelle}
-                            typeRessource = {ressource.typeDeRessource.libelle}
-                            typeRelations ={ressource.typeRelations}
-                            categorie = {ressource.categorie.nom}
-                            nbCommentaire = {ressource.commentaires.length}
-                            proprietaireId = {ressource.proprietaire.id}
-                            connectUserId = {connectUser}
-                            resourceId = {ressource.id}
-
+                            proprietaire={ressource.proprietaire}
+                            vue={ressource.nombreVue}
+                            nom={ressource.proprietaire.nom}
+                            prenom={ressource.proprietaire.prenom}
+                            date_creation={ressource.dateCreation}
+                            visibilite={ressource.visibilite.libelle}
+                            typeRessource={ressource.typeDeRessource.libelle}
+                            typeRelations={ressource.typeRelations}
+                            categorie={ressource.categorie.nom}
+                            nbCommentaire={ressource.commentaires.length}
+                            voirRessource={ressource.voirRessource}
+                            idUser={connectUser}
+                            userRoles={userRoles}
+                            progressions={ressource.progressions}
+                            showAlertMessage={showAlertMessage} // Passer la fonction pour afficher l'alerte au composant enfant
                         />
                     ))}
-                    <br /><br />
-                    <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
+                    <br/><br/>
+                    <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange}/>
                 </div>
             )}
+            {/* Affichage de l'alerte */}
+            <Snackbar
+                open={!!alertMessage}
+                autoHideDuration={6000}
+                onClose={() => setAlertMessage(null)}
+                message={alertMessage}
+            />
         </div>
     );
 }
 
 export default ListRessources;
+
 export async function loader() {
     try {
         const response = await fetch('http://127.0.0.1:8000/api/options');
