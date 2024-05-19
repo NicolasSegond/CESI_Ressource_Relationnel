@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from "react";
 import Logo from "../../assets/logo.png";
 import {Link} from "react-router-dom";
-import StarIcon from '@mui/icons-material/Star';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import CloseIcon from '@mui/icons-material/Close';
 import './MenuStyle.css';
@@ -34,11 +33,10 @@ const SideBar = ({isOpen, toggleSidebar, token}) => {
         {
             icon: <DashboardIcon className={"icon"}/>,
             texte: "Tableau de bord",
-            chemin: "/inscription",
+            chemin: "/dashboard",
             tokenNecessaire: true
         },
         {icon: <LibraryBooksIcon className={"icon"}/>, texte: "Catalogue des ressources", chemin: "/"},
-        {icon: <StarIcon className={"icon"}/>, texte: "Favoris", chemin: "/inscription", tokenNecessaire: true},
         {
             icon: <AdminPanelSettingsIcon className={"icon"}/>,
             texte: "Administration Dashboard",
