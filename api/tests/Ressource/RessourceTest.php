@@ -74,8 +74,53 @@ class RessourceTest extends KernelTestCase
         $this->assertArrayHasKey('hydra:member', $json);
         $this->assertArrayHasKey('hydra:totalItems', $json);
 
-        foreach($json['hydra:member'] as $ressource) {
+        foreach ($json['hydra:member'] as $ressource) {
             $this->assertEquals(1, $ressource['statut']['id']);
+        }
+    }
+
+    public function testGetRessourceWithTwoParameters200()
+    {
+
+        $client = new \GuzzleHttp\Client(['base_uri' => 'http://localhost:8000']);
+        $response = $client->request('GET', '/api/ressources', [
+            'query' => ['statut' => 1, 'visibilite' => 1],
+            'http_errors' => false,
+        ]);
+
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $json = json_decode($response->getBody()->getContents(), true);
+
+        $this->assertArrayHasKey('hydra:member', $json);
+        $this->assertArrayHasKey('hydra:totalItems', $json);
+
+        foreach ($json['hydra:member'] as $ressource) {
+            $this->assertEquals(1, $ressource['statut']['id']);
+            $this->assertEquals('/api/visibilites/1', $ressource['visibilite']['@id']);
+        }
+    }
+
+    public function testGetRessourceWithThreeParameters200()
+    {
+
+        $client = new \GuzzleHttp\Client(['base_uri' => 'http://localhost:8000']);
+        $response = $client->request('GET', '/api/ressources', [
+            'query' => ['statut' => 1, 'visibilite' => 1, 'typeDeRessource' => 1],
+            'http_errors' => false,
+        ]);
+
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $json = json_decode($response->getBody()->getContents(), true);
+
+        $this->assertArrayHasKey('hydra:member', $json);
+        $this->assertArrayHasKey('hydra:totalItems', $json);
+
+        foreach ($json['hydra:member'] as $ressource) {
+            $this->assertEquals(1, $ressource['statut']['id']);
+            $this->assertEquals('/api/visibilites/1', $ressource['visibilite']['@id']);
+            $this->assertEquals('/api/type_de_ressources/1', $ressource['typeDeRessource']['@id']);
         }
     }
 }
