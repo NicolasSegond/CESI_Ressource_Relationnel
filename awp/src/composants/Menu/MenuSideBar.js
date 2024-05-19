@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from "react";
 import Logo from "../../assets/logo.png";
 import {Link} from "react-router-dom";
-import IosShareIcon from '@mui/icons-material/IosShare';
 import StarIcon from '@mui/icons-material/Star';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import CloseIcon from '@mui/icons-material/Close';
@@ -11,8 +10,10 @@ import HowToRegIcon from '@mui/icons-material/HowToReg';
 import PersonIcon from '@mui/icons-material/Person';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
 
-const SideBar = ({ isOpen, toggleSidebar, token }) => {
+const SideBar = ({isOpen, toggleSidebar, token}) => {
     const [userRoles, setUserRoles] = useState([]);
 
     useEffect(() => {
@@ -30,13 +31,34 @@ const SideBar = ({ isOpen, toggleSidebar, token }) => {
 
 
     const menuItems = [
-        { icon: <DashboardIcon className={"icon"}/>, texte: "Tableau de bord", chemin: "/inscription", tokenNecessaire: true },
-        { icon: <LibraryBooksIcon className={"icon"} />, texte: "Catalogue des ressources", chemin: "/ressource/lists" },
-        { icon: <IosShareIcon className={"icon"} />, texte: "Fichiers partagés", chemin: "/inscription", tokenNecessaire: true },
-        { icon: <StarIcon className={"icon"} />, texte: "Favoris", chemin: "/inscription", tokenNecessaire: true },
-        { icon: <IosShareIcon className={"icon"} />, texte: "Administration", chemin: "/admin/dashboard", tokenNecessaire: true, estAdmin: true },
-        { icon: <PersonIcon className={"icon"} />, texte: "Mon Profil", chemin: "/profile", tokenNecessaire: true, userRole: "ROLE_USER" },
-        { icon: <ExitToAppIcon className={"icon"} />, texte: "Déconnexion", chemin: "/deconnexion", tokenNecessaire: true },
+        {
+            icon: <DashboardIcon className={"icon"}/>,
+            texte: "Tableau de bord",
+            chemin: "/inscription",
+            tokenNecessaire: true
+        },
+        {icon: <LibraryBooksIcon className={"icon"}/>, texte: "Catalogue des ressources", chemin: "/"},
+        {icon: <StarIcon className={"icon"}/>, texte: "Favoris", chemin: "/inscription", tokenNecessaire: true},
+        {
+            icon: <AdminPanelSettingsIcon className={"icon"}/>,
+            texte: "Administration Dashboard",
+            chemin: "/admin/dashboard",
+            tokenNecessaire: true,
+            estAdmin: true
+        },
+        {
+            icon: <SupervisorAccountIcon className={"icon"}/>,
+            texte: "Administration Gestions",
+            chemin: "/admin/gestion",
+            tokenNecessaire: true,
+            estAdmin: true
+        },
+        {
+            icon: <ExitToAppIcon className={"icon"}/>,
+            texte: "Déconnexion",
+            chemin: "/deconnexion",
+            tokenNecessaire: true
+        },
     ];
 
     return (
@@ -56,11 +78,11 @@ const SideBar = ({ isOpen, toggleSidebar, token }) => {
                 {!token && (
                     <>
                         <Link to="/connexion" className="lien-menuSideBar">
-                            <PersonIcon />
+                            <PersonIcon/>
                             Connexion
                         </Link>
                         <Link to="/inscription" className="lien-menuSideBar">
-                            <HowToRegIcon />
+                            <HowToRegIcon/>
                             Inscription
                         </Link>
                     </>

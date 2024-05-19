@@ -31,7 +31,7 @@ function App() {
                     element: <VerifCodeInscription/>,
                 },
                 {
-                    path: '/ressource/lists',
+                    path: '/',
                     element: <ListRessources/>,
                     loader: GetDefaultList
                 },
@@ -41,7 +41,7 @@ function App() {
                 }, // Définition de la route pour modifier une ressource
                 {
                     path: 'ressources/:slug',
-                    element: <PageRessource />
+                    element: <PageRessource/>
                 },
                 {
                     path: '/admin',
