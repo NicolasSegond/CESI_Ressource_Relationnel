@@ -5,6 +5,7 @@ import 'package:ressources_re_mobile/classes/Utilisateur.dart';
 import 'package:ressources_re_mobile/utilities/authentification.dart';
 import 'package:ressources_re_mobile/utilities/customFetch.dart';
 import 'package:ressources_re_mobile/utilities/apiConfig.dart';
+import 'package:ressources_re_mobile/classes/HydraView.dart';
 
 void main() {
   runApp(MyApp());
@@ -51,9 +52,23 @@ class _GestionUtilisateurState extends State<GestionUtilisateur> {
       final dynamic result = json.decode(response['data']);
       final List<dynamic> members = result['hydra:member'];
 
-      setState(() {
-        _totalPages = ((result['hydra:totalItems'] - 1) / 10).ceil() + 1;
-      });
+      if (result.containsKey('hydra:view')) {
+        HydraView hydraView = HydraView.fromJson(result['hydra:view']);
+        String lastPageUrl = hydraView.last;
+        List<String> parts = lastPageUrl.split("page=");
+        setState(
+          () {
+            _totalPages = int.tryParse(parts.last) ?? 1;
+          },
+        );    
+      } else {
+        setState(
+          () {
+            _totalPages = 1;
+          },
+        );  
+      }
+
       return members.map((json) => Utilisateur.fromJson(json)).toList();
     } else {
       if (response['error'].contains("DECONNEXION NECCESSAIRE")) {
@@ -79,6 +94,9 @@ class _GestionUtilisateurState extends State<GestionUtilisateur> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Utilisateur promu modérateur!')),
         );
+        setState(() {
+          futureUtilisateurs = fetchUtilisateurs(_currentPage);
+        });
       } else {
         if (response['error'].contains("DECONNEXION NECESSAIRE")) {
           Navigator.pushReplacementNamed(context, '/connexion');
@@ -102,6 +120,9 @@ class _GestionUtilisateurState extends State<GestionUtilisateur> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Utilisateur promu administrateur!')),
         );
+        setState(() {
+          futureUtilisateurs = fetchUtilisateurs(_currentPage);
+        });
       } else {
         if (response['error'].contains("DECONNEXION NECESSAIRE")) {
           Navigator.pushReplacementNamed(context, '/connexion');
@@ -125,6 +146,9 @@ class _GestionUtilisateurState extends State<GestionUtilisateur> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Utilisateur bannis avec succès!')),
         );
+        setState(() {
+          futureUtilisateurs = fetchUtilisateurs(_currentPage);
+        });
       } else {
         if (response['error'].contains("DECONNEXION NECESSAIRE")) {
           Navigator.pushReplacementNamed(context, '/connexion');
@@ -148,6 +172,9 @@ class _GestionUtilisateurState extends State<GestionUtilisateur> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Utilisateur débannis avec succès!')),
         );
+        setState(() {
+          futureUtilisateurs = fetchUtilisateurs(_currentPage);
+        });
       } else {
         if (response['error'].contains("DECONNEXION NECESSAIRE")) {
           Navigator.pushReplacementNamed(context, '/connexion');
@@ -171,6 +198,9 @@ class _GestionUtilisateurState extends State<GestionUtilisateur> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Utilisateur dégrader avec succès!')),
         );
+        setState(() {
+          futureUtilisateurs = fetchUtilisateurs(_currentPage);
+        });
       } else {
         if (response['error'].contains("DECONNEXION NECESSAIRE")) {
           Navigator.pushReplacementNamed(context, '/connexion');
@@ -193,7 +223,7 @@ class _GestionUtilisateurState extends State<GestionUtilisateur> {
         text = 'Non vérifié';
         color = Colors.orange;
         break;
-      case 3:
+      case 2:
         text = 'Banni';
         color = Colors.red;
         break;
