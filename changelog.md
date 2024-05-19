@@ -1,3 +1,10 @@
+Version 1.0.4 - 19 mai 2024
+
+- Page statistiques REACT
+- Fix bug
+- Page modification REACT
+- Commentaires et pièces jointes REACT et Flutter
+
 Version 1.0.3 - 13 mai 2024
 
 - Page favoris et mise de côté
@@ -23,5 +30,5 @@ Version 1.0.0 - 22 mars 2024
 
 - Création du projet
 - KAN-22, KAN-24 : Création de l'authentification
-- KAN-26 : Mise en place de l'authentification via les tokens 
+- KAN-26 : Mise en place de l'authentification via les tokens
 - KAN-33, KAN-32 : Création Header et Footer
