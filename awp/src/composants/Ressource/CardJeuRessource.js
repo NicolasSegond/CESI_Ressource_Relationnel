@@ -1,4 +1,4 @@
-import React, {useMemo, useState} from 'react';
+import React, {useState} from 'react';
 import './CardRessource.css';
 import Vu from "../../assets/vue.png";
 import Com from "../../assets/commentaire.png";
@@ -32,28 +32,22 @@ function formatDelai(date) {
     }
 }
 
-function Card({
-                  id,
-                  imageUrl,
-                  title,
-                  description,
-                  vue,
-                  nom,
-                  prenom,
-                  date_creation,
-                  visibilite,
-                  typeRessource,
-                  typeRelations,
-                  categorie,
-                  nbCommentaire,
-                  proprietaireId,
-                  connectUserId,
-                  resourceId
-              }) {
+function CardJeuRessource({
+                              id,
+                              imageUrl,
+                              title,
+                              vue,
+                              date_creation,
+                              typeRessource,
+                              typeRelations,
+                              categorie,
+                              nbCommentaire,
+                              proprietaireId,
+                              connectUserId,
+                              resourceId
+                          }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalContent, setModalContent] = useState(""); // Contenu du modal spécifique à chaque ressource
-    const [color] = useState(useMemo(() => couleurAleatoire(), [])); // Calcul de la couleur une seule fois
-    const [uniqueModalContent, setUniqueModalContent] = useState(""); // Contenu modal unique pour chaque ressource
 
     const typeRelationLabels = typeRelations.map(typeRelation => (
         <span key={typeRelation['@id']} className="typeRelation">{typeRelation.libelle}</span>
@@ -63,11 +57,10 @@ function Card({
 
     const toggleModal = (content) => {
         setIsModalOpen(!isModalOpen);
-        setUniqueModalContent(content); // Stocker le contenu modal unique pour cette ressource
     };
 
     return (
-        <Link to={`/ressources/${id}`} style={{textDecoration: 'none', color: 'inherit'}}>
+        <Link to={`/ressources/jeu/${id}`} style={{textDecoration: 'none', color: 'inherit'}}>
             <div className="card">
                 <img src={imageUrl} alt={title} className="card-image"/>
                 <div className="card-content">
@@ -76,7 +69,7 @@ function Card({
                         <div className="modal-container"> {/* Conteneur pour l'icône de menu et la modal */}
                             <img src={Menu} alt={"voir plus logo"} onClick={(e) => {
                                 e.preventDefault();
-                                toggleModal(description, e);
+                                toggleModal(e);
                             }}/>
                             {isModalOpen && (
                                 <div className="modal" onClick={(e) => {
@@ -98,14 +91,6 @@ function Card({
                             <div className="categorie">{categorie}</div>
                         </div>
                         <div className="description">
-                            <div className="info">
-                                <div className={"pdp-utilisateur"}
-                                     style={{backgroundColor: color}}> {nom[0].toUpperCase()} {prenom[0].toUpperCase()}</div>
-                                <div className={"info-utilisateur"}>
-                                    <p>{nom} {prenom}</p>
-                                    <p>{delai}</p>
-                                </div>
-                            </div>
                             <div className="logo-container">
                                 <div className="card-logo">
                                     <img src={Vu} alt={"Vues"}/>
@@ -124,4 +109,4 @@ function Card({
     );
 }
 
-export default Card;
+export default CardJeuRessource;

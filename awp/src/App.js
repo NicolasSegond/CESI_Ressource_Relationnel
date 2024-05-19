@@ -13,7 +13,8 @@ import PageRessource from "./page/Ressource/pageRessource";
 import Admin from "./page/Administration/RootAdmin";
 import AdminDashboard, {loader as AdminDashboardLoader} from "./page/Administration/DashboardAdmin";
 import GestionAdmin from "./page/Administration/Gestion/GestionAdmin";
-import ModifierRessource from "./page/Ressource/modifierRessource"; // Importez le composant pour la modification de la ressource
+import ModifierRessource from "./page/Ressource/modifierRessource";
+import RessourceTypeJeu from "./page/Ressource/ressourceTypeJeu";
 
 function App() {
     const router = createBrowserRouter([
@@ -40,8 +41,12 @@ function App() {
                     element: <ModifierRessource/>,
                 }, // Définition de la route pour modifier une ressource
                 {
-                    path: 'ressources/:slug',
-                    element: <PageRessource />
+                    path: 'ressources/:id',
+                    element: <PageRessource/>
+                },
+                {
+                    path: '/ressources/jeu/169',
+                    element: <RessourceTypeJeu/>
                 },
                 {
                     path: '/admin',
