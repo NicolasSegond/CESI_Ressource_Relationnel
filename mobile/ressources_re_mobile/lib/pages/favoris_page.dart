@@ -68,8 +68,6 @@ class _FavorisPageState extends State<FavorisPage> {
       },
     }, connecter: true);
 
-    print(response['error']);
-
     if (response['error'] == '') {
       final dynamic result = json.decode(response['data']);
       final List<dynamic> members = result['hydra:member'];
