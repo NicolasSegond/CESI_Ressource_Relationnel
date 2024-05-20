@@ -18,7 +18,7 @@ Future<Map<String, dynamic>> customFetch(Map<String, dynamic> parameters, {bool 
 
   try {
     if (connecter) {
-      var token = await getToken();
+      var token = await getToken(); 
 
       final duration = await getTokenExpiration(token!['token']);
 
@@ -43,7 +43,7 @@ Future<Map<String, dynamic>> customFetch(Map<String, dynamic> parameters, {bool 
 
     var res = await http.get(
       Uri.parse(parameters['url']),
-      headers: parameters['headers']
+      headers: headers
     );
 
     data = res.body;
