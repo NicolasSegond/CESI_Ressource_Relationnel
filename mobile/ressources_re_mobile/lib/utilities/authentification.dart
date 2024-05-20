@@ -127,20 +127,21 @@ Future<List<String>> getRolesUser(int id) async {
       'url': ApiConfig.apiUrl + '/api/utilisateurs/$id/roles',
       'method': 'GET',
     });
-
-    if (response['error'] != null) {
+   
+    if (response['error'] != '') {
       if (response['error'].toString().contains('DECONNEXION NECESSAIRE')) {
         // Gérer la redirection vers la page de connexion si une déconnexion est nécessaire
         // Rediriger vers '/login' ou toute autre route appropriée
-      } else {
-        print("Une erreur s'est produite lors de la récupération des rôles : ${response['error']}");
-        throw Exception("Une erreur s'est produite lors de la récupération des rôles");
-      }
+      } 
     }
-
-    final data = response['data'] as Map<String, dynamic>;
-    final roles = data['hydra:member'] as List<dynamic>;
-
+    
+//    final data = response['data'];
+ // final roles = data['hydra:member'] as List<dynamic>;
+    final dynamic data = json.decode(response['data']);
+    print(data);
+  
+    final List<dynamic> roles = data['hydra:member'];
+    print(roles);
     if (roles.isNotEmpty) {
       // Extraire les rôles de la réponse
       final userRoles = roles[0]['roles'] as List<dynamic>;
@@ -154,4 +155,7 @@ Future<List<String>> getRolesUser(int id) async {
     print("Une erreur s'est produite lors de la récupération des rôles : $err");
     throw err;
   }
+  
 }
+
+

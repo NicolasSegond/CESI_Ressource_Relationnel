@@ -189,11 +189,14 @@ class _LoginState extends State<Login> {
                         String password = _passwordController.text;
 
                         // Appeler la méthode de connexion avec le contexte actuel
-                        Connect.login(context, email, password, (success) {
-                          if (success) {
-                            Navigator.pushNamed(context, '/');
+                         Connect.login(context, email, password, (success) {
+                        if (success) {
+                          if (widget.onLoginSuccess != null) {
+                            widget.onLoginSuccess!(); // Appeler la fonction onLoginSuccess si elle est définie
                           }
-                        });
+                         
+                        }
+                      });
                       },
                       color: Color.fromRGBO(3,152,158, 1),
                       elevation: 0,
