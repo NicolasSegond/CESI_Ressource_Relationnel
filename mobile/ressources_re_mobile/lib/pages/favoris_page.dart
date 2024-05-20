@@ -94,7 +94,7 @@ class _FavorisPageState extends State<FavorisPage> {
         });
 
       } else {
-        if (response.containsKey('error') && response['error'].contains("DECONNEXION NECESSAIRE")) {
+        if (response.containsKey('error') && response['error'].contains("DECONNEXION NECCESSAIRE")) {
           Navigator.pushReplacementNamed(context, '/connexion');
         } else {
           throw Exception('Échec du chargement des données');

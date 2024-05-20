@@ -15,6 +15,7 @@ import AdminDashboard, {loader as AdminDashboardLoader} from "./page/Administrat
 import GestionAdmin from "./page/Administration/Gestion/GestionAdmin";
 import Dashboard from "./page/DashBoardUser/Dashboard";
 import ModifierRessource from "./page/Ressource/modifierRessource"; // Importez le composant pour la modification de la ressource
+import ProfilePage, {loader as ProfileLoader} from "./page/Utilisateur/pageProfil";
 
 function App() {
     const router = createBrowserRouter([
@@ -48,6 +49,11 @@ function App() {
                 {
                     path: 'ressources/:id',
                     element: <PageRessource/>
+                },
+                {
+                    path: '/utilisateur/profil/:id',
+                    element: <ProfilePage />,
+                    loader: ProfileLoader
                 },
                 {
                     path: '/admin',
