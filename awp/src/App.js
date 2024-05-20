@@ -46,7 +46,7 @@ function App() {
                     element: <ModifierRessource/>,
                 }, // Définition de la route pour modifier une ressource
                 {
-                    path: 'ressources/:slug',
+                    path: 'ressources/:id',
                     element: <PageRessource/>
                 },
                 {

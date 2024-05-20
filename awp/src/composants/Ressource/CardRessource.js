@@ -35,15 +35,6 @@ function formatDelai(date) {
     }
 }
 
-function slugify(text) {
-    return text.toString().toLowerCase()
-        .replace(/\s+/g, '-')           // Replace spaces with -
-        .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
-        .replace(/\-\-+/g, '-')         // Replace multiple - with single -
-        .replace(/^-+/, '')             // Trim - from start of text
-        .replace(/-+$/, '');            // Trim - from end of text
-}
-
 function Card({
                   id,
                   imageUrl,
@@ -71,7 +62,6 @@ function Card({
     const [modalContent, setModalContent] = useState(""); // Contenu du modal spécifique à chaque ressource
     const [color] = useState(useMemo(() => couleurAleatoire(), [])); // Calcul de la couleur une seule fois
     const [uniqueModalContent, setUniqueModalContent] = useState(""); // Contenu modal unique pour chaque ressource
-    const slug = useMemo(() => slugify(title), [title]);
     const personnesPartageState = useState([]); // Utiliser un nom de variable différent pour l'état
     const personnesPartage = personnesPartageState[0]; // Récupérer le tableau
     const setPersonnesPartage = personnesPartageState[1]; // Récupérer la fonction pour mettre à jour le tableau
@@ -254,7 +244,7 @@ function Card({
     }
 
     return (
-        <Link to={`/ressources/${slug}`} state={{id: id}}
+        <Link to={`/ressources/${id}`}
               style={{textDecoration: 'none', color: 'inherit'}}> {/* Utilise React Router pour naviguer */}
             <div className="card">
                 <img src={imageUrl} alt={title} className="card-image"/>

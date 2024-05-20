@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {useLocation} from 'react-router-dom';
+import {useLocation, useParams} from 'react-router-dom';
 import styles from './pageRessource.module.css'
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import EditIcon from '@mui/icons-material/Edit';
@@ -13,8 +13,7 @@ import {customFetch} from "../../utils/customFetch";
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 
 function PageRessource() {
-    const location = useLocation();
-    const {id} = location.state || {};
+    const { id } = useParams();
     const [ressource, setRessource] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
