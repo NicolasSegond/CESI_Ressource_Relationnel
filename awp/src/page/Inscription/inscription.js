@@ -15,6 +15,7 @@ const Inscription = () => {
         { type: "text", name: "nom", label: "Nom", ref: nomRef },
         { type: "text", name: "prenom", label: "Prénom", ref: prenomRef },
         { type: "email", name: "email", label: "Email", ref: emailRef },
+        { label: "pseudo", type: 'text', name: 'pseudo', visibility: true},
         { type: "password", name: "motDePasse", label: "Mot de Passe", ref: motDePasseRef },
         { type: "password", name: "motDePasseControl", label: "Confirmer Mot de Passe", ref: motDePasseControlRef }
     ]);

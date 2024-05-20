@@ -11,6 +11,7 @@ const Connexion = () => {
     const [formData, setFormData] = useState([
         { label: "Email", type: "email", name: "email", ref: emailRef },
         { label: "Mot de passe", type: "password", name: "motDePasse", ref: passwordRef },
+        { label: "pseudo", type: 'text', name: 'pseudo', visibility: true}
     ]);
     const navigate = useNavigate();
     const [alertMessage, setAlertMessage] = useState(null); // State pour le message d'alerte

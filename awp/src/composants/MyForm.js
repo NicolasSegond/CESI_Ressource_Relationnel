@@ -6,16 +6,18 @@ const MyForm = ({ formData, onSubmit, buttonText, buttonDisabled }) => {
     return (
         <Form onSubmit={onSubmit}>
             {formData.map((field, index) => (
-                <div key={index}>
-                    <TextField
-                        type={field.type}
-                        name={field.name}
-                        label={field.label}
-                        className={"textfield"}
-                        inputRef={field.ref}
-                    />
-                    <br/><br/>
-                </div>
+                !field.visibility ? (
+                    <div key={index}>
+                        <TextField
+                            type={field.type}
+                            name={field.name}
+                            label={field.label}
+                            className={"textfield"}
+                            inputRef={field.ref}
+                        />
+                        <br/><br/>
+                    </div>
+                ) : null
             ))}
             <Button type="submit" className={"send"} variant="contained" disabled={buttonDisabled}>{buttonText}</Button>
         </Form>
