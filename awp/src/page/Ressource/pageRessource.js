@@ -133,7 +133,7 @@ function PageRessource() {
     return (
         <div className={styles["page-container"]}>
             <h1 className={styles["header"]}>{ressource.titre}</h1>
-            <img className={styles["article-image"]} src={`http://127.0.0.1:8000/images/book/${ressource.miniature}`}
+            <img className={styles["article-image"]} src={`${apiConfig.apiUrl}/images/book/${ressource.miniature}`}
                  alt="Miniature"/>
             <div className={styles["article-metadata"]}>
                 <p><AccessTimeIcon style={{verticalAlign: 'middle'}}/> Crée

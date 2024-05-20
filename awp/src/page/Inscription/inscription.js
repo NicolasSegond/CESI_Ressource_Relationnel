@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import "./inscriptionDesign.css";
 import { Alert } from "@mui/material";
 import CheckIcon from '@mui/icons-material/Check';
+import apiConfig from "../../utils/config";
 const Inscription = () => {
     const nomRef = useRef();
     const prenomRef = useRef();
@@ -69,7 +70,7 @@ const Inscription = () => {
 
             const body = JSON.stringify(formDataObject);
 
-            fetch('http://127.0.0.1:8000/api/utilisateurs', {
+            fetch(`${apiConfig.apiUrl}/api/utilisateurs`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/ld+json', // Mise à jour du type de contenu ici

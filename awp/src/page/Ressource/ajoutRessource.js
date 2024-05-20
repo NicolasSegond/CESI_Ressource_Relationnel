@@ -1,20 +1,19 @@
-import React, {useRef} from 'react';
+import React, { useRef } from 'react';
+import {useNavigate, useLoaderData, redirect} from 'react-router-dom';
 import MonFormRessource from '../../composants/Ressource/MonFormRessource';
 import './formRessource.css';
 import apiConfig from "../../utils/config";
-import {customFetch} from "../../utils/customFetch";
-import {redirect, useLoaderData} from "react-router-dom";
-import {getIdUser, getToken} from "../../utils/authentification";
+import { customFetch } from "../../utils/customFetch";
+import { getIdUser, getToken } from "../../utils/authentification";
 import CustomAlert from "../../composants/CustomAlert";
 
 const options = [
-    {id: 1, name: "Public"},
-    {id: 2, name: "Prive"}
-]
+    { id: 1, name: "Public" },
+    { id: 2, name: "Prive" }
+];
 
 const AjoutRessource = () => {
     const [alerts, setAlerts] = React.useState([]);
-
     const [relation, setRelation] = React.useState([]);
     const [categorie, setCategorie] = React.useState('');
     const [typeRessource, setTypeRessource] = React.useState('');
@@ -23,6 +22,7 @@ const AjoutRessource = () => {
     const [editorContent, setEditorContent] = React.useState(null);
     const token = getToken();
     const idUser = getIdUser(token);
+    const navigate = useNavigate();
 
     const titre = useRef();
     const miniature = useRef();
@@ -42,21 +42,19 @@ const AjoutRessource = () => {
         if (e.target.value.length <= 3) {
             setRelation(e.target.value);
         }
-    }
+    };
 
     const onDeleteRelation = (value) => {
-        setRelation(
-            relation.filter((item) => item !== value)
-        )
-    }
+        setRelation(relation.filter((item) => item !== value));
+    };
 
     const handleCategorieChange = (value) => {
         setCategorie(value);
-    }
+    };
 
     const handleTypeChange = (value) => {
         setTypeRessource(value);
-    }
+    };
 
     const handleTagClick = (value) => {
         setTagsID(value.id);
@@ -66,7 +64,6 @@ const AjoutRessource = () => {
     const handleChange = (content) => {
         setEditorContent(content);
     };
-
 
     const formData = [
         {
@@ -172,12 +169,12 @@ const AjoutRessource = () => {
         const fileParts = fileName.split('.');
         const fileExtension = fileParts[fileParts.length - 1];
 
-        if(miniature.current.files.length === 0) {
+        if (miniature.current.files.length === 0) {
             addAlert('error', 'Veuillez ajouter une miniature');
             return;
         }
 
-        if(fileExtension !== 'jpg' && fileExtension !== 'jpeg' && fileExtension !== 'png') {
+        if (fileExtension !== 'jpg' && fileExtension !== 'jpeg' && fileExtension !== 'png') {
             addAlert('error', 'Le format de la miniature doit être jpg, jpeg ou png');
             return;
         }
@@ -207,7 +204,7 @@ const AjoutRessource = () => {
             const fileParts = fileName.split('.');
             const fileExtension = fileParts[fileParts.length - 1];
 
-            if(fileExtension !== 'pdf' && fileExtension !== 'doc' && fileExtension !== 'docx' && fileExtension !== 'ppt' && fileExtension !== 'pptx' && fileExtension !== 'xls' && fileExtension !== 'xlsx' && fileExtension !== 'png' && fileExtension !== 'jpg' && fileExtension !== 'jpeg') {
+            if (fileExtension !== 'pdf' && fileExtension !== 'doc' && fileExtension !== 'docx' && fileExtension !== 'ppt' && fileExtension !== 'pptx' && fileExtension !== 'xls' && fileExtension !== 'xlsx' && fileExtension !== 'png' && fileExtension !== 'jpg' && fileExtension !== 'jpeg') {
                 addAlert('error', 'Le format des pièces jointes doit être pdf, doc, docx, ppt, pptx, xls, xlsx, png, jpg ou jpeg');
                 return;
             }
@@ -218,7 +215,7 @@ const AjoutRessource = () => {
         const miniatureFiles = miniature.current.files[0];
         formData.append('miniature[]', miniatureFiles);
 
-        let {data, error} = await customFetch({
+        let { data, error } = await customFetch({
                 url: apiConfig.apiUrl + '/api/ressources',
                 method: 'POST',
                 headers: {
@@ -232,9 +229,9 @@ const AjoutRessource = () => {
         const dataResp = data;
 
         if (error) {
-            addAlert('error', error.message)
+            addAlert('error', error.message);
         } else {
-            addAlert('success', 'Ressource ajoutée avec succès')
+            addAlert('success', 'Ressource ajoutée avec succès');
 
             formData.append('idRessource', dataResp['id']);
 
@@ -243,13 +240,16 @@ const AjoutRessource = () => {
                 body: formData, // Assurez-vous de transmettre le FormData ici
             });
 
-            if (!response) {
-                addAlert('error', 'Erreur lors de l\'ajout des pièces jointes')
+            if (!response.ok) {
+                addAlert('error', 'Erreur lors de l\'ajout des pièces jointes');
             } else {
-                addAlert('success', 'Pièces jointes ajoutées avec succès')
+                addAlert('success', 'Pièces jointes ajoutées avec succès');
             }
+
+            // Redirection vers la page d'accueil après succès
+            navigate('/');
         }
-    }
+    };
 
     return (
         <>
@@ -270,12 +270,12 @@ const AjoutRessource = () => {
             ))}
         </>
     );
-}
+};
 
 export default AjoutRessource;
 
 export async function loader({}) {
-    let {data, error} = await customFetch({
+    let { data, error } = await customFetch({
             url: apiConfig.apiUrl + '/api/options',
             method: 'GET',
             headers: {

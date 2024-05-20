@@ -92,7 +92,7 @@ const ListStatutRessource = ({ title, ownerId, statusId }) => {
 
     const renderLink = (row) => {
         return (
-            <Link to={`/ressource/${row.id}`}>{row.titre}</Link>
+            <Link to={`/ressources/${row.id}`}>{row.titre}</Link>
         );
     };
 

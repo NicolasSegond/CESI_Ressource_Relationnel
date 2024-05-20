@@ -35,7 +35,7 @@ function ModifierRessource() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(`http://127.0.0.1:8000/api/ressources/${id}`);
+                const response = await fetch(`${apiConfig.apiUrl}/api/ressources/${id}`);
                 if (!response.ok) {
                     setError("La ressource ne vous appartient pas. Ou n'existe pas!");
                     throw new Error('Erreur lors de la récupération des données');
@@ -120,7 +120,7 @@ function ModifierRessource() {
     };
 
     const handleRedirect = () => {
-        navigate('/ressource/lists');
+        navigate('/');
     };
 
     if (error) {
@@ -240,7 +240,7 @@ function ModifierRessource() {
                     addAlert('success', 'Pièces jointes ajoutées avec succès');
                 }
 
-                navigate('/ressource/lists');
+                navigate('/');
             } else {
                 const errorMessage = `Erreur lors de la mise à jour de la ressource: ${response.statusText}`;
                 throw new Error(errorMessage);

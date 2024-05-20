@@ -8,6 +8,7 @@ import TriComponent from "../../composants/Ressource/TriComponent";
 import {getIdUser, getRolesUser, getTokenDisconnected} from "../../utils/authentification";
 import styles from './listRessources.module.css';
 import {Snackbar} from '@mui/material';
+import apiConfig from "../../utils/config";
 
 function ListRessources({ }) {
 
@@ -66,7 +67,7 @@ function ListRessources({ }) {
     const fetchData = async () => {
         setLoading(true);
         try {
-            let url = `http://127.0.0.1:8000/api/ressources?page=${currentPage}`;
+            let url = `${apiConfig.apiUrl}/api/ressources?page=${currentPage}&statut=1`;
             if (selectedCategory) {
                 url += `&categorie=${selectedCategory}`;
             }
@@ -198,7 +199,7 @@ function ListRessources({ }) {
                                 <div key={ressource['@id']}>
                                     <CardJeuRessource
                                         id={ressource.id}
-                                        imageUrl={`http://127.0.0.1:8000/images/book/${ressource.miniature}`}
+                                        imageUrl={`${apiConfig.apiUrl}/images/book/${ressource.miniature}`}
                                         title={ressource.titre}
                                         vue={ressource.nombreVue}
                                         date_creation={ressource.dateCreation}
@@ -209,13 +210,15 @@ function ListRessources({ }) {
                                         proprietaireId={ressource.proprietaire.id}
                                         connectUserId={connectUser}
                                         resourceId={ressource.id}
+                                        progressions={ressource.progressions}
+                                        showAlertMessage={showAlertMessage}
                                     />
                                 </div>
                             ) :(
                             <CardRessource
                                 key={ressource['@id']}
                                 id={ressource['id']}
-                                imageUrl={`http://127.0.0.1:8000/images/book/${ressource.miniature}`}
+                                imageUrl={`${apiConfig.apiUrl}/images/book/${ressource.miniature}`}
                                 title={ressource.titre}
                                 description={ressource.contenu}
                                 proprietaire={ressource.proprietaire}
@@ -254,7 +257,7 @@ function ListRessources({ }) {
 export default ListRessources;
 export async function loader() {
     try {
-        const response = await fetch('http://127.0.0.1:8000/api/options');
+        const response = await fetch(`${apiConfig.apiUrl}/api/options`);
         const responseData = await response.json();
 
         if (response.ok) {

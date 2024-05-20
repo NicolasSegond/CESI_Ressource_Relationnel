@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Alert } from "@mui/material"; // Importez le composant d'alerte de MUI
 import CheckIcon from '@mui/icons-material/Check'; // Importez l'icône de confirmation
 import "./Inscription/inscriptionDesign.css";
+import apiConfig from "../utils/config";
 
 const Connexion = () => {
     const emailRef = useRef();
@@ -50,7 +51,7 @@ const Connexion = () => {
             password: motDePasse,
         });
 
-        fetch('http://127.0.0.1:8000/api/login', {
+        fetch(`${apiConfig.apiUrl}/api/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

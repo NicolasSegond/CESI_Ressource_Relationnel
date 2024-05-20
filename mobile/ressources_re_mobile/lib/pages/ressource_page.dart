@@ -402,6 +402,50 @@ Widget build(BuildContext context) {
                                 ],
                               ),
                             ),
+                             Padding(
+                              padding: EdgeInsets.fromLTRB(0, 16, 0, 0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Fichiers",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18,
+                                      color: Color.fromRGBO(3, 152, 158, 1),
+                                    ),
+                                  ),
+                                  SizedBox(height: 8),
+                                  // Liste des fichiers dans une ListView
+                                 ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: NeverScrollableScrollPhysics(),
+                                  itemCount: uneRessource?.fichiers?.length ?? 0,
+                                  itemBuilder: (context, index) {
+                                    // Construction de l'URL du fichier
+                                    String url = '${ApiConfig.apiUrl}/images/book/${uneRessource?.fichiers?[index]?.nom}';
+                                    Uri uri = Uri.parse(url); // Convertit la chaîne de caractères en objet Uri
+                                    return ListTile(
+                                      leading: Icon(Icons.attach_file), // Icône pour chaque fichier
+                                      title: Text(
+                                        uneRessource?.fichiers?[index]?.nom ?? '',
+                                        style: TextStyle(
+                                          color: Colors.blue, // Couleur de lien
+                                          decoration: TextDecoration.underline, // Souligner le texte
+                                        ),
+                                      ),
+                                      onTap: () {
+                                        _launchUrl(uri);
+                                        // Ouvrir le fichier en cliquant sur son nom
+                                        // Ouverture du fichier (vous pouvez utiliser la bibliothèque url_launcher)
+                                      },
+                                       
+                                      );
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
                             Padding(
                               padding: EdgeInsets.fromLTRB(0, 16, 0, 0),
                               child: Column(
@@ -542,50 +586,7 @@ Widget build(BuildContext context) {
                                 ),
                               ),
                             ),
-                            Padding(
-                              padding: EdgeInsets.fromLTRB(0, 16, 0, 0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "Fichiers",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18,
-                                      color: Color.fromRGBO(3, 152, 158, 1),
-                                    ),
-                                  ),
-                                  SizedBox(height: 8),
-                                  // Liste des fichiers dans une ListView
-                                 ListView.builder(
-                                  shrinkWrap: true,
-                                  physics: NeverScrollableScrollPhysics(),
-                                  itemCount: uneRessource?.fichiers?.length ?? 0,
-                                  itemBuilder: (context, index) {
-                                    // Construction de l'URL du fichier
-                                    String url = '${ApiConfig.apiUrl}/images/book/${uneRessource?.fichiers?[index]?.nom}';
-                                    Uri uri = Uri.parse(url); // Convertit la chaîne de caractères en objet Uri
-                                    return ListTile(
-                                      leading: Icon(Icons.attach_file), // Icône pour chaque fichier
-                                      title: Text(
-                                        uneRessource?.fichiers?[index]?.nom ?? '',
-                                        style: TextStyle(
-                                          color: Colors.blue, // Couleur de lien
-                                          decoration: TextDecoration.underline, // Souligner le texte
-                                        ),
-                                      ),
-                                      onTap: () {
-                                        _launchUrl(uri);
-                                        // Ouvrir le fichier en cliquant sur son nom
-                                        // Ouverture du fichier (vous pouvez utiliser la bibliothèque url_launcher)
-                                      },
-                                       
-                                      );
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ),
+                           
                           ],
                         ),
                       ),

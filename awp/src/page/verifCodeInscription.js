@@ -6,6 +6,7 @@ import MenuNavBar from "../composants/Menu/MenuNavBar";
 import Footer from "../composants/Footer/footer";
 import CheckIcon from "@mui/icons-material/Check";
 import CustomAlert from "../composants/CustomAlert";
+import apiConfig from "../utils/config";
 
 
 const VerifCodeInscription = () => {
@@ -23,7 +24,7 @@ const VerifCodeInscription = () => {
     };
     const fetchData = async () => {
         try {
-            const response = await fetch(`http://127.0.0.1:8000/api/verif/${id}/${code}/${tokenVerif}`);
+            const response = await fetch(`${apiConfig.apiUrl}/api/verif/${id}/${code}/${tokenVerif}`);
             if (response.status === 200)
             {
                 setAlertType(0);

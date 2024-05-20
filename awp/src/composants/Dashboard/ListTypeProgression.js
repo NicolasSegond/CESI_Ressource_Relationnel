@@ -94,7 +94,7 @@ const ListTypeProgression = ({ title, id }) => {
     };
 
     const renderLink = (row) => (
-        <Link to={`/ressource/${row.Ressource.id}`}>{row.Ressource.titre}</Link>
+        <Link to={`/ressources/${row.Ressource.id}`}>{row.Ressource.titre}</Link>
     );
 
     const renderActions = (row) => (
