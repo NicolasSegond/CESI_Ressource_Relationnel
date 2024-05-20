@@ -8,7 +8,6 @@ import 'package:ressources_re_mobile/pages/statistique_page.dart';
 import 'utilities/authentification.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:floating_bottom_navigation_bar/floating_bottom_navigation_bar.dart';
 
 void main() {
   runApp(
@@ -37,9 +36,8 @@ class MyApp extends StatelessWidget {
         '/favoris': (context) => const MyMainPage(title: "Mes favoris", initialIndex: 3),
         '/stat': (context) => const MyMainPage(title: "Statistique", initialIndex: 4),
         '/admin': (context) => const MyMainPage(title: 'Administration', initialIndex: 5),
-        '/profil': (context) => const MyMainPage(title: "Profil", initialIndex: 6),
+        '/profil': (context) => const ProfilPage(), // Modifié pour accéder directement à ProfilPage
       },
-
       initialRoute: '/',
     );
   }
@@ -57,12 +55,16 @@ class MyMainPage extends StatefulWidget {
 
 class _MyMainPageState extends State<MyMainPage> {
   late int _index;
-  bool _showStatButton = false;
+  bool _showCreateButton = false;
+  bool _showDashboardButton = false;
+  bool _isUserConnected = false;
 
   @override
   void initState() {
     super.initState();
     _index = widget.initialIndex;
+    _checkUserRole(updateButtonVisibility);
+    _checkUserConnectionStatus();
   }
 
   void setCurrentIndex(int index) {
@@ -72,74 +74,126 @@ class _MyMainPageState extends State<MyMainPage> {
     });
   }
 
-  void updateStatButtonVisibility(bool showButton) {
+  void updateButtonVisibility(bool showCreateButton, bool showDashboardButton) {
     setState(() {
-      _showStatButton = showButton;
+      _showCreateButton = showCreateButton;
+      _showDashboardButton = showDashboardButton;
+    });
+  }
+
+  void _checkUserConnectionStatus() async {
+    final token = await getTokenDisconnected();
+    setState(() {
+      _isUserConnected = token != null;
+    });
+  }
+
+  void _logout() async {
+    storage.delete(key: 'token');
+    setState(() {
+      _isUserConnected = false;
+      _showCreateButton = false;
+      _showDashboardButton = false;
+      setCurrentIndex(0);
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final List<Widget> pages = _isUserConnected
+        ? [
+            Catalogue(),
+            FavorisPage(),
+            FavorisPage(),
+            if (_showDashboardButton) DashboardAdmin(),
+            if (_showDashboardButton) AdminPage(),
+          ]
+        : [
+            Catalogue(),
+            SignUp(),
+            Login(
+              onLoginSuccess: () {
+                _checkUserRole(updateButtonVisibility);
+                _checkUserConnectionStatus();
+                setCurrentIndex(0);
+              },
+            ),
+          ];
+
+    final List<BottomNavigationBarItem> items = _isUserConnected
+        ? [
+            BottomNavigationBarItem(icon: Icon(Icons.library_books), label: 'Catalogue'),
+            BottomNavigationBarItem(icon: Icon(Icons.favorite), label: 'Mes favoris'),
+            BottomNavigationBarItem(icon: Icon(Icons.create), label: 'Création'),
+            if (_showDashboardButton) BottomNavigationBarItem(icon: Icon(Icons.analytics), label: 'Statistique'),
+            if (_showDashboardButton) BottomNavigationBarItem(icon: Icon(Icons.admin_panel_settings), label: 'Administration'),
+          ]
+        : [
+            BottomNavigationBarItem(icon: Icon(Icons.library_books), label: 'Catalogue'),
+            BottomNavigationBarItem(icon: Icon(Icons.person_add), label: 'Inscription'),
+            BottomNavigationBarItem(icon: Icon(Icons.login), label: 'Connexion'),
+          ];
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
         title: Text("Ressources Relationnelles"),
+        actions: [
+          if (_isUserConnected)
+            IconButton(
+              icon: Icon(Icons.person),
+              onPressed: () {
+                Navigator.pushNamed(context, '/profil');
+              },
+            ),
+            if (_isUserConnected)
+            IconButton(
+              icon: Icon(Icons.logout),
+              onPressed: _logout,
+            ),
+        ],
       ),
-      body: [
-        Catalogue(),
-        SignUp(),
-        Login(
-          onLoginSuccess: () {
-            _checkUserRole(updateStatButtonVisibility);
-            _index = 0;
-          },
-        ),
-        FavorisPage(),
-        DashboardAdmin(),
-        AdminPage(),
-        ProfilPage()
-        ][_index],
-        bottomNavigationBar: BottomNavigationBar(
-          backgroundColor: Colors.white,
-          type: BottomNavigationBarType.fixed,
-          selectedItemColor: Colors.blue,
-          unselectedItemColor: Colors.grey,
-          iconSize: 32,
-          elevation: 10,
-          onTap: setCurrentIndex,
-          currentIndex: _index,
-          items: [
-            BottomNavigationBarItem(icon: Icon(Icons.login), label: 'Catalogue'),
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Inscription'),
-            BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Connexion'),
-            BottomNavigationBarItem(icon: Icon(Icons.favorite), label: 'Mes favoris'),
-            BottomNavigationBarItem(icon: Icon(Icons.analytics), label: 'Statistique'),
-            BottomNavigationBarItem(icon: Icon(Icons.admin_panel_settings), label: 'Administration'),
-            BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),
-           ],
-         ),
-       );
-    }
+      body: pages[_index],
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.white,
+        type: BottomNavigationBarType.fixed,
+        selectedItemColor: Colors.blue,
+        unselectedItemColor: Colors.grey,
+        iconSize: 32,
+        elevation: 10,
+        onTap: setCurrentIndex,
+        currentIndex: _index,
+        items: items,
+      ),
+    );
+  }
 }
 
-void _checkUserRole(Function(bool) updateStatButtonVisibility) async {
-    try {
-      final token = await getTokenDisconnected();
+void _checkUserRole(Function(bool, bool) updateButtonVisibility) async {
+  try {
+    final token = await getTokenDisconnected();
 
-      if (token != null) {
-        final tokenValue = await token;
-        final userId = await getIdUser(tokenValue);
-        final roles = await getRolesUser(userId);
+    if (token != null) {
+      final tokenValue = await token;
+      final userId = await getIdUser(tokenValue);
+      final roles = await getRolesUser(userId);
 
-        if (roles.contains("ROLE_ADMIN") || roles.contains("ROLE_MODO")) {
-          updateStatButtonVisibility(true);
-        } else {
-          updateStatButtonVisibility(false);
-        }
-      } else {
-        print("Le token est null.");
+      bool showCreateButton = false;
+      bool showDashboardButton = false;
+
+      if (roles.contains("ROLE_ADMIN")) {
+        showCreateButton = true;
+        showDashboardButton = true;
+      } else if (roles.contains("ROLE_MODO")) {
+        showCreateButton = true;
+        showDashboardButton = true;  // Inclure le bouton dashboard pour les modérateurs aussi
       }
-    } catch (error) {
-      print("Erreur lors de la récupération des rôles de l'utilisateur : $error");
+
+      updateButtonVisibility(showCreateButton, showDashboardButton);
+    } else {
+      print("Le token est null.");
     }
+  } catch (error) {
+    print("Erreur lors de la récupération des rôles de l'utilisateur : $error");
   }
+}
