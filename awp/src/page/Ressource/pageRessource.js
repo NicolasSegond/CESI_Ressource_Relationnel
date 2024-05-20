@@ -55,6 +55,8 @@ function PageRessource() {
     useEffect(() => {
         const token = getTokenDisconnected();
 
+        console.log(token);
+
         if (token) {
             setUserId(getIdUser(token));
         }
@@ -131,23 +133,30 @@ function PageRessource() {
     return (
         <div className={styles["page-container"]}>
             <h1 className={styles["header"]}>{ressource.titre}</h1>
-            <img className={styles["article-image"]} src={`http://127.0.0.1:8000/images/book/${ressource.miniature}`} alt="Miniature" />
+            <img className={styles["article-image"]} src={`http://127.0.0.1:8000/images/book/${ressource.miniature}`}
+                 alt="Miniature"/>
             <div className={styles["article-metadata"]}>
-                <p><AccessTimeIcon style={{ verticalAlign: 'middle' }} /> Crée le : {new Date(ressource.dateCreation).toLocaleDateString()}</p>
-                <p><EditIcon style={{ verticalAlign: 'middle' }} /> Dernière modification : {new Date(ressource.dateModification).toLocaleDateString()}</p>
-                <p><VisibilityIcon style={{ verticalAlign: 'middle' }} /> Vues : {ressource.nombreVue}</p>
-                <p><PersonIcon style={{ verticalAlign: 'middle' }} /> Propriétaire : {ressource.proprietaire.nom} {ressource.proprietaire.prenom}</p>
-                <p><LabelIcon style={{ verticalAlign: 'middle' }} /> Type: {ressource.typeDeRessource.libelle}</p>
-                <p><CategoryIcon style={{ verticalAlign: 'middle' }} /> Categorie : {ressource.categorie.nom}</p>
+                <p><AccessTimeIcon style={{verticalAlign: 'middle'}}/> Crée
+                    le : {new Date(ressource.dateCreation).toLocaleDateString()}</p>
+                <p><EditIcon style={{verticalAlign: 'middle'}}/> Dernière modification
+                    : {new Date(ressource.dateModification).toLocaleDateString()}</p>
+                <p><VisibilityIcon style={{verticalAlign: 'middle'}}/> Vues : {ressource.nombreVue}</p>
+                <p><PersonIcon
+                    style={{verticalAlign: 'middle'}}/> Propriétaire
+                    : {ressource.proprietaire.nom} {ressource.proprietaire.prenom}
+                </p>
+                <p><LabelIcon style={{verticalAlign: 'middle'}}/> Type: {ressource.typeDeRessource.libelle}</p>
+                <p><CategoryIcon style={{verticalAlign: 'middle'}}/> Categorie : {ressource.categorie.nom}</p>
             </div>
 
-            <div className={styles["article-content"]} dangerouslySetInnerHTML={{ __html: ressource.contenu }} />
+            <div className={styles["article-content"]} dangerouslySetInnerHTML={{__html: ressource.contenu}}/>
             <div className={styles["attachments-section"]}>
                 <h2>Pièces jointes</h2>
                 {ressource.fichiers && ressource.fichiers.map((fichier, index) => (
                     <div key={index} className={styles["attachment"]}>
-                        <AttachFileIcon />
-                        <a href={`${apiConfig.apiUrl}/images/book/${fichier.nom}`} target="_blank" rel="noopener noreferrer">
+                        <AttachFileIcon/>
+                        <a href={`${apiConfig.apiUrl}/images/book/${fichier.nom}`} target="_blank"
+                           rel="noopener noreferrer">
                             {fichier.nom}
                         </a>
                     </div>
@@ -158,7 +167,8 @@ function PageRessource() {
                 {commentaire.map((comment, index) => (
                     <div key={index} className={styles["comment"]}>
                         <p>{comment.contenu}</p>
-                        <p className={styles["comment-date"]}>Posté le : {new Date(comment.date).toLocaleDateString()}</p>
+                        <p className={styles["comment-date"]}>Poster
+                            le : {new Date(comment.date).toLocaleDateString()}</p>
                     </div>
                 ))}
                 <div className={styles["comment-form"]}>

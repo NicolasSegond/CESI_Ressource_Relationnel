@@ -16,6 +16,7 @@ import GestionAdmin from "./page/Administration/Gestion/GestionAdmin";
 import Dashboard from "./page/DashBoardUser/Dashboard";
 import ModifierRessource from "./page/Ressource/modifierRessource"; // Importez le composant pour la modification de la ressource
 import ProfilePage, {loader as ProfileLoader} from "./page/Utilisateur/pageProfil";
+import RessourceTypeJeu from "./page/Ressource/ressourceTypeJeu";
 
 function App() {
     const router = createBrowserRouter([
@@ -54,6 +55,10 @@ function App() {
                     path: '/utilisateur/profil/:id',
                     element: <ProfilePage />,
                     loader: ProfileLoader
+                },
+                {
+                    path: '/ressources/jeu/169',
+                    element: <RessourceTypeJeu/>
                 },
                 {
                     path: '/admin',

@@ -3,15 +3,17 @@ import Pagination from "../../composants/General/PaginationGlobal";
 import CardRessource from "../../composants/Ressource/CardRessource";
 import {customFetch} from "../../utils/customFetch";
 import {useLoaderData} from "react-router-dom";
+import CardJeuRessource from "../../composants/Ressource/CardJeuRessource";
 import TriComponent from "../../composants/Ressource/TriComponent";
 import {getIdUser, getRolesUser, getTokenDisconnected} from "../../utils/authentification";
 import styles from './listRessources.module.css';
 import {Snackbar} from '@mui/material';
 
-function ListRessources({}) {
+function ListRessources({ }) {
+
     const [data, setData] = useState([]);
     const [tri, setTri] = useState({});
-    const {options} = useLoaderData(); // Utiliser les options récupérées du loader
+    const { options } = useLoaderData(); // Utiliser les options récupérées du loader
     const [loading, setLoading] = useState(true);
     const [totalPages, setTotalPages] = useState(1); // Initialisation du nombre total de pages à 1
     const [currentPage, setCurrentPage] = useState(1);
@@ -33,10 +35,10 @@ function ListRessources({}) {
     }, []);
 
     const visibilite = [
-        {libelle: 'Public', id: 1},
-        {libelle: 'Privé', id: 2},
-        {libelle: 'Partage', id: 3},
-        {libelle: 'Mes Ressources', id: 4}
+        { libelle: 'Public', id: 1 },
+        { libelle: 'Privé', id: 2 },
+        { libelle: 'Partage', id: 3 },
+        { libelle: 'Mes Ressources', id: 4 }
     ];
 
     const [selectedVisibilite, setSelectedVisibilite] = useState(null);
@@ -186,37 +188,56 @@ function ListRessources({}) {
                     defautSelect={1}
                 />}
             </div>
-            <br/><br/>
+            <br /><br />
             {loading ? (
                 <p>Chargement des ressources...</p>
             ) : (
                 <div>
                     {data.map(ressource => (
-                        <CardRessource
-                            key={ressource['@id']}
-                            id={ressource['id']}
-                            imageUrl={`http://127.0.0.1:8000/images/book/${ressource.miniature}`}
-                            title={ressource.titre}
-                            description={ressource.contenu}
-                            proprietaire={ressource.proprietaire}
-                            vue={ressource.nombreVue}
-                            nom={ressource.proprietaire.nom}
-                            prenom={ressource.proprietaire.prenom}
-                            date_creation={ressource.dateCreation}
-                            visibilite={ressource.visibilite.libelle}
-                            typeRessource={ressource.typeDeRessource.libelle}
-                            typeRelations={ressource.typeRelations}
-                            categorie={ressource.categorie.nom}
-                            nbCommentaire={ressource.commentaires.length}
-                            voirRessource={ressource.voirRessource}
-                            idUser={connectUser}
-                            userRoles={userRoles}
-                            progressions={ressource.progressions}
-                            showAlertMessage={showAlertMessage} // Passer la fonction pour afficher l'alerte au composant enfant
-                        />
+                        ressource.categorie.nom === 'Jeu/Activité' ? (
+                                <div key={ressource['@id']}>
+                                    <CardJeuRessource
+                                        id={ressource.id}
+                                        imageUrl={`http://127.0.0.1:8000/images/book/${ressource.miniature}`}
+                                        title={ressource.titre}
+                                        vue={ressource.nombreVue}
+                                        date_creation={ressource.dateCreation}
+                                        typeRessource={ressource.typeDeRessource.libelle}
+                                        typeRelations={ressource.typeRelations}
+                                        categorie={ressource.categorie.nom}
+                                        nbCommentaire={ressource.commentaires.length}
+                                        proprietaireId={ressource.proprietaire.id}
+                                        connectUserId={connectUser}
+                                        resourceId={ressource.id}
+                                    />
+                                </div>
+                            ) :(
+                            <CardRessource
+                                key={ressource['@id']}
+                                id={ressource['id']}
+                                imageUrl={`http://127.0.0.1:8000/images/book/${ressource.miniature}`}
+                                title={ressource.titre}
+                                description={ressource.contenu}
+                                proprietaire={ressource.proprietaire}
+                                vue={ressource.nombreVue}
+                                nom={ressource.proprietaire.nom}
+                                prenom={ressource.proprietaire.prenom}
+                                date_creation={ressource.dateCreation}
+                                visibilite={ressource.visibilite.libelle}
+                                typeRessource={ressource.typeDeRessource.libelle}
+                                typeRelations={ressource.typeRelations}
+                                categorie={ressource.categorie.nom}
+                                nbCommentaire={ressource.commentaires.length}
+                                voirRessource={ressource.voirRessource}
+                                idUser={connectUser}
+                                userRoles={userRoles}
+                                progressions={ressource.progressions}
+                                showAlertMessage={showAlertMessage} // Passer la fonction pour afficher l'alerte au composant enfant
+                            />
+                        )
                     ))}
-                    <br/><br/>
-                    <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange}/>
+                    <br /><br />
+                    <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
                 </div>
             )}
             {/* Affichage de l'alerte */}
@@ -231,7 +252,6 @@ function ListRessources({}) {
 }
 
 export default ListRessources;
-
 export async function loader() {
     try {
         const response = await fetch('http://127.0.0.1:8000/api/options');
