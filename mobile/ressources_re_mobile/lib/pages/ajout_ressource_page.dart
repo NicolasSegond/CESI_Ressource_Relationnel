@@ -11,6 +11,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:quill_html_converter/quill_html_converter.dart';
 import 'package:ressources_re_mobile/utilities/apiConfig.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:ressources_re_mobile/utilities/authentification.dart';
 
 class Category {
   final int id;
@@ -57,6 +58,7 @@ class _AjoutRessourcePageState extends State<AjoutRessourcePage> {
   String fileName = "";
   List<PlatformFile> attachedFiles = [];
   List<File> _files = [];
+  int? userId; // ID de l'utilisateur
 
 
   @override
@@ -66,6 +68,26 @@ class _AjoutRessourcePageState extends State<AjoutRessourcePage> {
     _focusNode = FocusNode();
     _scrollController = ScrollController();
     fetchDataFromAPI();
+    _initializePage();
+  }
+
+  Future<void> _initializePage() async {
+    await fetchUserId();
+  }
+
+
+  Future<void> fetchUserId() async {
+    try {
+      final tokens = await getToken();
+      if (tokens != null) {
+        final id = await getIdUser(tokens!);
+        setState(() {
+          userId = id;
+        });
+      }
+    } catch (e) {
+      print('Une erreur s\'est produite lors de la récupération de l\'ID de l\'utilisateur : $e');
+    }
   }
 
   Future<void> _pickFiles() async {
@@ -198,18 +220,17 @@ class _AjoutRessourcePageState extends State<AjoutRessourcePage> {
         .toList();
 
     print("Submitting resource...");
-    print(imageFile != null ? path.basename(imageFile!.path) : null);
-    print('---------------------------------------------------------------------------------------------------------------------------------');
-    print(_controller.document.toDelta().toHtml());
-    print('---------------------------------------------------------------------------------------------------------------------------------');
 
+    
+   print(userId.toString());
+   print('-------------------------------------------------------------------');
     Map<String, dynamic> body = {
       'titre': titreController.text,
       'contenu': _controller.document.toDelta().toHtml(),
       'dateCreation': DateTime.now().toIso8601String(),
       'dateModification': DateTime.now().toIso8601String(),
       'nombreVue': 0,
-      'proprietaire': '/api/utilisateurs/2',
+      'proprietaire': '/api/utilisateurs/${userId.toString()}',
       'statut': '/api/statuts/2',
       'visibilite': isPrivate ? '/api/visibilites/1' : '/api/visibilites/2',
       'categorie': selectedCategory != null
