@@ -53,11 +53,11 @@ function App() {
                 },
                 {
                     path: '/utilisateur/profil/:id',
-                    element: <ProfilePage />,
+                    element: <ProfilePage/>,
                     loader: ProfileLoader
                 },
                 {
-                    path: '/ressources/jeu/169',
+                    path: '/ressources/jeu/1',
                     element: <RessourceTypeJeu/>
                 },
                 {

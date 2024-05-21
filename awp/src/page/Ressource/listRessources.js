@@ -195,7 +195,7 @@ function ListRessources({ }) {
             ) : (
                 <div>
                     {data.map(ressource => (
-                        ressource.categorie.nom === 'Jeu/Activité' ? (
+                        ressource.typeDeRessource.libelle === 'Jeu/Activité' ? (
                                 <div key={ressource['@id']}>
                                     <CardJeuRessource
                                         id={ressource.id}
