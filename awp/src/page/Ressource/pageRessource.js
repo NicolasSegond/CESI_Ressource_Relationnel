@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import styles from './pageRessource.module.css';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import EditIcon from '@mui/icons-material/Edit';
@@ -8,6 +8,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import CategoryIcon from '@mui/icons-material/Category';
 import LabelIcon from '@mui/icons-material/Label';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { getIdUser, getTokenDisconnected } from "../../utils/authentification";
 import apiConfig from "../../utils/config";
 import { customFetch } from "../../utils/customFetch";
@@ -27,6 +28,7 @@ function PageRessource() {
     const addAlert = (severity, message) => {
         setAlerts(prevAlerts => [...prevAlerts, { severity, message }]);
     };
+
     const handleCloseAlert = (index) => {
         setAlerts(prevAlerts => prevAlerts.filter((_, i) => i !== index));
     };
@@ -55,8 +57,6 @@ function PageRessource() {
     useEffect(() => {
         const token = getTokenDisconnected();
 
-        console.log(token);
-
         if (token) {
             setUserId(getIdUser(token));
         }
@@ -82,6 +82,28 @@ function PageRessource() {
             }
         });
     }, [id]);
+
+    const handleDeleteComment = async (commentId) => {
+        try {
+            const response = await customFetch(
+                {
+                    url: `${apiConfig.apiUrl}/api/commentaires/${commentId}`,
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                },
+                false
+            );
+            setCommentaire(prevCommentaire => prevCommentaire.filter(comment => comment.id !== commentId));
+            addAlert('success', 'Commentaire supprimé avec succès.');
+
+
+        } catch (error) {
+            console.error('Erreur lors de la suppression du commentaire:', error);
+            addAlert('error', 'Erreur lors de la suppression du commentaire.');
+        }
+    };
 
     if (loading) return <div>Loading...</div>;
     if (error) return <div>Error loading the resource.</div>;
@@ -165,15 +187,35 @@ function PageRessource() {
             <div className={styles["comment-section"]}>
                 <h2>Commentaires</h2>
                 {commentaire.map((comment, index) => (
-                    <div key={index} className={styles["comment"]}>
+                    <div key={index} className={styles["comment"]}
+                         style={{position: 'relative', padding: '10px', borderBottom: '1px solid #ddd'}}>
                         <p>{comment.contenu}</p>
-                        <p className={styles["comment-date"]}>Poster
-                            le : {new Date(comment.date).toLocaleDateString()} par : {comment.utilisateur.nom} {comment.utilisateur.prenom}</p>
+                        <p className={styles["comment-date"]}>Poster le
+                            : {new Date(comment.date).toLocaleDateString()} par
+                            : {comment.utilisateur.nom} {comment.utilisateur.prenom}</p>
+                        {comment.utilisateur.id === userId && (
+                            <button
+                                style={{
+                                    background: 'none',
+                                    border: 'none',
+                                    color: '#f44336',
+                                    cursor: 'pointer',
+                                    position: 'absolute',
+                                    right: '10px',
+                                    top: '50%',
+                                    transform: 'translateY(-50%)',
+                                    padding: '0'
+                                }}
+                                onClick={() => handleDeleteComment(comment.id)}
+                            >
+                                <DeleteIcon/>
+                            </button>
+                        )}
                     </div>
                 ))}
-                <div className={styles["comment-form"]}>
-                    {userId && (
-                        <form onSubmit={handleCommentSubmit}>
+            <div className={styles["comment-form"]}>
+                {userId && (
+                    <form onSubmit={handleCommentSubmit}>
                             <textarea
                                 value={commentContent}
                                 onChange={e => setCommentContent(e.target.value)}
@@ -181,22 +223,25 @@ function PageRessource() {
                                 className={styles["comment-input"]}
                                 required
                             />
-                            <button type="submit" className={styles["submit-comment"]}>Poster le commentaire</button>
-                        </form>
-                    )}
-                </div>
+                        <button type="submit" className={styles["submit-comment"]}>Poster le commentaire</button>
+                    </form>
+                )}
             </div>
-            {alerts.map((alert, index) => (
-                <CustomAlert
-                    key={index}
-                    open={true}
-                    message={alert.message}
-                    handleClose={() => handleCloseAlert(index)}
-                    severity={alert.severity}
-                />
-            ))}
         </div>
-    );
+    {
+        alerts.map((alert, index) => (
+            <CustomAlert
+                key={index}
+                open={true}
+                message={alert.message}
+                handleClose={() => handleCloseAlert(index)}
+                severity={alert.severity}
+            />
+        ))
+    }
+</div>
+)
+    ;
 }
 
 export default PageRessource;

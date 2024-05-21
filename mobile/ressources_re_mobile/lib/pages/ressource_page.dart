@@ -38,6 +38,7 @@ class _Ressources_pageState extends State<Ressources_page> {
   int indexPage = 1;
   bool hasNextPage = false;
   bool isLoading = true;
+  int userId = 0; 
 
   // Méthode pour mettre à jour le nombre de caractères restants
   void updateMaxLength(String value) {
@@ -58,6 +59,7 @@ class _Ressources_pageState extends State<Ressources_page> {
   @override
   void initState() {
     super.initState();
+    fetchUserId();
     fetchRessourceById(widget.idRessource!);
     indexPage = 1;
     checkTokenExists();
@@ -80,6 +82,21 @@ class _Ressources_pageState extends State<Ressources_page> {
       tokenExists = token != null;
     });
   }
+
+  Future<void> fetchUserId() async {
+  try {
+    final Map<String, dynamic>? tokens = await getToken();
+
+    if (tokens != null) {
+      userId = await getIdUser(tokens);
+    } else {
+      throw Exception('Tokens non disponibles');
+    }
+  } catch (e) {
+    print("Erreur lors de la récupération de l'ID utilisateur: $e");
+  }
+}
+
 
   Future<void> fetchRessourceById(int idRessource) async {
      setState(() {
@@ -155,12 +172,14 @@ class _Ressources_pageState extends State<Ressources_page> {
     });
 
     String commentaireContenu = _commentaireController.text;
-    int userId = 0; 
+    
     try {
       final Map<String, dynamic>? tokens = await getToken();
 
       if (tokens != null) {
         userId = await getIdUser(tokens);
+        // ignore: avoid_print
+        print("Utilisateur ID: $userId"); // Utilisez print pour afficher l'ID de l'utilisateur
       } else {
         throw Exception('Tokens non disponibles');
       }
@@ -199,6 +218,24 @@ class _Ressources_pageState extends State<Ressources_page> {
     setState(() {
       isAddingComment = false;
     });
+  }
+  void _deleteComment(int commentId) async {
+    try {
+      var response = await http.delete(
+        Uri.parse('${ApiConfig.apiUrl}/api/commentaires/$commentId'),
+        headers: {'Content-Type': 'application/json'},
+      );
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Commentaire supprimé avec succès')),
+        );
+        // Rafraîchir la liste des commentaires après la suppression
+        fetchCommentaires();
+    } catch (e) {
+      print('Error deleting comment: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erreur lors de la suppression du commentaire')),
+      );
+    }
   }
 
  @override
@@ -446,26 +483,80 @@ Widget build(BuildContext context) {
                                 ],
                               ),
                             ),
-                            Padding(
-                              padding: EdgeInsets.fromLTRB(0, 16, 0, 0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment
-
-.start,
-                                children: [
-                                  Text(
-                                    "Commentaires",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18,
-                                      color: Color.fromRGBO(3, 152, 158, 1),
-                                    ),
+                          Padding(
+                            padding: EdgeInsets.fromLTRB(0, 16, 0, 0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Commentaires",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                    color: Color.fromRGBO(3, 152, 158, 1),
                                   ),
-                                  SizedBox(height: 8),
-                                  // Utilisez un Column à la place de ListView.builder
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                                    children: commentaires.map((commentaire) => Card(
+                                ),
+                                SizedBox(height: 8),
+                                // Utilisez un Column à la place de ListView.builder
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  children: commentaires.map((commentaire) {
+                                    // Afficher l'icône de suppression uniquement si l'utilisateur connecté est l'auteur du commentaire
+                                  if (userId == commentaire.getUtilisateur()?.getId()) {
+                                   
+                                   return Card(
+                                    elevation: 2,
+                                    margin: EdgeInsets.symmetric(vertical: 4),
+                                    child: Padding(
+                                      padding: EdgeInsets.all(8),
+                                      child: Row(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  "${commentaire.getUtilisateur()?.getPrenom() ?? ''} ${commentaire.getUtilisateur()?.getPrenom() ?? ''}",
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 16,
+                                                    color: Colors.black,
+                                                  ),
+                                                ),
+                                                SizedBox(height: 4),
+                                                Text(
+                                                  commentaire.getContenu() ?? "",
+                                                  style: TextStyle(
+                                                    fontSize: 14,
+                                                  ),
+                                                ),
+                                                SizedBox(height: 4),
+                                                Text(
+                                                  "${commentaire.getDate()?.toString() ?? ''}",
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Colors.grey,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          IconButton(
+                                            icon: Icon(Icons.delete),
+                                            onPressed: () {
+                                              // Appeler la fonction pour supprimer le commentaire
+                                              _deleteComment(commentaire.id ?? -1); // Remplacer `commentaire.id` par l'ID réel du commentaire
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+
+                                  } else {
+                                    // Retourner simplement le Card sans l'icône de suppression
+                                    return Card(
                                       elevation: 2,
                                       margin: EdgeInsets.symmetric(vertical: 4),
                                       child: Padding(
@@ -499,11 +590,14 @@ Widget build(BuildContext context) {
                                           ],
                                         ),
                                       ),
-                                    )).toList(),
-                                  ),
-                                ],
-                              ),
+                                    );
+                                  }
+                                  }).toList(),
+                                ),
+                              ],
                             ),
+                          ),
+
                             Padding(
                               padding: EdgeInsets.fromLTRB(0, 16, 0, 0),
                               child: Row(

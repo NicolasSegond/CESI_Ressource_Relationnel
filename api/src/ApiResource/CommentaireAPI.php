@@ -8,6 +8,7 @@ use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Doctrine\Orm\State\Options;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Post;
@@ -35,6 +36,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
             ],
         ),
         new Post(),
+        new Delete(),
     ],
 
 
@@ -51,6 +53,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ApiFilter(OrderFilter::class, properties: ['date' => 'ASC'])]
 class CommentaireAPI
 {
+    #[Groups(['commentaire:read'])]
     public ?int $id = null;
 
     #[Groups(['ressource:read', 'ressource:write', 'commentaire:read', 'progression:read'])]
