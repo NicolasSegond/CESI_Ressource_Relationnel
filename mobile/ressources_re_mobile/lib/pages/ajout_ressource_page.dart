@@ -257,6 +257,7 @@ class _AjoutRessourcePageState extends State<AjoutRessourcePage> {
         Map<String, dynamic> responseData = json.decode(response.body);
         int id = responseData['id'];
         await _uploadFiles(id);
+        Navigator.pushNamed(context, '/');
       }
     } else {
       print('Erreur lors de la soumission: ${response.statusCode}');
