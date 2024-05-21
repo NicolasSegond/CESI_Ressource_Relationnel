@@ -10,6 +10,7 @@ import 'package:path/path.dart' as path;
 import 'package:image_picker/image_picker.dart';
 import 'package:quill_html_converter/quill_html_converter.dart';
 import 'package:ressources_re_mobile/utilities/apiConfig.dart';
+import 'package:file_picker/file_picker.dart';
 
 class Category {
   final int id;
@@ -54,6 +55,9 @@ class _AjoutRessourcePageState extends State<AjoutRessourcePage> {
   ResourceType? selectedResourceType;
   final picker = ImagePicker();
   String fileName = "";
+  List<PlatformFile> attachedFiles = [];
+  List<File> _files = [];
+
 
   @override
   void initState() {
@@ -63,6 +67,28 @@ class _AjoutRessourcePageState extends State<AjoutRessourcePage> {
     _scrollController = ScrollController();
     fetchDataFromAPI();
   }
+
+  Future<void> _pickFiles() async {
+  FilePickerResult? result = await FilePicker.platform.pickFiles(
+    type: FileType.custom,
+    allowedExtensions: ['pdf', 'doc', 'docx', 'xls', 'xlsx'],
+    allowMultiple: true,
+  );
+
+  if (result != null && result.files.length <= 3) {
+    setState(() {
+      _files = result.files
+      .where((file) => file.path != null)
+      .map((file) => File(file.path!))
+      .toList();
+      print(_files);
+      //print(attachedFiles);
+    });
+  } else if (result != null && result.files.length > 3) {
+    _showAlert('Vous ne pouvez pas sélectionner plus de 3 fichiers.');
+  }
+}
+
 
   Future<void> fetchDataFromAPI() async {
     try {
@@ -119,46 +145,36 @@ class _AjoutRessourcePageState extends State<AjoutRessourcePage> {
     }
   }
 
-  Future<void> _uploadImage(int idRessource) async {
+  Future<void> _uploadFiles(int idRessource) async {
+    var request = http.MultipartRequest(
+      'POST',
+      Uri.parse('${ApiConfig.apiUrl}/api/uploads'),
+    );
+
+    request.fields['idRessource'] = idRessource.toString();
+
     if (imageFile != null) {
-      var request = http.MultipartRequest(
-        'POST',
-        Uri.parse('${ApiConfig.apiUrl}/api/uploads'),
-      );
+      request.files.add(await http.MultipartFile.fromPath(
+        'miniature[]',
+        imageFile!.path,
+      ));
+    }
 
-      request.fields['idRessource'] = idRessource.toString();
+    for (var file in _files) {
+      final fileName = path.basename(file.path);
+      request.files.add(await http.MultipartFile.fromPath(
+        'fichiers[]',
+        file.path,
+        filename: fileName,
+      ));
+    }
 
-      if (kIsWeb) {
-        var response = await http.get(Uri.parse(imageFile!.path));
+    var response = await request.send();
 
-        if (response.statusCode == 200) {
-          var imageData = response.bodyBytes;
-
-          var multipartFile = http.MultipartFile.fromBytes(
-            'miniature[]',
-            imageData,
-            filename: fileName,
-          );
-
-          request.files.add(multipartFile);
-        } else {
-          print('Failed to fetch image data: ${response.statusCode}');
-          return;
-        }
-      } else {
-        request.files.add(await http.MultipartFile.fromPath(
-          'miniature[]',
-          imageFile!.path,
-        ));
-      }
-
-      var response2 = await request.send();
-
-      if (response2.statusCode == 201) {
-        print('File uploaded successfully');
-      } else {
-        print('File upload failed with status: ${response2.statusCode}');
-      }
+    if (response.statusCode == 201) {
+      print('Files uploaded successfully');
+    } else {
+      print('Files upload failed with status: ${response.statusCode}');
     }
   }
 
@@ -219,7 +235,7 @@ class _AjoutRessourcePageState extends State<AjoutRessourcePage> {
       if (imageFile != null) {
         Map<String, dynamic> responseData = json.decode(response.body);
         int id = responseData['id'];
-        await _uploadImage(id);
+        await _uploadFiles(id);
       }
     } else {
       print('Erreur lors de la soumission: ${response.statusCode}');
@@ -455,7 +471,40 @@ class _AjoutRessourcePageState extends State<AjoutRessourcePage> {
                 ),
               ),
             ),
-            
+            const SizedBox(height: 16),
+            Card(
+            elevation: 4,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15.0),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  if (_files.isEmpty)
+                    const Text('Aucune pièce jointe sélectionnée.')
+                  else
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: _files.map((file) {
+                        return Text(file.path);
+                      }).toList(),
+                    ),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: _pickFiles,
+                    child: const Text('Choisir des pièces jointes'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.teal,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _handleSubmit,
