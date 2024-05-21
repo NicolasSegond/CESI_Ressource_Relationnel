@@ -1,15 +1,15 @@
-import React, { useRef } from 'react';
-import {useNavigate, useLoaderData, redirect} from 'react-router-dom';
+import React, {useRef} from 'react';
+import {redirect, useLoaderData, useNavigate} from 'react-router-dom';
 import MonFormRessource from '../../composants/Ressource/MonFormRessource';
 import './formRessource.css';
 import apiConfig from "../../utils/config";
-import { customFetch } from "../../utils/customFetch";
-import { getIdUser, getToken } from "../../utils/authentification";
+import {customFetch} from "../../utils/customFetch";
+import {getIdUser, getToken} from "../../utils/authentification";
 import CustomAlert from "../../composants/CustomAlert";
 
 const options = [
-    { id: 1, name: "Public" },
-    { id: 2, name: "Prive" }
+    {id: 1, name: "Public"},
+    {id: 2, name: "Prive"}
 ];
 
 const AjoutRessource = () => {
@@ -31,7 +31,7 @@ const AjoutRessource = () => {
     const data = useLoaderData().data;
 
     const addAlert = (severity, message) => {
-        setAlerts(prevAlerts => [...prevAlerts, { severity, message }]);
+        setAlerts(prevAlerts => [...prevAlerts, {severity, message}]);
     };
 
     const handleCloseAlert = (index) => {
@@ -108,7 +108,7 @@ const AjoutRessource = () => {
             name: "categorie",
             label_select: "Catégories de la ressource :",
             alignment: "droite",
-            options: data.categories,
+            options: data.categories ?? '',
             value: categorie,
             onChange: handleCategorieChange,
         },
@@ -215,7 +215,7 @@ const AjoutRessource = () => {
         const miniatureFiles = miniature.current.files[0];
         formData.append('miniature[]', miniatureFiles);
 
-        let { data, error } = await customFetch({
+        let {data, error} = await customFetch({
                 url: apiConfig.apiUrl + '/api/ressources',
                 method: 'POST',
                 headers: {
@@ -275,7 +275,7 @@ const AjoutRessource = () => {
 export default AjoutRessource;
 
 export async function loader({}) {
-    let { data, error } = await customFetch({
+    let {data, error} = await customFetch({
             url: apiConfig.apiUrl + '/api/options',
             method: 'GET',
             headers: {
