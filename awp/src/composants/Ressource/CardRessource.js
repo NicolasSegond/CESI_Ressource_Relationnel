@@ -156,10 +156,8 @@ function Card({
 
     const mettreEnProgression = async (idTypeProgression) => {
         try {
-            // Construire le message de succès pour affichage
             let successMessage = '';
 
-            // En fonction du type de progression, ajustez le message et l'URL pour l'API
             switch (idTypeProgression) {
                 case 1:
                     successMessage = 'La ressource a été mise en favoris avec succès';
@@ -172,7 +170,6 @@ function Card({
                     break;
             }
 
-            // Effectuer l'appel à l'API pour enregistrer la progression
             const {data, error} = await customFetch({
                 url: `${apiConfig.apiUrl}/api/progressions`,
                 method: 'POST',
@@ -244,68 +241,73 @@ function Card({
     }
 
     return (
-        <Link to={`/ressources/${id}`}
-              style={{textDecoration: 'none', color: 'inherit'}}> {/* Utilise React Router pour naviguer */}
-            <div className="card">
-                <img src={imageUrl} alt={title} className="card-image"/>
-                <div className="card-content">
-                    <div className={"card-header"}>
-                        <h2 className="card-title">{title}</h2>
-                        <div className="modal-container"> {/* Conteneur pour l'icône de menu et la modal */}
-                            {idUser && (
-                                <img src={Menu} alt={"voir plus logo"} onClick={(e) => {
-                                    e.preventDefault();
-                                    toggleModal(description, e);
-                                }}/>
-                            )}
-                            {isModalOpen && (
-                                <div className="modal" onClick={(e) => {
-                                    e.preventDefault()
-                                    setIsModalOpen(false);
-                                }}>
-                                    {!isFavorited && (
-                                        <a onClick={() => mettreEnProgression(1)}>Mettre en favoris la ressource</a>
-                                    )}
-                                    {!isMiseDeCote && (
-                                        <a onClick={() => mettreEnProgression(2)}>Mettre de côté la ressource</a>
-                                    )}
-                                    {proprietaire.id === idUser && (
-                                        <Link to={`/modifressource/${id}`}><a> Modifier</a></Link>
-                                    )}
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                    <div className="info-container">
-                        <div className="categories-container">
-                            <div className="cat">{typeRessource}</div>
-                            <div className="type-relations">{typeRelationLabels}</div>
-                            <div className="categorie">{categorie}</div>
-                        </div>
-                        <div className="description">
-                            <div className="info">
-                                <div className={"pdp-utilisateur"}
-                                     style={{backgroundColor: color}}> {nom[0].toUpperCase()} {prenom[0].toUpperCase()}</div>
-                                <div className={"info-utilisateur"}>
-                                    <p>{nom} {prenom}</p>
-                                    <p>{delai}</p>
-                                </div>
+        <>
+            <Link to={`/ressources/${id}`}
+                  style={{textDecoration: 'none', color: 'inherit'}}> {/* Utilise React Router pour naviguer */}
+                <div className="card">
+                    <img src={imageUrl} alt={title} className="card-image"/>
+                    <div className="card-content">
+                        <div className={"card-header"}>
+                            <h2 className="card-title">{title}</h2>
+                            <div className="modal-container"> {/* Conteneur pour l'icône de menu et la modal */}
+                                {idUser && (
+                                    <img src={Menu} alt={"voir plus logo"} onClick={(e) => {
+                                        e.preventDefault();
+                                        toggleModal(description, e);
+                                    }}/>
+                                )}
+                                {isModalOpen && (
+                                    <div className="modal" onClick={(e) => {
+                                        e.preventDefault()
+                                        setIsModalOpen(false);
+                                    }}>
+                                        {!isFavorited && (
+                                            <a onClick={() => mettreEnProgression(1)}>Mettre en favoris la ressource</a>
+                                        )}
+                                        {!isMiseDeCote && (
+                                            <a onClick={() => mettreEnProgression(2)}>Mettre de côté la ressource</a>
+                                        )}
+                                        {proprietaire.id === idUser && (
+                                            <Link to={`/modifressource/${id}`}><a> Modifier</a></Link>
+                                        )}
+                                        <a onClick={() => handleOpenModalPartager()}>Partager la ressource</a>
+
+                                    </div>
+                                )}
                             </div>
-                            <div className="logo-container">
-                                <div className="card-logo">
-                                    <img src={Vu} alt={"Vues"}/>
-                                    <p>{vue} Vues</p>
+                        </div>
+                        <div className="info-container">
+                            <div className="categories-container">
+                                <div className="cat">{typeRessource}</div>
+                                <div className="type-relations">{typeRelationLabels}</div>
+                                <div className="categorie">{categorie}</div>
+                            </div>
+                            <div className="description">
+                                <div className="info">
+                                    <div className={"pdp-utilisateur"}
+                                         style={{backgroundColor: color}}> {nom[0].toUpperCase()} {prenom[0].toUpperCase()}</div>
+                                    <div className={"info-utilisateur"}>
+                                        <p>{nom} {prenom}</p>
+                                        <p>{delai}</p>
+                                    </div>
                                 </div>
-                                <div className="card-logo">
-                                    <img src={Com} alt={"Commentaires"}/>
-                                    <p>{nbCommentaire} Commentaires</p>
+                                <div className="logo-container">
+                                    <div className="card-logo">
+                                        <img src={Vu} alt={"Vues"}/>
+                                        <p>{vue} Vues</p>
+                                    </div>
+                                    <div className="card-logo">
+                                        <img src={Com} alt={"Commentaires"}/>
+                                        <p>{nbCommentaire} Commentaires</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </Link>
+            </Link>
+            <DialogPartager/>
+        </>
     );
 }
 
