@@ -47,6 +47,25 @@ class ModalOptions extends StatelessWidget {
     }
   }
 
+  Future<void> _deleteRessource(BuildContext context) async {
+    Map<String, dynamic> response = await customFetchDelete({
+      'url': ApiConfig.apiUrl + '/api/ressources/' + ressource!.id.toString(),
+      'method': 'DELETE',
+      'headers': {
+        'Content-Type': 'application/json',
+      },
+    }, connecter: true);
+
+    if (response['error'] == '') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Ressource supprimée avec succès !')),
+      );
+      onShareOrUnshare();
+    } else {
+      throw Exception('Failed to delete ressource');
+    }
+  }
+
   void addToMiseDeCote(BuildContext context) async {
     Map<String, dynamic> response = await customFetchPost({
       'url': ApiConfig.apiUrl + '/api/progressions',
@@ -111,6 +130,7 @@ class ModalOptions extends StatelessWidget {
                       ),
                       child: TextButton(
                         onPressed: () {
+                          _deleteRessource(context);
                           Navigator.pop(context);
                         },
                         style: ButtonStyle(
@@ -234,8 +254,6 @@ class ModalOptions extends StatelessWidget {
     TextEditingController personController = TextEditingController();
 
     List<Utilisateur> voirRessources = ressource?.getVoirRessources() ?? [];
-
-    print('Ressources: ' + (ressource?.getVoirRessources()?.toString() ?? ''));
 
     showDialog(
       context: context,
