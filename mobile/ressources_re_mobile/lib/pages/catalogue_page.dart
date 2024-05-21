@@ -496,7 +496,7 @@ class _CatalogueState extends State<Catalogue> {
                                   margin: const EdgeInsets.all(0),
                                   padding: const EdgeInsets.all(0),
                                   width: double.infinity,
-                                  height: 90,
+                                  height: 130,
                                   decoration: BoxDecoration(
                                     color: const Color(0x1fffffff),
                                     shape: BoxShape.rectangle,

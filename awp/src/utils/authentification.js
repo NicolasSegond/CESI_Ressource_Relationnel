@@ -106,7 +106,7 @@ export function getIdUser(token) {
 
 export async function getRolesUser(id) {
     try {
-        const { data, error } = await customFetch({
+        const {data, error} = await customFetch({
             url: apiConfig.apiUrl + '/api/utilisateurs/' + id + '/roles',
             method: 'GET'
         }, true);
@@ -117,18 +117,15 @@ export async function getRolesUser(id) {
                 redirect('/login');
             } else {
                 console.error("Une erreur s'est produite lors de la récupération des rôles :", error);
-
-                throw new Error("Une erreur s'est produite lors de la récupération des rôles");
             }
         }
 
         if (data && data['hydra:member'] && data['hydra:member'].length > 0) {
             return data['hydra:member'][0].roles;
         } else {
-            throw new Error("Aucun rôle trouvé pour l'utilisateur");
+            //throw new Error("Aucun rôle trouvé pour l'utilisateur");
         }
     } catch (err) {
         console.error("Une erreur s'est produite lors de la récupération des rôles :", err);
-        throw err;
     }
 }

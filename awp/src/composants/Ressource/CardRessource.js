@@ -270,8 +270,9 @@ function Card({
                                         {proprietaire.id === idUser && (
                                             <Link to={`/modifressource/${id}`}><a> Modifier</a></Link>
                                         )}
-                                        <a onClick={() => handleOpenModalPartager()}>Partager la ressource</a>
-
+                                        {proprietaire.id === idUser && (
+                                            <a onClick={() => handleOpenModalPartager()}>Partager la ressource</a>
+                                        )}
                                     </div>
                                 )}
                             </div>
