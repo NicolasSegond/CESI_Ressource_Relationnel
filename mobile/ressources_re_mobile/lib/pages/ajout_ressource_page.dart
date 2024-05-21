@@ -174,7 +174,7 @@ class _AjoutRessourcePageState extends State<AjoutRessourcePage> {
       return;
     }
 
-    final uri = Uri.parse('${ApiConfig.apiUrl}/ap/ressources');
+    final uri = Uri.parse('${ApiConfig.apiUrl}/api/ressources');
     final headers = {'Content-Type': 'application/json'};
 
     List<String> formattedTypeRelations = selectedRelationTypes
@@ -305,6 +305,16 @@ class _AjoutRessourcePageState extends State<AjoutRessourcePage> {
                   ],
                 ),
               ),
+            ),
+            const SizedBox(height: 16),
+            SwitchListTile(
+              title: const Text('Privé'),
+              value: isPrivate,
+              onChanged: (bool value) {
+                setState(() {
+                  isPrivate = value;
+                });
+              },
             ),
             const SizedBox(height: 16),
             Card(
