@@ -33,7 +33,7 @@ const RessourceTypeJeu = () => {
     const [comments, setComments] = useState([]);
     const [userId, setUserId] = useState(null);
     const [commentContent, setCommentContent] = useState('');
-    const idRessource = 169;
+    const idRessource = 1;
 
     useEffect(() => {
         const token = getTokenDisconnected();

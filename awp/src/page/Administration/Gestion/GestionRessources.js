@@ -11,6 +11,7 @@ import ClearIcon from "@mui/icons-material/Clear";
 import CheckIcon from "@mui/icons-material/Check";
 import TriComponent from "../../../composants/Ressource/TriComponent";
 import StopCircleIcon from '@mui/icons-material/StopCircle';
+import {useNavigate} from "react-router-dom";
 
 const GestionRessources = () => {
     const [data, setData] = useState([]);
@@ -28,6 +29,7 @@ const GestionRessources = () => {
     const [openModal, setOpenModal] = useState(false);
     const [row, setRow] = useState(null);
     const [rejectReason, setRejectReason] = useState('');
+    const navigate = useNavigate();
 
     // Options pour le statut des ressources
     const statut = [
@@ -197,7 +199,7 @@ const GestionRessources = () => {
 
     // Fonction pour éditer une ressource
     const handleEdit = (row) => {
-        console.log('Edit clicked for row:', row);
+        navigate('/modifressource/' + row.id);
     };
 
     // Fonction pour supprimer une ressource
