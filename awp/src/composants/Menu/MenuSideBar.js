@@ -20,6 +20,7 @@ const SideBar = ({isOpen, toggleSidebar, token}) => {
             if (token) {
                 const userID = getIdUser(token);
                 const rolesUser = await getRolesUser(userID);
+                console.log(rolesUser);
                 setUserRoles(rolesUser);
             }
         };
@@ -66,7 +67,8 @@ const SideBar = ({isOpen, toggleSidebar, token}) => {
                 <img src={Logo} alt="logo" className="logo"/>
                 {menuItems.map((item, index) => (
                     (item.tokenNecessaire && !token) ||
-                    (item.estAdmin && (!userRoles || !userRoles.includes("ROLE_ADMIN"))) ||
+                    (item.estAdmin && (!userRoles || (!userRoles.includes("ROLE_ADMIN") && !userRoles.includes("ROLE_MODO"))))
+                    ||
                     (item.userRole && (!userRoles || !userRoles.includes(item.userRole))) ? null :
                         <Link key={index} to={item.chemin} className="lien-menuSideBar">
                             {item.icon}

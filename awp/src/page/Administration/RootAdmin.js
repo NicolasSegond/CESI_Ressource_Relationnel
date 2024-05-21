@@ -16,8 +16,8 @@ const Admin = () => {
 
             const userID = getIdUser(token);
             const rolesUser = await getRolesUser(userID);
-
-            if (rolesUser.includes("ROLE_ADMIN")) {
+            console.log(rolesUser);
+            if (rolesUser.includes("ROLE_ADMIN") || rolesUser.includes("ROLE_MODO")) {
                 setIsAdmin(true);
             } else {
                 navigate('/');
