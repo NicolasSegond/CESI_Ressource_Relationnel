@@ -168,7 +168,7 @@ function PageRessource() {
                     <div key={index} className={styles["comment"]}>
                         <p>{comment.contenu}</p>
                         <p className={styles["comment-date"]}>Poster
-                            le : {new Date(comment.date).toLocaleDateString()}</p>
+                            le : {new Date(comment.date).toLocaleDateString()} par : {comment.utilisateur.nom} {comment.utilisateur.prenom}</p>
                     </div>
                 ))}
                 <div className={styles["comment-form"]}>
