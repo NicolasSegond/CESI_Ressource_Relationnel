@@ -4,13 +4,12 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
-import 'package:file_picker/file_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:path/path.dart' as path;
-import 'package:ressources_re_mobile/utilities/authentification.dart';
 import 'package:image_picker/image_picker.dart';
-
+import 'package:quill_html_converter/quill_html_converter.dart';
+import 'package:ressources_re_mobile/utilities/apiConfig.dart';
 
 class Category {
   final int id;
@@ -45,12 +44,12 @@ class _AjoutRessourcePageState extends State<AjoutRessourcePage> {
   late ScrollController _scrollController;
   TextEditingController descriptionController = TextEditingController();
   List<Category> categories = [];
-  Category? selectedCategory; // Une seule catégorie peut être sélectionnée
+  Category? selectedCategory;
   File? imageFile;
-  Uint8List? webImage; // Pour stocker l'image sélectionnée sur le web
+  Uint8List? webImage;
   bool isPrivate = false;
   List<RelationType> relationTypes = [];
-  List<RelationType> selectedRelationTypes = []; // Permettre plusieurs types de relations
+  List<RelationType> selectedRelationTypes = [];
   List<ResourceType> resourceTypes = [];
   ResourceType? selectedResourceType;
   final picker = ImagePicker();
@@ -67,7 +66,7 @@ class _AjoutRessourcePageState extends State<AjoutRessourcePage> {
 
   Future<void> fetchDataFromAPI() async {
     try {
-      var url = Uri.parse('http://192.168.0.13:8000/api/options');
+      var url = Uri.parse('${ApiConfig.apiUrl}/api/options');
       var response = await http.get(url);
       if (response.statusCode == 200) {
         var jsonData = jsonDecode(response.body);
@@ -104,8 +103,7 @@ class _AjoutRessourcePageState extends State<AjoutRessourcePage> {
     super.dispose();
   }
 
-
-Future<void> _pickImage() async {
+  Future<void> _pickImage() async {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
@@ -114,7 +112,6 @@ Future<void> _pickImage() async {
         print(imageFile);
       });
 
-      // Récupération du nom du fichier
       fileName = pickedFile.name;
       print("Nom de l'image: $fileName");
     } else {
@@ -122,63 +119,62 @@ Future<void> _pickImage() async {
     }
   }
 
-
-
   Future<void> _uploadImage() async {
-  if (imageFile != null) {
-    var request = http.MultipartRequest(
-      'POST',
-      Uri.parse('http://192.168.0.13:8000/api/uploads'),
-    );
+    if (imageFile != null) {
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse('${ApiConfig.apiUrl}/api/uploads'),
+      );
 
-    // Ajouter le paramètre 'idRessource' à la requête
-    request.fields['idRessource'] = '166';
+      request.fields['idRessource'] = '166';
 
-    // Vérifier si l'application s'exécute sur le web
-    if (kIsWeb) {
-      // Récupérer les données de l'image depuis l'URL blob
-      var response = await http.get(Uri.parse(imageFile!.path));
+      if (kIsWeb) {
+        var response = await http.get(Uri.parse(imageFile!.path));
 
-      if (response.statusCode == 200) {
-        // Convertir les données de l'image en bytes
-        var imageData = response.bodyBytes;
+        if (response.statusCode == 201) {
+          var imageData = response.bodyBytes;
 
-        // Créer un MultipartFile à partir des données de l'image
-        var multipartFile = http.MultipartFile.fromBytes(
-          'miniature[]',
-          imageData,
-          filename: fileName, // Nom de fichier fictif
-        );
+          var multipartFile = http.MultipartFile.fromBytes(
+            'miniature[]',
+            imageData,
+            filename: fileName,
+          );
 
-        // Ajouter le MultipartFile à la requête
-        request.files.add(multipartFile);
+          request.files.add(multipartFile);
+        } else {
+          print('Failed to fetch image data: ${response.statusCode}');
+          return;
+        }
       } else {
-        print('Failed to fetch image data: ${response.statusCode}');
-        return;
+        request.files.add(await http.MultipartFile.fromPath(
+          'miniature[]',
+          imageFile!.path,
+        ));
       }
-    } else {
-      // Si l'application s'exécute sur un appareil mobile, utiliser le chemin local du fichier
-      request.files.add(await http.MultipartFile.fromPath(
-        'miniature[]',
-        imageFile!.path,
-      ));
-    }
 
-    var response2 = await request.send();
+      var response2 = await request.send();
 
-    if (response2.statusCode == 200) {
-      print('File uploaded successfully');
-    } else {
-      print('File upload failed with status: ${response2.statusCode}');
+      if (response2.statusCode == 201) {
+        print('File uploaded successfully');
+      } else {
+        print('File upload failed with status: ${response2.statusCode}');
+      }
     }
   }
-}
-
-
-
 
   void _handleSubmit() async {
-    final uri = Uri.parse('http://192.168.0.13:8000/api/ressources');
+    // Vérification des champs obligatoires
+    if (titreController.text.isEmpty ||
+        descriptionController.text.isEmpty ||
+        selectedCategory == null ||
+        selectedResourceType == null ||
+        selectedRelationTypes.isEmpty ||
+        _controller.document.toPlainText().trim().isEmpty) {
+      _showAlert('Tous les champs doivent être remplis.');
+      return;
+    }
+
+    final uri = Uri.parse('${ApiConfig.apiUrl}/ap/ressources');
     final headers = {'Content-Type': 'application/json'};
 
     List<String> formattedTypeRelations = selectedRelationTypes
@@ -187,19 +183,26 @@ Future<void> _pickImage() async {
 
     print("Submitting resource...");
     print(imageFile != null ? path.basename(imageFile!.path) : null);
+    print('---------------------------------------------------------------------------------------------------------------------------------');
+    print(_controller.document.toDelta().toHtml());
+    print('---------------------------------------------------------------------------------------------------------------------------------');
 
     Map<String, dynamic> body = {
       'titre': titreController.text,
-      'contenu': _controller.document.toPlainText(),
+      'contenu': _controller.document.toDelta().toHtml(),
       'dateCreation': DateTime.now().toIso8601String(),
       'dateModification': DateTime.now().toIso8601String(),
-      'nombreVue': 0,  // Exemple de champ avec valeur par défaut
-      'proprietaire': '/api/utilisateurs/9',  // ID de l'utilisateur, ajustez selon vos besoins
+      'nombreVue': 0,
+      'proprietaire': '/api/utilisateurs/9',
       'statut': '/api/statuts/2',
-      'visibilite': isPrivate ? '/api/visibilites/1' : '/api/visibilites/2',  // Exemple de condition
-      'categorie': selectedCategory != null  ? '/api/categories/${selectedCategory?.id}' : null, 
+      'visibilite': isPrivate ? '/api/visibilites/1' : '/api/visibilites/2',
+      'categorie': selectedCategory != null
+          ? '/api/categories/${selectedCategory?.id}'
+          : null,
       'valide': false,
-      'typeDeRessource': selectedResourceType != null ? '/api/type_de_ressources/${selectedResourceType?.id}' : null,
+      'typeDeRessource': selectedResourceType != null
+          ? '/api/type_de_ressources/${selectedResourceType?.id}'
+          : null,
       'typeRelations': formattedTypeRelations,
       'miniature': imageFile != null ? fileName : null,
     };
@@ -222,9 +225,30 @@ Future<void> _pickImage() async {
     }
   }
 
+  void _showAlert(String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Erreur'),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    quill.QuillSimpleToolbarConfigurations toolbarConfig = quill.QuillSimpleToolbarConfigurations(
+    quill.QuillSimpleToolbarConfigurations toolbarConfig =
+        quill.QuillSimpleToolbarConfigurations(
       controller: _controller,
       showBoldButton: true,
       showItalicButton: true,
@@ -240,89 +264,197 @@ Future<void> _pickImage() async {
 
     quill.QuillEditorConfigurations editorConfig = quill.QuillEditorConfigurations(
       controller: _controller,
-      placeholder: 'Commencez à écrire ici...', // Ajoutez d'autres configurations si nécessaire
+      placeholder: 'Commencez à écrire ici...',
       scrollable: true,
-      padding: const EdgeInsets.all(10), // Utilisez const ici pour optimiser
+      padding: const EdgeInsets.all(10),
     );
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Ajouter Ressource')),
+      appBar: AppBar(
+        title: const Text('Ajouter Ressource'),
+        backgroundColor: Colors.teal,
+      ),
       body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            TextField(
-              controller: titreController,
-              decoration: const InputDecoration(labelText: 'Titre de la ressource'),
+            Card(
+              elevation: 4,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15.0),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    if (imageFile == null)
+                      const Text('Aucune image sélectionnée.')
+                    else
+                      const Text('Image sélectionnée.'),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: _pickImage,
+                      child: const Text('Choisir une Miniature'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.teal,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-            TextField(
-              controller: descriptionController,
-              decoration: const InputDecoration(labelText: 'Description'),
-              maxLines: 3,
+            const SizedBox(height: 16),
+            Card(
+              elevation: 4,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15.0),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    TextField(
+                      controller: titreController,
+                      decoration: InputDecoration(
+                        labelText: 'Titre de la ressource',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: descriptionController,
+                      decoration: InputDecoration(
+                        labelText: 'Description',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                      ),
+                      maxLines: 3,
+                    ),
+                  ],
+                ),
+              ),
             ),
-            imageFile == null
-                ? Text('Aucune image sélectionnée.')
-                : Text('image sélectionnée.'),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _pickImage,
-              child: const Text('Choisir une Miniature'),
-            ),
+            const SizedBox(height: 16),
             if (categories.isNotEmpty)
-              DropdownButton<Category>(
-                value: selectedCategory,
-                hint: Text("Choisir une catégorie"),
-                onChanged: (newValue) {
-                  setState(() {
-                    selectedCategory = newValue;
-                  });
-                },
-                items: categories.map((Category category) {
-                  return DropdownMenuItem<Category>(
-                    value: category,
-                    child: Text(category.name),
-                  );
-                }).toList(),
+              Card(
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15.0),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: DropdownButton<Category>(
+                    value: selectedCategory,
+                    hint: const Text("Choisir une catégorie"),
+                    onChanged: (newValue) {
+                      setState(() {
+                        selectedCategory = newValue;
+                      });
+                    },
+                    items: categories.map((Category category) {
+                      return DropdownMenuItem<Category>(
+                        value: category,
+                        child: Text(category.name),
+                      );
+                    }).toList(),
+                    isExpanded: true,
+                  ),
+                ),
               ),
+            const SizedBox(height: 16),
             if (relationTypes.isNotEmpty)
-              MultiSelectDialogField<RelationType>(
-                items: relationTypes.map((relationType) => MultiSelectItem<RelationType>(relationType, relationType.name)).toList(),
-                title: Text("Types de relation"),
-                selectedItemsTextStyle: TextStyle(color: Colors.blue),
-                onConfirm: (values) {
-                  selectedRelationTypes = values as List<RelationType>;
-                },
-                buttonText: Text("Choisir les types de relation"),
+              Card(
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15.0),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: MultiSelectDialogField<RelationType>(
+                    items: relationTypes
+                        .map((relationType) =>
+                            MultiSelectItem<RelationType>(relationType, relationType.name))
+                        .toList(),
+                    title: const Text("Types de relation"),
+                    selectedItemsTextStyle: const TextStyle(color: Colors.blue),
+                    onConfirm: (values) {
+                      setState(() {
+                        selectedRelationTypes = values as List<RelationType>;
+                      });
+                    },
+                    buttonText: const Text("Choisir les types de relation"),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: Colors.teal,
+                        width: 2,
+                      ),
+                    ),
+                  ),
+                ),
               ),
+            const SizedBox(height: 16),
             if (resourceTypes.isNotEmpty)
-              DropdownButton<ResourceType>(
-                value: selectedResourceType,
-                hint: Text("Choisir le type de ressource"),
-                onChanged: (newValue) {
-                  setState(() {
-                    selectedResourceType = newValue;
-                  });
-                },
-                items: resourceTypes.map((ResourceType type) {
-                  return DropdownMenuItem<ResourceType>(
-                    value: type,
-                    child: Text(type.name),
-                  );
-                }).toList(),
+              Card(
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15.0),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: DropdownButton<ResourceType>(
+                    value: selectedResourceType,
+                    hint: const Text("Choisir le type de ressource"),
+                    onChanged: (newValue) {
+                      setState(() {
+                        selectedResourceType = newValue;
+                      });
+                    },
+                    items: resourceTypes.map((ResourceType type) {
+                      return DropdownMenuItem<ResourceType>(
+                        value: type,
+                        child: Text(type.name),
+                      );
+                    }).toList(),
+                    isExpanded: true,
+                  ),
+                ),
               ),
+            const SizedBox(height: 16),
             quill.QuillToolbar.simple(configurations: toolbarConfig),
-            Container(
-              padding: const EdgeInsets.all(8),
-              child: quill.QuillEditor(
-                key: UniqueKey(),
-                focusNode: _focusNode,
-                scrollController: _scrollController,
-                configurations: editorConfig,
+            Card(
+              elevation: 4,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15.0),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: quill.QuillEditor(
+                  key: UniqueKey(),
+                  focusNode: _focusNode,
+                  scrollController: _scrollController,
+                  configurations: editorConfig,
+                ),
               ),
             ),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _handleSubmit,
               child: const Text('Soumettre'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.teal,
+                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                textStyle: const TextStyle(fontSize: 18),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+              ),
             ),
           ],
         ),
