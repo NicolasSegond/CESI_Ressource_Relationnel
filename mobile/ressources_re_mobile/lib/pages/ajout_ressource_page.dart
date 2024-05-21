@@ -119,19 +119,19 @@ class _AjoutRessourcePageState extends State<AjoutRessourcePage> {
     }
   }
 
-  Future<void> _uploadImage() async {
+  Future<void> _uploadImage(int idRessource) async {
     if (imageFile != null) {
       var request = http.MultipartRequest(
         'POST',
         Uri.parse('${ApiConfig.apiUrl}/api/uploads'),
       );
 
-      request.fields['idRessource'] = '166';
+      request.fields['idRessource'] = idRessource.toString();
 
       if (kIsWeb) {
         var response = await http.get(Uri.parse(imageFile!.path));
 
-        if (response.statusCode == 201) {
+        if (response.statusCode == 200) {
           var imageData = response.bodyBytes;
 
           var multipartFile = http.MultipartFile.fromBytes(
@@ -193,7 +193,7 @@ class _AjoutRessourcePageState extends State<AjoutRessourcePage> {
       'dateCreation': DateTime.now().toIso8601String(),
       'dateModification': DateTime.now().toIso8601String(),
       'nombreVue': 0,
-      'proprietaire': '/api/utilisateurs/9',
+      'proprietaire': '/api/utilisateurs/2',
       'statut': '/api/statuts/2',
       'visibilite': isPrivate ? '/api/visibilites/1' : '/api/visibilites/2',
       'categorie': selectedCategory != null
@@ -217,7 +217,9 @@ class _AjoutRessourcePageState extends State<AjoutRessourcePage> {
       print('Ressource ajoutée avec succès');
       print(imageFile);
       if (imageFile != null) {
-        await _uploadImage();
+        Map<String, dynamic> responseData = json.decode(response.body);
+        int id = responseData['id'];
+        await _uploadImage(id);
       }
     } else {
       print('Erreur lors de la soumission: ${response.statusCode}');
@@ -453,6 +455,7 @@ class _AjoutRessourcePageState extends State<AjoutRessourcePage> {
                 ),
               ),
             ),
+            
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _handleSubmit,
