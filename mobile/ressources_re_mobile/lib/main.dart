@@ -8,6 +8,7 @@ import 'package:ressources_re_mobile/pages/statistique_page.dart';
 import 'utilities/authentification.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:ressources_re_mobile/pages/ajout_ressource_page.dart';
 
 void main() {
   runApp(
@@ -36,7 +37,8 @@ class MyApp extends StatelessWidget {
         '/favoris': (context) => const MyMainPage(title: "Mes favoris", initialIndex: 3),
         '/stat': (context) => const MyMainPage(title: "Statistique", initialIndex: 4),
         '/admin': (context) => const MyMainPage(title: 'Administration', initialIndex: 5),
-        '/profil': (context) => const ProfilPage(), // Modifié pour accéder directement à ProfilPage
+        '/profil': (context) => const ProfilPage(),
+        '/ajoutRessource': (context) => const MyMainPage(title: "Ajouter Ressource", initialIndex: 6)
       },
       initialRoute: '/',
     );
@@ -104,7 +106,7 @@ class _MyMainPageState extends State<MyMainPage> {
         ? [
             Catalogue(),
             FavorisPage(),
-            FavorisPage(),
+            AjoutRessourcePage(),
             if (_showDashboardButton) DashboardAdmin(),
             if (_showDashboardButton) AdminPage(),
           ]
