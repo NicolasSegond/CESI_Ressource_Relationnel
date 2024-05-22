@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom'; // Assurez-vous que react-router-dom est installé et configuré
 import LogoMinistere from "../../assets/logoMinistere.png";
 
 const Footer = () => {
@@ -20,7 +21,8 @@ const Footer = () => {
             <hr />
             <div className={"info-site"}>
                 <a>© 2024 RE</a>
-                <a>Mentions légales</a>
+                <Link to="/mentions-legales">Mentions légales</Link>
+                <Link to="/conditions-generales">Conditions générales d'utilisation</Link>
                 <a>Politique de confidentialité</a>
             </div>
         </footer>

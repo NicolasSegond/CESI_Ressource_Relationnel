@@ -17,6 +17,8 @@ import Dashboard from "./page/DashBoardUser/Dashboard";
 import ModifierRessource from "./page/Ressource/modifierRessource"; // Importez le composant pour la modification de la ressource
 import ProfilePage, {loader as ProfileLoader} from "./page/Utilisateur/pageProfil";
 import RessourceTypeJeu from "./page/Ressource/ressourceTypeJeu";
+import MentionsLegales from "./page/mentionsLegales";
+import ConditionsGeneralesUtilisation from "./page/conditionsGeneralesUtilisation";
 
 function App() {
     const router = createBrowserRouter([
@@ -74,6 +76,14 @@ function App() {
                             element: <GestionAdmin/>
                         }
                     ]
+                },
+                {
+                    path: '/mentions-legales',
+                    element: <MentionsLegales/>
+                },
+                {
+                    path: '/conditions-generales',
+                    element: <ConditionsGeneralesUtilisation/>
                 }
             ],
         },
@@ -93,7 +103,8 @@ function App() {
         {
             path: '/passwordReset',
             element: <Forgottenpassword/>,
-        }
+        },
+
     ]);
 
     return (
