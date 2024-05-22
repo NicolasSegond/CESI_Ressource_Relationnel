@@ -44,7 +44,6 @@ class _AjoutRessourcePageState extends State<AjoutRessourcePage> {
   late FocusNode _focusNode;
   TextEditingController titreController = TextEditingController();
   late ScrollController _scrollController;
-  TextEditingController descriptionController = TextEditingController();
   List<Category> categories = [];
   Category? selectedCategory;
   File? imageFile;
@@ -147,7 +146,6 @@ class _AjoutRessourcePageState extends State<AjoutRessourcePage> {
     _focusNode.dispose();
     _scrollController.dispose();
     titreController.dispose();
-    descriptionController.dispose();
     super.dispose();
   }
 
@@ -203,7 +201,6 @@ class _AjoutRessourcePageState extends State<AjoutRessourcePage> {
   void _handleSubmit() async {
     // Vérification des champs obligatoires
     if (titreController.text.isEmpty ||
-        descriptionController.text.isEmpty ||
         selectedCategory == null ||
         selectedResourceType == null ||
         selectedRelationTypes.isEmpty ||
@@ -374,17 +371,6 @@ class _AjoutRessourcePageState extends State<AjoutRessourcePage> {
                           borderRadius: BorderRadius.circular(10.0),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 16),
-                    TextField(
-                      controller: descriptionController,
-                      decoration: InputDecoration(
-                        labelText: 'Description',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                      ),
-                      maxLines: 3,
                     ),
                   ],
                 ),
