@@ -356,6 +356,15 @@ const GestionRessources = () => {
         }
     };
 
+    const renderTitre = (row) => {
+        console.log('ROW' + row.toString());
+        return (
+            <a className={styles['titre']} href={"/ressources/" + row.id}>
+                {row.titre}
+            </a>
+        );
+    };
+
 
     return (
         <>
@@ -389,7 +398,7 @@ const GestionRessources = () => {
                 data={data}
                 loading={loading}
                 columns={[
-                    {label: 'Titre', field: 'titre'},
+                    {label: 'Titre', field: 'titre', render: renderTitre},
                     {label: 'Date de création', field: 'dateCreation', renderDate: true},
                     {label: 'Date de modification', field: 'dateModification', renderDate: true},
                     {label: 'Propriétaire', render: row => `${row.proprietaire.nom} ${row.proprietaire.prenom}`},
