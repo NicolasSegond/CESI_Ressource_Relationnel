@@ -69,6 +69,8 @@ const DashboardAdmin = () => {
                     ressourceParMoisUrl += `&typeDeRessource=${selectedTypeRessource}`;
                 }
 
+                console.log('RessourcemoisURL' + ressourceParMoisUrl);
+
                 const [vueData, nonValiderData, ressourceParMois, utilisateurData] = await Promise.all([
                     customFetch({url: vueUrl, method: 'GET', headers: {'Content-Type': 'application/json'}}, true),
                     customFetch({

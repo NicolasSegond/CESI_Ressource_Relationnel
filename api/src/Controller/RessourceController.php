@@ -17,10 +17,10 @@ class RessourceController extends AbstractController
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private RessourceRepository $ressourceRepository,
-        private UtilisateurRepository $utilisateurRepository,
-        private VisibiliteRepository $visibiliteRepository,
-        private EmailService $emailService
+        private RessourceRepository    $ressourceRepository,
+        private UtilisateurRepository  $utilisateurRepository,
+        private VisibiliteRepository   $visibiliteRepository,
+        private EmailService           $emailService
     )
     {
     }
@@ -31,32 +31,42 @@ class RessourceController extends AbstractController
         setlocale(LC_TIME, 'fr_FR.utf8', 'fr_FR', 'fr');
 
         // Récupérer les dates sélectionnées depuis la requête
-        // Valider et nettoyer les paramètres de date d'entrée
         $data = $request->query->all();
-
-        $startDate = isset($data['dateCreation']['before']) ? $data['dateCreation']['after'] : null;
-        $endDate = isset($data['dateCreation']['after']) ? $data['dateCreation']['before'] : null;
+        $startDate = isset($data['dateCreation']['after']) ? $data['dateCreation']['after'] : null;
+        $endDate = isset($data['dateCreation']['before']) ? $data['dateCreation']['before'] : null;
 
         $startDateObj = $startDate ? new \DateTimeImmutable($startDate) : new \DateTimeImmutable();
         $endDateObj = $endDate ? new \DateTimeImmutable($endDate) : new \DateTimeImmutable();
 
-        $startDateObj = $startDateObj->format('Y-m-d');
-        $endDateObj = $endDateObj->format('Y-m-d');
-        // Récupérer la catégorie sélectionnée depuis la requête
+        $startDateFormatted = $startDateObj->format('Y-m-d');
+        $endDateFormatted = $endDateObj->format('Y-m-d');
+
+        // Récupérer la catégorie et autres filtres sélectionnés depuis la requête
         $selectedCategory = $data['categorie'] ?? null;
+        $selectedTypeRelations = $data['typeRelations'] ?? null;
+        $selectedTypeDeRessource = $data['typeDeRessource'] ?? null;
 
         // Requête SQL pour récupérer le nombre de ressources créées par mois
         $queryBuilder = $this->entityManager->createQueryBuilder()
             ->select("SUBSTRING(r.dateCreation, 6, 2) as moisCreation, COUNT(r.id) as count")
             ->from(Ressource::class, 'r')
             ->where("r.dateCreation BETWEEN :startDate AND :endDate")
-            ->setParameter("startDate", $startDateObj)
-            ->setParameter("endDate", $endDateObj);
+            ->setParameter("startDate", $startDateFormatted)
+            ->setParameter("endDate", $endDateFormatted);
 
-        // Filtrer par catégorie si elle est définie
         if ($selectedCategory) {
             $queryBuilder->andWhere("r.categorie = :category")
                 ->setParameter("category", $selectedCategory);
+        }
+
+        if ($selectedTypeRelations) {
+            $queryBuilder->andWhere(":selectedTypeRelations MEMBER OF r.typeRelations")
+                ->setParameter("selectedTypeRelations", $selectedTypeRelations);
+        }
+
+        if ($selectedTypeDeRessource) {
+            $queryBuilder->andWhere("r.typeDeRessource = :typeDeRessource")
+                ->setParameter("typeDeRessource", $selectedTypeDeRessource);
         }
 
         $query = $queryBuilder->groupBy("moisCreation")
@@ -73,71 +83,49 @@ class RessourceController extends AbstractController
         }
 
         // Ajout de la récupération du nombre d'utilisateurs selon leur statut de vérification
-        $verifiedUsersCount = $this->utilisateurRepository->findBy(['verif' => 1]);
-        $unverifiedUsersCount = $this->utilisateurRepository->findBy(['verif' => 0]);
-        $pendingVerificationUsersCount = $this->utilisateurRepository->findBy(['verif' => 2]);
+        $verifiedUsersCount = count($this->utilisateurRepository->findBy(['verif' => 1]));
+        $unverifiedUsersCount = count($this->utilisateurRepository->findBy(['verif' => 0]));
+        $pendingVerificationUsersCount = count($this->utilisateurRepository->findBy(['verif' => 2]));
 
-        // Récupérer les ressources validées créées entre les deux dates
-        $ressourceValideQueryBuilder = $this->ressourceRepository->createQueryBuilder('r')
-            ->where('r.statut = :statut')
-            ->andWhere('r.dateCreation >= :startDate')
-            ->andWhere('r.dateCreation <= :endDate')
-            ->setParameter('statut', 1)
-            ->setParameter('startDate', $startDateObj)
-            ->setParameter('endDate', $endDateObj);
+        // Filtrer les ressources selon leur statut et les dates
+        $ressourcesStatuts = [1 => 'ressource_valide', 2 => 'ressource_en_attente', 3 => 'ressource_refuse'];
+        $ressourcesResult = [];
 
-        // Filtrer par catégorie si elle est définie
-        if ($selectedCategory) {
-            $ressourceValideQueryBuilder->andWhere('r.categorie = :category')
-                ->setParameter('category', $selectedCategory);
+        foreach ($ressourcesStatuts as $statut => $key) {
+            $ressourceQueryBuilder = $this->ressourceRepository->createQueryBuilder('r')
+                ->where('r.statut = :statut')
+                ->andWhere('r.dateCreation BETWEEN :startDate AND :endDate')
+                ->setParameter('statut', $statut)
+                ->setParameter('startDate', $startDateFormatted)
+                ->setParameter('endDate', $endDateFormatted);
+
+            if ($selectedCategory) {
+                $ressourceQueryBuilder->andWhere('r.categorie = :category')
+                    ->setParameter('category', $selectedCategory);
+            }
+
+            if ($selectedTypeRelations) {
+                $ressourceQueryBuilder->andWhere(":selectedTypeRelations MEMBER OF r.typeRelations")
+                    ->setParameter("selectedTypeRelations", $selectedTypeRelations);
+            }
+
+            if ($selectedTypeDeRessource) {
+                $ressourceQueryBuilder->andWhere('r.typeDeRessource = :typeDeRessource')
+                    ->setParameter('typeDeRessource', $selectedTypeDeRessource);
+            }
+
+            $ressourcesResult[$key] = count($ressourceQueryBuilder->getQuery()->getResult());
         }
-
-        $ressourceValide = $ressourceValideQueryBuilder->getQuery()->getResult();
-
-        // Récupérer les ressources en attente créées entre les deux dates
-        $ressourceEnAttenteQueryBuilder = $this->ressourceRepository->createQueryBuilder('r')
-            ->where('r.statut = :statut')
-            ->andWhere('r.dateCreation >= :startDate')
-            ->andWhere('r.dateCreation <= :endDate')
-            ->setParameter('statut', 2)
-            ->setParameter('startDate', $startDateObj)
-            ->setParameter('endDate', $endDateObj);
-
-        // Filtrer par catégorie si elle est définie
-        if ($selectedCategory) {
-            $ressourceEnAttenteQueryBuilder->andWhere('r.categorie = :category')
-                ->setParameter('category', $selectedCategory);
-        }
-
-        $ressourceEnAttente = $ressourceEnAttenteQueryBuilder->getQuery()->getResult();
-
-        // Récupérer les ressources refusées créées entre les deux dates
-        $ressourceRefuseQueryBuilder = $this->ressourceRepository->createQueryBuilder('r')
-            ->where('r.statut = :statut')
-            ->andWhere('r.dateCreation >= :startDate')
-            ->andWhere('r.dateCreation <= :endDate')
-            ->setParameter('statut', 3)
-            ->setParameter('startDate', $startDateObj)
-            ->setParameter('endDate', $endDateObj);
-
-        // Filtrer par catégorie si elle est définie
-        if ($selectedCategory) {
-            $ressourceRefuseQueryBuilder->andWhere('r.categorie = :category')
-                ->setParameter('category', $selectedCategory);
-        }
-
-        $ressourceRefuse = $ressourceRefuseQueryBuilder->getQuery()->getResult();
 
         $response = [
             'ressources' => $result,
-            'verifier' => count($verifiedUsersCount),
-            'non_verifier' => count($unverifiedUsersCount),
-            'bannis' => count($pendingVerificationUsersCount),
-            'ressource_valide' => count($ressourceValide),
-            'ressource_en_attente' => count($ressourceEnAttente),
-            'ressource_refuse' => count($ressourceRefuse)
+            'verifier' => $verifiedUsersCount,
+            'non_verifier' => $unverifiedUsersCount,
+            'bannis' => $pendingVerificationUsersCount,
+            'ressource_valide' => $ressourcesResult['ressource_valide'],
+            'ressource_en_attente' => $ressourcesResult['ressource_en_attente'],
+            'ressource_refuse' => $ressourcesResult['ressource_refuse'],
         ];
-
 
         return $this->json($response);
     }
@@ -152,7 +140,7 @@ class RessourceController extends AbstractController
 
         $ressource = $this->ressourceRepository->find($request->attributes->get('id'));
 
-        $visibilite =  $this->visibiliteRepository->findOneBy(['id' => '3']);
+        $visibilite = $this->visibiliteRepository->findOneBy(['id' => '3']);
 
         $ressource->setVisibilite($visibilite);
 
@@ -183,22 +171,22 @@ class RessourceController extends AbstractController
 
         $ressource = $this->ressourceRepository->find($request->attributes->get('id'));
 
-        if(!$ressource){
+        if (!$ressource) {
             throw new HttpException(404, "La ressource n'existe pas");
         }
 
         // Charger l'utilisateur correspondant à l'identifiant
         $utilisateur = $this->utilisateurRepository->findOneBy(['email' => $id_utilisateur]);
 
-        if($utilisateur){
+        if ($utilisateur) {
             // Ajouter l'utilisateur à la ressource
             $ressource->removeVoirRessource($utilisateur);
-        } else{
+        } else {
             throw new HttpException(404, "L'utilisateur n'existe pas");
         }
 
-        if($ressource->getVoirRessource()->isEmpty()){
-            $visibilite =  $this->visibiliteRepository->findOneBy(['id' => '2']);
+        if ($ressource->getVoirRessource()->isEmpty()) {
+            $visibilite = $this->visibiliteRepository->findOneBy(['id' => '2']);
             $ressource->setVisibilite($visibilite);
         }
 
