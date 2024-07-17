@@ -70,9 +70,4 @@ jobs:
           vendor/bin/phpunit --testdox
         env:
           APP_ENV: test  # Ajout d'une variable d'environnement pour les tests
-
-      - name: Afficher les fichiers de logs en cas d'échec
-        if: failure()
-        run: |
-          cd api
-          cat var/log/test.log
+          
