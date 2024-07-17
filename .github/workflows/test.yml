@@ -31,9 +31,9 @@ jobs:
       - name: Configurer l'environnement
         run: |
           cd api
-          cp .env.example .env
           echo "APP_ENV=test" >> .env
-
+          # Assure-toi que d'autres variables nécessaires sont également définies
+          
       - name: Lancer Symfony Serve
         run: |
           cd api
