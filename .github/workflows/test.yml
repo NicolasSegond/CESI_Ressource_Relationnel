@@ -1,20 +1,69 @@
-name: GitHub Actions Demo
-run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
-on: [push]
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
 jobs:
-  Explore-GitHub-Actions:
+  build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout code
+      - name: Vérifier le code source
         uses: actions/checkout@v2
-      
-      - name: Set up PHP
+
+      - name: Installer PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.1' # Change to the PHP version you are using
-      
-      - name: Install dependencies
-        run: composer install
-      
-      - name: Run PHPUnit
-        run: ./vendor/bin/phpunit --configuration phpunit.xml.dist
+          php-version: '8.1'
+          extensions: mbstring, xml, bcmath, intl, pdo_mysql
+
+      - name: Installer Composer
+        run: |
+          cd api
+          composer install --no-progress --no-suggest --prefer-dist
+
+      - name: Installer Symfony CLI
+        run: |
+          curl -sS https://get.symfony.com/cli/installer | bash
+          export PATH="$HOME/.symfony5/bin:$PATH"
+
+      - name: Configurer l'environnement
+        run: |
+          cd api
+          echo "APP_ENV=test" >> .env
+          # Assure-toi que d'autres variables nécessaires sont également définies
+          
+      - name: Installer OpenSSL et générer les clés JWT
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y openssl
+          cd api
+          php bin/console lexik:jwt:generate-keypair --overwrite
+
+      - name: Lancer Symfony Serve
+        run: |
+          export PATH="$HOME/.symfony5/bin:$PATH"
+          cd api
+          symfony serve --port=8000 &
+
+      - name: Attendre que le serveur soit disponible
+        run: |
+          echo "Attente que le serveur Symfony soit prêt..."
+          for i in {1..30}; do
+            if curl -s http://localhost:8000; then
+              echo "Le serveur est prêt."
+              break
+            fi
+            echo "En attente..."
+            sleep 2
+          done
+
+      - name: Exécuter les tests PHPUnit
+        run: |
+          cd api
+          vendor/bin/phpunit --testdox
