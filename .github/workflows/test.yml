@@ -50,7 +50,7 @@ jobs:
         run: |
           export PATH="$HOME/.symfony5/bin:$PATH"
           cd api
-          symfony serve --no-reload --port=8000 &
+          symfony serve --port=8000 &
 
       - name: Attendre que le serveur soit disponible
         run: |
