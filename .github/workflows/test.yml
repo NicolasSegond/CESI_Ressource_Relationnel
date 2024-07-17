@@ -22,10 +22,16 @@ jobs:
           echo "$HOME/.symfony*/bin" >> $GITHUB_PATH
       
       - name: Install dependencies
-        run: composer install --working-dir=api
+        run: |
+          cd api
+          composer install
 
       - name: Run api platform
-        run: symfony serve -d --ansi
+        run: |
+          cd api
+          symfony serve -d --ansi
       
       - name: Run PHPUnit
-        run: ./api/vendor/bin/phpunit --configuration api/phpunit.xml.dist
+        run: |
+          cd api
+          ./vendor/bin/phpunit --configuration phpunit.xml.dist
