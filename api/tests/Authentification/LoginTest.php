@@ -4,7 +4,6 @@ namespace App\Tests\Authentification;
 
 use App\Factory\UtilisateurFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use Zenstruck\Browser\Json;
 use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Test\Factories;
@@ -17,8 +16,7 @@ class LoginTest extends KernelTestCase
     public function testLogin200()
     {
         $user = UtilisateurFactory::createOne([
-            'password' => 'pass',
-            'verif' => 1
+            'password' => 'pass'
         ]);
 
         $json = $this->browser()
@@ -103,19 +101,20 @@ class LoginTest extends KernelTestCase
             'verif' => 0
         ]);
 
-        try {
-            $this->browser()->post('/api/login', [
+        $json = $this->browser()
+            ->post('/api/login', [
                 'json' => [
                     'email' => $user->getEmail(),
                     'password' => 'pass'
                 ]
-            ]);
-        } catch (HttpException $e) {
-            $this->assertEquals('Votre compte n\'est pas encore vérifié.', $e->getMessage());
-            return; // Fin du test si l'exception est attendue
-        }
+            ])
+            ->assertStatus(401)
+            ->json()
+            ->assertHas('detail');
 
-        $this->fail('Une exception aurait dû être levée pour un compte non vérifié.');
+        assert($json instanceof Json);
+
+        $this->assertEquals('Votre compte n\'est pas encore vérifié.', $json->decoded()['detail']);
     }
 
     public function testLoginBannis401()
@@ -125,18 +124,19 @@ class LoginTest extends KernelTestCase
             'verif' => 2
         ]);
 
-        try {
-            $this->browser()->post('/api/login', [
+        $json = $this->browser()
+            ->post('/api/login', [
                 'json' => [
                     'email' => $user->getEmail(),
                     'password' => 'pass'
                 ]
-            ]);
-        } catch (HttpException $e) {
-            $this->assertEquals('Votre compte a été bloqué.', $e->getMessage());
-            return;
-        }
+            ])
+            ->assertStatus(401)
+            ->json()
+            ->assertHas('detail');
 
-        $this->fail('An exception should have been thrown for a banned account.');
+        assert($json instanceof Json);
+
+        $this->assertEquals('Votre compte a été bloqué.', $json->decoded()['detail']);
     }
 }
