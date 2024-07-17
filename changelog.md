@@ -1,3 +1,7 @@
+Version 1.0.5 - 7 juillet 2024
+
+- Version finale
+
 Version 1.0.4 - 19 mai 2024
 
 - Page statistiques REACT
