@@ -1,37 +1,52 @@
-name: GitHub Actions Demo
-run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
-on: [push]
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
 jobs:
-  Explore-GitHub-Actions:
+  build:
+
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout code
+      - name: Vérifier le code source
         uses: actions/checkout@v2
-      
-      - name: Set up PHP
+
+      - name: Installer PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.1'
-      
-      - name: Install Composer
-        run: sudo apt-get install -y composer
-      
-      - name: Install Symfony CLI
-        run: |
-          wget https://get.symfony.com/cli/installer -O - | bash
-          echo "$HOME/.symfony*/bin" >> $GITHUB_PATH
-      
-      - name: Install dependencies
-        run: |
-          cd api
-          composer install
+          php-version: '8.1' # Choisis la version de PHP appropriée
+          extensions: mbstring, xml, bcmath, intl, pdo_mysql
 
-      - name: Run api platform
+      - name: Installer Composer
+        run: composer install --no-progress --no-suggest --prefer-dist
+
+      - name: Configurer l'environnement
         run: |
-          cd api
-          symfony serve -d --ansi
-      
-      - name: Run PHPUnit
+          cp .env.example .env
+          # Configure ici tes variables d'environnement si nécessaire
+          echo "APP_ENV=test" >> .env
+
+      - name: Lancer Symfony Serve
         run: |
-          cd api
-          ./vendor/bin/phpunit --configuration phpunit.xml.dist
+          symfony serve --no-reload --port=8000 &
+
+      - name: Attendre que le serveur soit disponible
+        run: |
+          echo "Attente que le serveur Symfony soit prêt..."
+          for i in {1..30}; do
+            if curl -s http://localhost:8000; then
+              echo "Le serveur est prêt."
+              break
+            fi
+            echo "En attente..."
+            sleep 2
+          done
+
+      - name: Exécuter les tests PHPUnit
+        run: vendor/bin/phpunit --testdox
