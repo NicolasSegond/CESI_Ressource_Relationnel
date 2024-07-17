@@ -12,10 +12,12 @@ class LoginTest extends KernelTestCase
 {
     use HasBrowser;
     use Factories;
+
     public function testLogin200()
     {
         $user = UtilisateurFactory::createOne([
-            'password' => 'pass'
+            'password' => 'pass',
+            'verif' => 1
         ]);
 
         $json = $this->browser()
