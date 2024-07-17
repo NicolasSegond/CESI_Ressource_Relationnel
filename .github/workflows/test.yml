@@ -15,6 +15,9 @@ jobs:
       
       - name: Install dependencies
         run: composer install --working-dir=api
+
+      - name: Run api platform
+        run: symfony serve
       
       - name: Run PHPUnit
         run: ./api/vendor/bin/phpunit --configuration api/phpunit.xml.dist
