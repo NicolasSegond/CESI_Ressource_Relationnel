@@ -10,7 +10,6 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -28,6 +27,11 @@ jobs:
           cd api
           composer install --no-progress --no-suggest --prefer-dist
 
+      - name: Installer Symfony CLI
+        run: |
+          curl -sS https://get.symfony.com/cli/installer | bash
+          export PATH="$HOME/.symfony/bin:$PATH"
+
       - name: Configurer l'environnement
         run: |
           cd api
@@ -36,6 +40,7 @@ jobs:
           
       - name: Lancer Symfony Serve
         run: |
+          export PATH="$HOME/.symfony/bin:$PATH"
           cd api
           symfony serve --no-reload --port=8000 &
 
