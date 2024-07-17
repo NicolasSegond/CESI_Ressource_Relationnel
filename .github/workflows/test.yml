@@ -30,7 +30,7 @@ jobs:
       - name: Installer Symfony CLI
         run: |
           curl -sS https://get.symfony.com/cli/installer | bash
-          export PATH="$HOME/.symfony/bin:$PATH"
+          export PATH="$HOME/.symfony5/bin:$PATH"
 
       - name: Configurer l'environnement
         run: |
@@ -40,7 +40,7 @@ jobs:
           
       - name: Lancer Symfony Serve
         run: |
-          export PATH="$HOME/.symfony/bin:$PATH"
+          export PATH="$HOME/.symfony5/bin:$PATH"
           cd api
           symfony serve --no-reload --port=8000 &
 
