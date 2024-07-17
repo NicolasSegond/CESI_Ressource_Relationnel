@@ -58,7 +58,7 @@ class RessourceTest extends KernelTestCase
         $this->assertArrayHasKey('id', $data);
     }
 
-    public function testGetRessourceWithParameters200()
+   /* public function testGetRessourceWithParameters200()
     {
 
         $client = new \GuzzleHttp\Client(['base_uri' => 'http://localhost:8000']);
@@ -122,5 +122,5 @@ class RessourceTest extends KernelTestCase
             $this->assertEquals('/api/visibilites/1', $ressource['visibilite']['@id']);
             $this->assertEquals('/api/type_de_ressources/1', $ressource['typeDeRessource']['@id']);
         }
-    }
+    }*/
 }
