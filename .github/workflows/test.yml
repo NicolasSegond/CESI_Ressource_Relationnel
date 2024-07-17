@@ -19,7 +19,7 @@ jobs:
       - name: Installer PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.1' # Choisis la version de PHP appropriée
+          php-version: '8.1'
           extensions: mbstring, xml, bcmath, intl, pdo_mysql
 
       - name: Installer Composer
@@ -38,11 +38,18 @@ jobs:
           echo "APP_ENV=test" >> .env
           # Assure-toi que d'autres variables nécessaires sont également définies
           
+      - name: Installer OpenSSL et générer les clés JWT
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y openssl
+          cd api
+          php bin/console lexik:jwt:generate-keypair --overwrite
+
       - name: Lancer Symfony Serve
         run: |
           export PATH="$HOME/.symfony5/bin:$PATH"
           cd api
-          symfony serve --port=8000 &
+          symfony serve --no-reload --port=8000 &
 
       - name: Attendre que le serveur soit disponible
         run: |
