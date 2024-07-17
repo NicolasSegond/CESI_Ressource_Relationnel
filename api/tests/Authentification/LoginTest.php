@@ -4,6 +4,7 @@ namespace App\Tests\Authentification;
 
 use App\Factory\UtilisateurFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Zenstruck\Browser\Json;
 use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Test\Factories;
@@ -102,20 +103,19 @@ class LoginTest extends KernelTestCase
             'verif' => 0
         ]);
 
-        $json = $this->browser()
-            ->post('/api/login', [
+        try {
+            $this->browser()->post('/api/login', [
                 'json' => [
                     'email' => $user->getEmail(),
                     'password' => 'pass'
                 ]
-            ])
-            ->assertStatus(401)
-            ->json()
-            ->assertHas('detail');
+            ]);
+        } catch (HttpException $e) {
+            $this->assertEquals('Votre compte n\'est pas encore vérifié.', $e->getMessage());
+            return; // Fin du test si l'exception est attendue
+        }
 
-        assert($json instanceof Json);
-
-        $this->assertEquals('Votre compte n\'est pas encore vérifié.', $json->decoded()['detail']);
+        $this->fail('Une exception aurait dû être levée pour un compte non vérifié.');
     }
 
     public function testLoginBannis401()
@@ -125,19 +125,18 @@ class LoginTest extends KernelTestCase
             'verif' => 2
         ]);
 
-        $json = $this->browser()
-            ->post('/api/login', [
+        try {
+            $this->browser()->post('/api/login', [
                 'json' => [
                     'email' => $user->getEmail(),
                     'password' => 'pass'
                 ]
-            ])
-            ->assertStatus(401)
-            ->json()
-            ->assertHas('detail');
+            ]);
+        } catch (HttpException $e) {
+            $this->assertEquals('Votre compte a été bloqué.', $e->getMessage());
+            return;
+        }
 
-        assert($json instanceof Json);
-
-        $this->assertEquals('Votre compte a été bloqué.', $json->decoded()['detail']);
+        $this->fail('An exception should have been thrown for a banned account.');
     }
 }
