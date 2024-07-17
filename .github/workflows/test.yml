@@ -37,19 +37,20 @@ jobs:
           cd api
           echo "APP_ENV=test" >> .env
           # Assure-toi que d'autres variables nécessaires sont également définies
-          
+
       - name: Installer OpenSSL et générer les clés JWT
         run: |
           sudo apt-get update
           sudo apt-get install -y openssl
           cd api
           php bin/console lexik:jwt:generate-keypair --overwrite
+          sleep 5  # Ajout d'un délai pour s'assurer que les clés sont disponibles
 
       - name: Lancer Symfony Serve
         run: |
           export PATH="$HOME/.symfony5/bin:$PATH"
           cd api
-          symfony serve --port=8000 &
+          symfony serve --no-reload --port=8000 &
 
       - name: Attendre que le serveur soit disponible
         run: |
@@ -67,3 +68,11 @@ jobs:
         run: |
           cd api
           vendor/bin/phpunit --testdox
+        env:
+          APP_ENV: test  # Ajout d'une variable d'environnement pour les tests
+
+      - name: Afficher les fichiers de logs en cas d'échec
+        if: failure()
+        run: |
+          cd api
+          cat var/log/test.log
