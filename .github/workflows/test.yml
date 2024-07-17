@@ -24,16 +24,19 @@ jobs:
           extensions: mbstring, xml, bcmath, intl, pdo_mysql
 
       - name: Installer Composer
-        run: composer install --no-progress --no-suggest --prefer-dist
+        run: |
+          cd api
+          composer install --no-progress --no-suggest --prefer-dist
 
       - name: Configurer l'environnement
         run: |
+          cd api
           cp .env.example .env
-          # Configure ici tes variables d'environnement si nécessaire
           echo "APP_ENV=test" >> .env
 
       - name: Lancer Symfony Serve
         run: |
+          cd api
           symfony serve --no-reload --port=8000 &
 
       - name: Attendre que le serveur soit disponible
@@ -49,4 +52,6 @@ jobs:
           done
 
       - name: Exécuter les tests PHPUnit
-        run: vendor/bin/phpunit --testdox
+        run: |
+          cd api
+          vendor/bin/phpunit --testdox
