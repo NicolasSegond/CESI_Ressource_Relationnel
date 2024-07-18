@@ -23,7 +23,8 @@ jobs:
         run: |
           cd api
           docker build -t moimathis/cesibackend:test .
-      - name: Push Docker image with test tag
+
+      - name: Push Docker image with dev tag
         run: docker push moimathis/cesibackend:test
 
   test:
@@ -33,9 +34,9 @@ jobs:
     services:
       docker:
         image: moimathis/cesibackend:test
-        options: --health-cmd="curl --fail http://127.0.0.1:80/api || exit 1" --health-interval=10s --health-timeout=5s --health-retries=5
+        options: --health-cmd="curl --fail http://127.0.0.1:8000 || exit 1" --health-interval=10s --health-timeout=5s --health-retries=5
         ports:
-          - 8000:80
+          - 8000:8000
 
     steps:
       - name: Checkout repository
@@ -86,12 +87,13 @@ jobs:
       - name: Log in to Docker Hub
         run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
 
-      - name: Pull the Docker image with test tag
+      - name: Pull the Docker image with dev tag
         run: docker pull moimathis/cesibackend:test
 
       - name: Update .env for production environment
         run: |
-          docker exec $(docker ps -q -f ancestor=moimathis/cesibackend:test) sed -i 's/APP_ENV=dev/APP_ENV=prod/g' /var/www/html/.env
+          docker run --rm -v $(pwd)/api:/var/www/html moimathis/cesibackend:test sed -i 's/APP_ENV=dev/APP_ENV=prod/g' /var/www/html/.env
+
       - name: Tag the Docker image as latest
         run: docker tag moimathis/cesibackend:test moimathis/cesibackend:latest
 
