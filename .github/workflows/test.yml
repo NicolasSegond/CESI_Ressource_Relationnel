@@ -39,6 +39,13 @@ jobs:
           - 8000:80
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Update .env for test environment
+        run: |
+          docker exec $(docker ps -q -f ancestor=moimathis/cesibackend:test) sed -i 's/APP_ENV=prod/APP_ENV=dev/g' /var/www/html/.env
+
       - name: Wait for Docker container to be healthy
         run: |
           CONTAINER_ID=$(docker ps -q -f ancestor=moimathis/cesibackend:test)
@@ -77,6 +84,10 @@ jobs:
 
       - name: Pull the Docker image with test tag
         run: docker pull moimathis/cesibackend:test
+
+      - name: Update .env for production environment
+        run: |
+          docker exec $(docker ps -q -f ancestor=moimathis/cesibackend:test) sed -i 's/APP_ENV=dev/APP_ENV=prod/g' /var/www/html/.env
 
       - name: Tag the Docker image as latest
         run: docker tag moimathis/cesibackend:test moimathis/cesibackend:latest
