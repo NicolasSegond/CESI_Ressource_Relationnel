@@ -1,7 +1,7 @@
 # Utiliser une image PHP avec Apache basée sur PHP 8.1
 FROM php:8.1-apache
 
-# Définir l'environnement APP_ENV à prod
+# Définir l'environnement APP_ENV à prod par défaut
 ENV APP_ENV prod
 
 # Installer les dépendances nécessaires
@@ -40,17 +40,17 @@ RUN chown -R dockeruse:dockeruse /var/www/html
 # Changer l'utilisateur courant pour dockeruse
 USER dockeruse
 
-# Installer les dépendances PHP avec Composer en mode production
-RUN composer install --no-dev --optimize-autoloader --no-scripts --no-interaction
+# Installer les dépendances PHP avec Composer en mode développement
+RUN composer install --no-interaction
 
 # Installer Symfony Runtime
 RUN composer require symfony/runtime
 
-# Remplacer APP_ENV=dev par APP_ENV=prod dans .env
-RUN sed -i 's/APP_ENV=dev/APP_ENV=prod/g' .env
+# Remplacer APP_ENV=dev par APP_ENV=prod dans .env pour production
+RUN if [ "$APP_ENV" = "prod" ]; then sed -i 's/APP_ENV=dev/APP_ENV=prod/g' .env; fi
 
-# Installer les assets Symfony
-RUN php bin/console assets:install --symlink --env=prod
+# Installer les assets Symfony en mode production
+RUN if [ "$APP_ENV" = "prod" ]; then php bin/console assets:install --symlink --env=prod; fi
 
 # Revenir à l'utilisateur root pour les étapes de configuration d'Apache
 USER root
