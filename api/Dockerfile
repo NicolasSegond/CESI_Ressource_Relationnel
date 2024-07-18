@@ -10,6 +10,7 @@ RUN apt-get update \
         libicu-dev \
         git \
         unzip \
+        sudo \  # Installer sudo
     && docker-php-ext-install \
         intl \
         pdo_mysql \
@@ -27,8 +28,8 @@ COPY . /var/www/html
 # Définir le répertoire de travail
 WORKDIR /var/www/html
 
-# Installer Composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+# Installer Composer avec sudo
+RUN curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin --filename=composer
 
 # Nettoyer le cache de Composer
 RUN composer clear-cache
