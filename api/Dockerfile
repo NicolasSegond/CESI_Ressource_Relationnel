@@ -34,7 +34,10 @@ COPY . .
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
 # Installer les dépendances PHP
-RUN composer install
+RUN composer install --no-dev --optimize-autoloader
+
+# Compiler le cache et les conteneurs de dépendances
+RUN php bin/console cache:warmup
 
 # Générer les clés JWT
 RUN php bin/console lexik:jwt:generate-keypair --overwrite
