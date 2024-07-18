@@ -1,7 +1,6 @@
-# Utilise une image PHP officielle comme image de base
 FROM php:8.1-cli
 
-# Installe les dépendances système nécessaires
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg-dev \
@@ -19,49 +18,43 @@ RUN apt-get update && apt-get install -y \
     openssl \
     && rm -rf /var/lib/apt/lists/*
 
-# Installe les extensions PHP nécessaires
+# Install PHP extensions
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install gd \
     && docker-php-ext-install pdo pdo_mysql pdo_pgsql pdo_sqlite zip intl
 
-# Installe Composer
+# Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Installe le Symfony CLI
+# Install Symfony CLI
 RUN curl -sS https://get.symfony.com/cli/installer | bash \
     && mv /root/.symfony*/bin/symfony /usr/local/bin/symfony
 
-# Crée un utilisateur non-root
+# Create a non-root user
 RUN useradd -ms /bin/sh myuser
 
-# Définit le répertoire de travail
+# Set working directory
 WORKDIR /var/www/html
 
-# Copie les fichiers du projet dans le conteneur
+# Copy project files
 COPY . /var/www/html
 
-# Change les permissions pour que l'utilisateur puisse modifier les fichiers
+# Change file permissions
 RUN chown -R myuser:myuser /var/www/html
 
-# Passe à l'utilisateur non-root
+# Switch to non-root user
 USER myuser
 
-# Crée le répertoire pour les clés JWT et donne les permissions nécessaires
-RUN mkdir -p /var/www/html/config/jwt && chmod -R 777 /var/www/html/config
+# Install Composer dependencies (including dev dependencies)
+RUN composer install --no-scripts --optimize-autoloader
 
-# Installe les dépendances PHP avec Composer (production)
-RUN composer install --no-scripts --no-dev --optimize-autoloader
-
-# Génère les clés JWT
+# Generate JWT keys
 RUN php bin/console lexik:jwt:generate-keypair
 
-# Optionnel: Installer les assets
-# RUN php bin/console asset:install
-
-# Expose le port pour le serveur Symfony
+# Expose port
 EXPOSE 8000
 
-# Dépend de la variable d'environnement SERVER pour déterminer le mode de démarrage
+# CMD to start the application
 ARG SERVER=cli
 CMD if [ "$SERVER" = "apache" ]; then \
       apt-get update && apt-get install -y apache2 libapache2-mod-php \
