@@ -91,7 +91,8 @@ jobs:
 
       - name: Update .env for production environment
         run: |
-          docker run --rm -v $(pwd)/api:/var/www/html moimathis/cesibackend:test sed -i 's/APP_ENV=dev/APP_ENV=prod/g' /var/www/html/.env
+          # Create a temporary Docker container to adjust permissions
+          docker run --rm -v $(pwd)/api:/var/www/html -w /var/www/html alpine sh -c "chown -R 1000:1000 /var/www/html && sed -i 's/APP_ENV=dev/APP_ENV=prod/g' .env"
 
       - name: Tag the Docker image as latest
         run: docker tag moimathis/cesibackend:test moimathis/cesibackend:latest
