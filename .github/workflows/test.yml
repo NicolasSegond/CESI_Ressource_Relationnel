@@ -42,13 +42,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Update .env for test environment
-        run: |
-          docker exec $(docker ps -q -f ancestor=moimathis/cesibackend:test) sed -i 's/APP_ENV=prod/APP_ENV=dev/g' /var/www/html/.env
-
-      - name: Install Composer dependencies
-        run: docker exec $(docker ps -q -f ancestor=moimathis/cesibackend:test) composer install --no-scripts --no-autoloader --no-interaction
-
       - name: Wait for Docker container to be healthy
         run: |
           CONTAINER_ID=$(docker ps -q -f ancestor=moimathis/cesibackend:test)
@@ -65,6 +58,12 @@ jobs:
           docker stop $CONTAINER_ID
           docker rm $CONTAINER_ID
           exit 1
+
+      - name: Install Composer dependencies
+        run: docker exec $(docker ps -q -f ancestor=moimathis/cesibackend:test) composer install --no-scripts --no-autoloader --no-interaction
+
+      - name: Dump Composer autoload
+        run: docker exec $(docker ps -q -f ancestor=moimathis/cesibackend:test) composer dump-autoload
 
       - name: Run PHPUnit tests
         run: docker exec $(docker ps -q -f ancestor=moimathis/cesibackend:test) vendor/bin/phpunit
