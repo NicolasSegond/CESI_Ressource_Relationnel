@@ -33,10 +33,10 @@ COPY . .
 # Définir l'environnement pour autoriser Composer à s'exécuter en tant que root
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
-# Installer les dépendances PHP
-RUN composer install --no-dev --optimize-autoloader
+# Installer les dépendances PHP sans les scripts automatiques
+RUN composer install --no-dev --optimize-autoloader --no-scripts
 
-# Compiler le cache et les conteneurs de dépendances
+# Compiler le cache et les conteneurs de dépendances manuellement
 RUN php bin/console cache:warmup
 
 # Générer les clés JWT
