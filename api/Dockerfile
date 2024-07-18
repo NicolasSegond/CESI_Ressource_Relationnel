@@ -46,8 +46,8 @@ RUN composer install --no-interaction
 # Installer Symfony Runtime
 RUN composer require symfony/runtime
 
-# Remplacer APP_ENV=dev par APP_ENV=prod dans .env pour production
-RUN if [ "$APP_ENV" = "prod" ]; then sed -i 's/APP_ENV=dev/APP_ENV=prod/g' .env; fi
+# Installer Foundry en mode développement et test
+RUN composer require --dev zenstruck/foundry
 
 # Installer les assets Symfony en mode production
 RUN if [ "$APP_ENV" = "prod" ]; then php bin/console assets:install --symlink --env=prod; fi
