@@ -24,7 +24,7 @@ jobs:
           cd api
           docker build -t moimathis/cesibackend:test .
 
-      - name: Push Docker image with dev tag
+      - name: Push Docker image with test tag
         run: docker push moimathis/cesibackend:test
 
   test:
@@ -44,9 +44,8 @@ jobs:
 
       - name: Wait for Docker container to be healthy
         run: |
-          CONTAINER_ID=$(docker ps -q -f ancestor=moimathis/cesibackend:test)
           for i in {1..60}; do
-            if [ "$(docker inspect --format='{{json .State.Health.Status}}' $CONTAINER_ID)" == '"healthy"' ]; then
+            if [ "$(docker inspect --format='{{json .State.Health.Status}}' $(docker ps -q -f ancestor=moimathis/cesibackend:test))" == '"healthy"' ]; then
               echo "Container is healthy"
               exit 0
             fi
@@ -54,9 +53,9 @@ jobs:
             sleep 5
           done
           echo "Container did not become healthy in time"
-          docker logs $CONTAINER_ID
-          docker stop $CONTAINER_ID
-          docker rm $CONTAINER_ID
+          docker logs $(docker ps -q -f ancestor=moimathis/cesibackend:test)
+          docker stop $(docker ps -q -f ancestor=moimathis/cesibackend:test)
+          docker rm $(docker ps -a -q -f ancestor=moimathis/cesibackend:test)
           exit 1
 
       - name: Verify Composer dependencies
@@ -87,7 +86,7 @@ jobs:
       - name: Log in to Docker Hub
         run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
 
-      - name: Pull the Docker image with dev tag
+      - name: Pull the Docker image with test tag
         run: docker pull moimathis/cesibackend:test
 
       - name: Update .env for production environment
