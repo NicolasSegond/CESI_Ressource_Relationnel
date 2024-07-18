@@ -29,7 +29,7 @@ services:
             $passwordHasher: '@security.password_hasher'
 
     Zenstruck\Foundry\:
-        resource: '../../vendor/zenstruck/foundry/src/*'
+        resource: '../vendor/zenstruck/foundry/src/*'
         public: true
 
     Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface:
