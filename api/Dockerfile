@@ -36,8 +36,8 @@ ENV COMPOSER_ALLOW_SUPERUSER=1
 # Installer les dépendances PHP sans les scripts automatiques
 RUN composer install --no-dev --optimize-autoloader --no-scripts
 
-# Générer les clés JWT
-RUN php bin/console lexik:jwt:generate-keypair --overwrite
+# Générer les clés JWT en mode production
+RUN composer run-script post-install-cmd --no-dev --working-dir=/var/www/html
 
 # Modifier les permissions
 RUN chown -R www-data:www-data /var/www/html/var
