@@ -1,9 +1,6 @@
 # Utiliser une image PHP avec Apache basée sur PHP 8.1
 FROM php:8.1-apache
 
-# Définir l'environnement APP_ENV à prod par défaut
-ENV APP_ENV prod
-
 # Installer les dépendances nécessaires
 RUN apt-get update
 
