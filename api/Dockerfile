@@ -2,14 +2,12 @@
 FROM php:8.1-apache
 
 # Installer les dépendances nécessaires
-RUN apt-get update
-
-# Installer les paquets nécessaires
-RUN apt-get install -y \
-    libicu-dev \
-    git \
-    unzip \
-    sudo
+RUN apt-get update \
+    && apt-get install -y \
+        libicu-dev \
+        git \
+        unzip \
+        sudo
 
 # Installer les extensions PHP nécessaires
 RUN docker-php-ext-install \
@@ -45,9 +43,6 @@ RUN composer require symfony/runtime
 
 # Installer Foundry en mode développement et test
 RUN composer require --dev zenstruck/foundry
-
-# Installer les assets Symfony en mode production
-RUN if [ "$APP_ENV" = "prod" ]; then php bin/console assets:install --symlink --env=prod; fi
 
 # Revenir à l'utilisateur root pour les étapes de configuration d'Apache
 USER root
