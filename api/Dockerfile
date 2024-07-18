@@ -41,6 +41,9 @@ RUN composer install --no-interaction
 # Assurer l'autoload de Composer
 RUN composer dump-autoload
 
+# Vérifier que les dépendances sont correctement installées
+RUN ls -l vendor/
+
 # Installer Symfony Runtime
 RUN composer require symfony/runtime
 
