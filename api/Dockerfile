@@ -49,31 +49,29 @@ USER myuser
 # Crée le répertoire pour les clés JWT et donne les permissions nécessaires
 RUN mkdir -p /var/www/html/config/jwt && chmod -R 777 /var/www/html/config
 
-# Installe les dépendances PHP avec Composer
-RUN composer install --no-scripts
+# Installe les dépendances PHP avec Composer (production)
+RUN composer install --no-scripts --no-dev --optimize-autoloader
 
 # Génère les clés JWT
 RUN php bin/console lexik:jwt:generate-keypair
 
-# Note: La configuration conditionnelle de Apache est effectuée après avoir changé l'utilisateur en root
-USER root
-
-# Installe Apache seulement si le serveur est défini comme apache
-RUN if [ "$SERVER" = "apache" ]; then \
-    apt-get update && apt-get install -y apache2 libapache2-mod-php \
-    && a2enmod rewrite \
-    && cp apacheCesi.conf /etc/apache2/sites-available/000-default.conf \
-    && chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*; \
-    fi
-
-# Retourne à l'utilisateur non-root
-USER myuser
+# Optionnel: Installer les assets
+# RUN php bin/console asset:install
 
 # Expose le port pour le serveur Symfony
 EXPOSE 8000
 
-# Commande par défaut (peut être écrasée par des arguments de Docker run)
-CMD ["symfony", "server:start", "--no-tls", "--port=8000"]
+# Dépend de la variable d'environnement SERVER pour déterminer le mode de démarrage
+ARG SERVER=cli
+CMD if [ "$SERVER" = "apache" ]; then \
+      apt-get update && apt-get install -y apache2 libapache2-mod-php \
+      && a2enmod rewrite \
+      && cp apacheCesi.conf /etc/apache2/sites-available/000-default.conf \
+      && chown -R www-data:www-data /var/www/html \
+      && chmod -R 755 /var/www/html \
+      && apt-get clean \
+      && rm -rf /var/lib/apt/lists/* \
+      && apachectl -D FOREGROUND; \
+    else \
+      symfony server:start --no-tls --port=8000; \
+    fi
