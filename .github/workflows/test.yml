@@ -41,7 +41,7 @@ jobs:
     steps:
       - name: Wait for Docker container to be healthy
         run: |
-          CONTAINER_ID=$(docker run -d -p 8000:8000 moimathis/cesibackend:test)
+          CONTAINER_ID=$(docker ps -q -f ancestor=moimathis/cesibackend:test)
           for i in {1..30}; do
             if [ "$(docker inspect --format='{{json .State.Health.Status}}' $CONTAINER_ID)" == '"healthy"' ]; then
               echo "Container is healthy"
@@ -57,12 +57,12 @@ jobs:
           exit 1
 
       - name: Run PHPUnit tests
-        run: docker exec $CONTAINER_ID vendor/bin/phpunit
+        run: docker exec $(docker ps -q -f ancestor=moimathis/cesibackend:test) vendor/bin/phpunit
 
       - name: Cleanup Docker container
         run: |
-          docker stop $CONTAINER_ID
-          docker rm $CONTAINER_ID
+          docker stop $(docker ps -q -f ancestor=moimathis/cesibackend:test)
+          docker rm $(docker ps -a -q -f ancestor=moimathis/cesibackend:test)
           
   deploy:
     runs-on: ubuntu-latest
