@@ -23,10 +23,7 @@ RUN docker-php-ext-install \
 RUN a2enmod rewrite
 
 # Créer un utilisateur non root
-RUN useradd -ms /bin/bash dockeruser
-
-# Passer à l'utilisateur dockeruser
-USER dockeruser
+RUN useradd -ms /bin/bash dockeruse
 
 # Copier les fichiers de l'application Symfony dans le conteneur
 COPY . /var/www/html
@@ -50,7 +47,6 @@ RUN sed -i 's/APP_ENV=dev/APP_ENV=prod/g' .env
 RUN php bin/console assets:install --symlink --env=prod
 
 # Configurer les permissions des fichiers de cache et de logs
-USER root
 RUN chown -R www-data:www-data var/
 
 # Configuration d'Apache pour Symfony
