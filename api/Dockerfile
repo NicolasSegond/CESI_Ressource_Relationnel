@@ -52,6 +52,9 @@ RUN mkdir -p /var/www/html/config/jwt && chmod -R 777 /var/www/html/config
 # Installe les dépendances PHP avec Composer
 RUN composer install --no-scripts
 
+# Génère les clés JWT
+RUN php bin/console lexik:jwt:generate-keypair
+
 # Expose le port pour le serveur Symfony
 EXPOSE 8000
 
