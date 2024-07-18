@@ -27,6 +27,9 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 # Installer les dépendances PHP avec Composer en mode production
 RUN composer install --no-dev --optimize-autoloader --no-scripts --no-interaction
 
+# Installer Symfony Runtime
+RUN composer require symfony/runtime
+
 # Remplacer APP_ENV=dev par APP_ENV=prod dans .env
 RUN sed -i 's/APP_ENV=dev/APP_ENV=prod/g' .env
 
