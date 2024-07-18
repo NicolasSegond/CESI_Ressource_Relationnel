@@ -1,5 +1,5 @@
-name: CI
-
+name: CI/CD Pipeline
+ 
 on:
   push:
     branches:
@@ -7,67 +7,48 @@ on:
   pull_request:
     branches:
       - main
-
+ 
 jobs:
   build:
     runs-on: ubuntu-latest
-
+ 
     steps:
-      - name: Vérifier le code source
+      - name: Checkout repository
         uses: actions/checkout@v2
-
-      - name: Installer PHP
+ 
+      - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.1'
-          extensions: mbstring, xml, bcmath, intl, pdo_mysql
-
-      - name: Installer Composer
+          php-version: 8.1
+ 
+      - name: Install dependencies
         run: |
-          cd api
-          composer install --no-progress --no-suggest --prefer-dist
-
-      - name: Installer Symfony CLI
+          composer install
+          npm install
+          npm run build
+ 
+      - name: Build Docker image
+        run: docker build -t moimathis/cesibackend:latest .
+ 
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+ 
+    services:
+      docker:
+        image: moimathis/cesibackend:latest
+        options: --health-cmd="curl --fail http://localhost:8000 || exit 1" --health-interval=10s --health-timeout=5s --health-retries=5
+        ports:
+          - 8000:8000
+ 
+    steps:
+      - name: Wait for Docker container to be healthy
+        run: sleep 30
+ 
+      - name: Run API tests
         run: |
-          curl -sS https://get.symfony.com/cli/installer | bash
-          export PATH="$HOME/.symfony5/bin:$PATH"
-
-      - name: Configurer l'environnement
+          curl -f http://localhost:8000/api/endpoint
+          # Add more curl commands or use a tool like Postman/Newman for more extensive testing
+      - name: Run PHPUnit Test
         run: |
-          cd api
-          echo "APP_ENV=test" >> .env
-          # Assure-toi que d'autres variables nécessaires sont également définies
-
-      - name: Installer OpenSSL et générer les clés JWT
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y openssl
-          cd api
-          php bin/console lexik:jwt:generate-keypair --overwrite
-          sleep 5  # Ajout d'un délai pour s'assurer que les clés sont disponibles
-
-      - name: Lancer Symfony Serve
-        run: |
-          export PATH="$HOME/.symfony5/bin:$PATH"
-          cd api
-          symfony serve --port=8000 &
-
-      - name: Attendre que le serveur soit disponible
-        run: |
-          echo "Attente que le serveur Symfony soit prêt..."
-          for i in {1..30}; do
-            if curl -s http://localhost:8000; then
-              echo "Le serveur est prêt."
-              break
-            fi
-            echo "En attente..."
-            sleep 2
-          done
-
-      - name: Exécuter les tests PHPUnit
-        run: |
-          cd api
-          vendor/bin/phpunit --testdox
-        env:
-          APP_ENV: test  # Ajout d'une variable d'environnement pour les tests
-          
+          vendor/bin/phpunit
