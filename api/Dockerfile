@@ -22,6 +22,9 @@ RUN docker-php-ext-install \
 # Activer le module rewrite d'Apache
 RUN a2enmod rewrite
 
+# Installer Composer en tant que root
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
 # Créer un utilisateur non root
 RUN useradd -ms /bin/bash dockeruse
 
@@ -36,9 +39,6 @@ RUN chown -R dockeruse:dockeruse /var/www/html
 
 # Changer l'utilisateur courant pour dockeruse
 USER dockeruse
-
-# Installer Composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Installer les dépendances PHP avec Composer en mode production
 RUN composer install --no-dev --optimize-autoloader --no-scripts --no-interaction
