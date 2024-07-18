@@ -22,7 +22,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Installer Symfony CLI
 RUN curl -sS https://get.symfony.com/cli/installer | bash \
-    && mv /root/.symfony5/bin/symfony /usr/local/bin/symfony
+    && mv /root/.symfony*/bin/symfony /usr/local/bin/symfony
 
 # Définir le répertoire de travail
 WORKDIR /var/www/html
@@ -35,9 +35,6 @@ ENV COMPOSER_ALLOW_SUPERUSER=1
 
 # Installer les dépendances PHP sans les scripts automatiques
 RUN composer install --no-dev --optimize-autoloader --no-scripts
-
-# Compiler le cache et les conteneurs de dépendances manuellement
-RUN php bin/console cache:warmup
 
 # Générer les clés JWT
 RUN php bin/console lexik:jwt:generate-keypair --overwrite
