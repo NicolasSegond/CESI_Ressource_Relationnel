@@ -31,6 +31,12 @@ COPY . /var/www/html
 # Définir le répertoire de travail
 WORKDIR /var/www/html
 
+# Définir les permissions pour l'utilisateur non root
+RUN chown -R dockeruse:dockeruse /var/www/html
+
+# Changer l'utilisateur courant pour dockeruse
+USER dockeruse
+
 # Installer Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
@@ -45,6 +51,9 @@ RUN sed -i 's/APP_ENV=dev/APP_ENV=prod/g' .env
 
 # Installer les assets Symfony
 RUN php bin/console assets:install --symlink --env=prod
+
+# Revenir à l'utilisateur root pour les étapes de configuration d'Apache
+USER root
 
 # Configurer les permissions des fichiers de cache et de logs
 RUN chown -R www-data:www-data var/
