@@ -1,69 +1,59 @@
-# Utiliser une image PHP avec Apache basée sur PHP 8.1
-FROM php:8.1-apache
+# Utilise une image PHP officielle comme image de base
+FROM php:8.2-cli
 
-# Installer les dépendances nécessaires
-RUN apt-get update \
-    && apt-get install -y \
-        libicu-dev \
-        git \
-        unzip \
-        sudo
+# Installe les dépendances système nécessaires
+RUN apt-get update && apt-get install -y \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    libzip-dev \
+    libxml2-dev \
+    git \
+    unzip \
+    zlib1g-dev \
+    libicu-dev \
+    libpq-dev \
+    libsqlite3-dev \
+    libonig-dev \
+    libmariadb-dev \
+    openssl \
+    && rm -rf /var/lib/apt/lists/*
 
-# Installer les extensions PHP nécessaires
-RUN docker-php-ext-install \
-    intl \
-    pdo_mysql
+# Installe les extensions PHP nécessaires
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install gd \
+    && docker-php-ext-install pdo pdo_mysql pdo_pgsql pdo_sqlite zip intl
 
-# Activer le module rewrite d'Apache
-RUN a2enmod rewrite
-
-# Installer Composer en tant que root
+# Installe Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Créer un utilisateur non root
-RUN useradd -ms /bin/bash dockeruse
+# Installe le Symfony CLI
+RUN curl -sS https://get.symfony.com/cli/installer | bash \
+    && mv /root/.symfony*/bin/symfony /usr/local/bin/symfony
 
-# Copier les fichiers de l'application Symfony dans le conteneur
-COPY . /var/www/html
+# Crée un utilisateur non-root
+RUN useradd -ms /bin/sh myuser
 
-# Définir le répertoire de travail
+# Définit le répertoire de travail
 WORKDIR /var/www/html
 
-# Définir les permissions pour l'utilisateur non root
-RUN chown -R dockeruse:dockeruse /var/www/html
+# Copie les fichiers du projet dans le conteneur
+COPY . /var/www/html
 
-# Changer l'utilisateur courant pour dockeruse
-USER dockeruse
+# Change les permissions pour que l'utilisateur puisse modifier les fichiers
+RUN chown -R myuser:myuser /var/www/html
 
-# Installer les dépendances PHP avec Composer en mode développement
-RUN composer install --no-interaction
+# Passe à l'utilisateur non-root
+USER myuser
 
-# Assurer l'autoload de Composer
-RUN composer dump-autoload
+# Crée le répertoire pour les clés JWT et donne les permissions nécessaires
+RUN mkdir -p /var/www/html/config/jwt && chmod -R 777 /var/www/html/config
 
-# Vérifier que les dépendances sont correctement installées
-RUN ls -l vendor/
+# Installe les dépendances PHP avec Composer
+RUN composer install --no-scripts
 
-# Installer Symfony Runtime
-RUN composer require symfony/runtime
+# Expose le port pour le serveur Symfony
+EXPOSE 8000
 
-# Installer Foundry en mode développement et test
-RUN composer require --dev zenstruck/foundry
-
-# Revenir à l'utilisateur root pour les étapes de configuration d'Apache
-USER root
-
-# Configurer les permissions des fichiers de cache et de logs
-RUN chown -R www-data:www-data var/
-
-# Configuration d'Apache pour Symfony
-COPY apacheCesi.conf /etc/apache2/sites-available/000-default.conf
-
-# Activer les modules Apache nécessaires pour Symfony
-RUN a2enmod rewrite headers
-
-# Exposer le port Apache
-EXPOSE 80
-
-# Commande par défaut pour lancer Apache quand le conteneur démarre
-CMD ["apache2-foreground"]
+# Commande par défaut (peut être écrasée par des arguments de Docker run)
+CMD ["symfony", "server:start", "--no-tls", "--port=8000"]
