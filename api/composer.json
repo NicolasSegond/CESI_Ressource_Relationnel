@@ -68,6 +68,7 @@
             "assets:install %PUBLIC_DIR%": "symfony-cmd"
         },
         "post-install-cmd": [
+            "php bin/console lexik:jwt:generate-keypair --overwrite",
             "@auto-scripts"
         ],
         "post-update-cmd": [
