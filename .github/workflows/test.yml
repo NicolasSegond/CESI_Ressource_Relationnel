@@ -19,14 +19,12 @@ jobs:
       - name: Log in to Docker Hub
         run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
 
-      - name: Set .env to development mode
-        run: |
-          sed -i 's/APP_ENV=prod/APP_ENV=dev/g' api/.env || echo 'APP_ENV=dev' >> api/.env
-
       - name: Build Docker image for development
         run: |
+          # Set .env to development mode
+          sed -i 's/APP_ENV=prod/APP_ENV=dev/g' api/.env || echo 'APP_ENV=dev' >> api/.env
           cd api
-          docker build --build-arg SERVER=cli -t moimathis/cesibackend:test .
+          docker build -t moimathis/cesibackend:test .
 
       - name: Push Docker image with test tag
         run: docker push moimathis/cesibackend:test
@@ -90,18 +88,15 @@ jobs:
       - name: Log in to Docker Hub
         run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
 
-      - name: Set .env to production mode
+      - name: Update .env for production environment
         run: |
+          # Set .env to production mode
           sed -i 's/APP_ENV=dev/APP_ENV=prod/g' api/.env || echo 'APP_ENV=prod' >> api/.env
 
       - name: Build Docker image for production
         run: |
           cd api
-          docker build --build-arg SERVER=apache -t moimathis/cesibackend:latest .
+          docker build -t moimathis/cesibackend:latest .
 
       - name: Push the Docker image with latest tag
         run: docker push moimathis/cesibackend:latest
-
-      - name: Install assets for production
-        run: |
-          docker run --rm -v $(pwd)/api:/var/www/html moimathis/cesibackend:latest php bin/console asset:install
