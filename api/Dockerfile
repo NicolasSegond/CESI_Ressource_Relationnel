@@ -38,6 +38,9 @@ USER dockeruse
 # Installer les dépendances PHP avec Composer en mode développement
 RUN composer install --no-interaction
 
+# Assurer l'autoload de Composer
+RUN composer dump-autoload
+
 # Installer Symfony Runtime
 RUN composer require symfony/runtime
 
