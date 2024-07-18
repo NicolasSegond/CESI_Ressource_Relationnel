@@ -1,20 +1,35 @@
-# Utiliser une image Node
-FROM node:16
+# Utilise l'image officielle Node.js comme image de base pour la construction
+FROM node:16 AS build
 
-# Définir le répertoire de travail
-WORKDIR /usr/src/app
+# Définit le répertoire de travail dans le conteneur
+WORKDIR /app
 
-# Copier les fichiers package.json et package-lock.json
+# Copie le fichier package.json et package-lock.json dans le répertoire de travail
 COPY package*.json ./
 
-# Installer les dépendances
+# Installe les dépendances de l'application
 RUN npm install
 
-# Copier les fichiers de l'application
+# Copie le reste des fichiers de l'application dans le répertoire de travail
 COPY . .
 
-# Exposer le port 3000
-EXPOSE 3000
+# Compile l'application pour la production
+RUN npm run build
 
-# Démarrer l'application React
-CMD ["npm", "start"]
+# Utilise l'image officielle Apache pour servir le contenu de l'application
+FROM httpd:alpine
+
+# Copie les fichiers compilés depuis l'étape de build vers le répertoire de contenu statique d'Apache
+COPY --from=build /app/build /usr/local/apache2/htdocs/
+
+# Copie le fichier de configuration du Virtual Host Apache
+COPY myapp.conf /usr/local/apache2/conf/extra/httpd-vhosts.conf
+
+# Inclut le fichier de configuration du Virtual Host dans le fichier httpd.conf principal
+RUN echo "Include /usr/local/apache2/conf/extra/httpd-vhosts.conf" >> /usr/local/apache2/conf/httpd.conf
+
+# Expose le port sur lequel Apache écoutera
+EXPOSE 80
+
+# Démarre Apache
+CMD ["httpd-foreground"]
