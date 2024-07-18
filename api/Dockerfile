@@ -15,6 +15,12 @@ RUN apt-get update \
         pdo_mysql \
     && a2enmod rewrite
 
+# Créer un utilisateur non root
+RUN useradd -ms /bin/bash dockeruser
+
+# Passer à l'utilisateur dockeruser
+USER dockeruser
+
 # Copier les fichiers de l'application Symfony dans le conteneur
 COPY . /var/www/html
 
@@ -24,8 +30,11 @@ WORKDIR /var/www/html
 # Installer Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Installer les dépendances PHP avec Composer en mode production
-RUN composer install --no-dev --optimize-autoloader --no-scripts --no-interaction
+# Nettoyer le cache de Composer
+RUN composer clear-cache
+
+# Installer Symfony Runtime
+RUN composer require symfony/runtime
 
 # Remplacer APP_ENV=dev par APP_ENV=prod dans .env
 RUN sed -i 's/APP_ENV=dev/APP_ENV=prod/g' .env
@@ -34,6 +43,7 @@ RUN sed -i 's/APP_ENV=dev/APP_ENV=prod/g' .env
 RUN php bin/console assets:install --symlink --env=prod
 
 # Configurer les permissions des fichiers de cache et de logs
+USER root
 RUN chown -R www-data:www-data var/
 
 # Configuration d'Apache pour Symfony
