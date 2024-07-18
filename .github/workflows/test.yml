@@ -46,6 +46,9 @@ jobs:
         run: |
           docker exec $(docker ps -q -f ancestor=moimathis/cesibackend:test) sed -i 's/APP_ENV=prod/APP_ENV=dev/g' /var/www/html/.env
 
+      - name: Install Composer dependencies
+        run: docker exec $(docker ps -q -f ancestor=moimathis/cesibackend:test) composer install --no-scripts --no-autoloader --no-interaction
+
       - name: Wait for Docker container to be healthy
         run: |
           CONTAINER_ID=$(docker ps -q -f ancestor=moimathis/cesibackend:test)
