@@ -45,7 +45,7 @@ RUN composer dump-autoload
 RUN composer require symfony/runtime
 
 # Installer Foundry en mode développement et test
-#RUN composer require --dev zenstruck/foundry
+RUN composer require --dev zenstruck/foundry
 
 # Revenir à l'utilisateur root pour les étapes de configuration d'Apache
 USER root
