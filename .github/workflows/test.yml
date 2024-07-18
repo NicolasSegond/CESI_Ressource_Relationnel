@@ -34,9 +34,9 @@ jobs:
     services:
       docker:
         image: moimathis/cesibackend:test
-        options: --health-cmd="curl --fail http://127.0.0.1:8000/api || exit 1" --health-interval=30s --health-timeout=10s --health-retries=10
+        options: --health-cmd="curl --fail http://127.0.0.1:8000/api || exit 1" --health-interval=10s --health-timeout=5s --health-retries=5
         ports:
-          - 8000:8000
+          - 8000:80
 
     steps:
       - name: Wait for Docker container to be healthy
