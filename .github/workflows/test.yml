@@ -15,10 +15,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-        
+
       - name: Log in to Docker Hub
         run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
-        
+
       - name: Build Docker image
         run: |
           cd api
@@ -36,7 +36,7 @@ jobs:
         image: moimathis/cesibackend:test
         options: --health-cmd="curl --fail http://127.0.0.1:8000/api || exit 1" --health-interval=30s --health-timeout=10s --health-retries=10
         ports:
-          - 8000:80
+          - 8000:8000
 
     steps:
       - name: Wait for Docker container to be healthy
@@ -71,10 +71,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-        
+
       - name: Log in to Docker Hub
         run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
-        
+
       - name: Pull the Docker image with test tag
         run: docker pull moimathis/cesibackend:test
 
