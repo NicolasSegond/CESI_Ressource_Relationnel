@@ -21,8 +21,8 @@ jobs:
 
       - name: Build Docker image for development
         run: |
-          # Ensure .env is in dev mode
-          cp api/.env.dev api/.env
+          # Set .env to development mode
+          sed -i 's/APP_ENV=prod/APP_ENV=dev/g' api/.env || echo 'APP_ENV=dev' >> api/.env
           cd api
           docker build -t moimathis/cesibackend:test .
 
@@ -90,7 +90,8 @@ jobs:
 
       - name: Update .env for production environment
         run: |
-          cp api/.env.prod api/.env
+          # Set .env to production mode
+          sed -i 's/APP_ENV=dev/APP_ENV=prod/g' api/.env || echo 'APP_ENV=prod' >> api/.env
 
       - name: Build Docker image for production
         run: |
