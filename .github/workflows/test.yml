@@ -23,7 +23,6 @@ jobs:
         run: |
           cd api
           docker build -t moimathis/cesibackend:test .
-
       - name: Push Docker image with test tag
         run: docker push moimathis/cesibackend:test
 
@@ -59,6 +58,9 @@ jobs:
           docker rm $CONTAINER_ID
           exit 1
 
+      - name: Verify Composer dependencies
+        run: docker exec $(docker ps -q -f ancestor=moimathis/cesibackend:test) ls -l /var/www/html/vendor/
+
       - name: Install Composer dependencies
         run: docker exec $(docker ps -q -f ancestor=moimathis/cesibackend:test) composer install --no-scripts --no-autoloader --no-interaction
 
@@ -90,7 +92,6 @@ jobs:
       - name: Update .env for production environment
         run: |
           docker exec $(docker ps -q -f ancestor=moimathis/cesibackend:test) sed -i 's/APP_ENV=dev/APP_ENV=prod/g' /var/www/html/.env
-
       - name: Tag the Docker image as latest
         run: docker tag moimathis/cesibackend:test moimathis/cesibackend:latest
 
