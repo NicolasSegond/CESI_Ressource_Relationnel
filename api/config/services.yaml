@@ -24,5 +24,15 @@ services:
             - { name: doctrine.event_listener, event: prePersist, entity: 'App\Entity\Utilisateur' }
     App\Entity\Utilisateur: ~
 
+    App\Factory\UtilisateurFactory:
+        arguments:
+            $passwordHasher: '@security.password_hasher'
+
+    Zenstruck\Foundry\:
+        resource: '../../vendor/zenstruck/foundry/src/*'
+        public: true
+
+    Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface:
+        public: true
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
