@@ -40,7 +40,7 @@ RUN composer install --no-dev --optimize-autoloader --no-scripts
 #RUN composer run-script post-install-cmd --no-dev --working-dir=/var/www/html
 
 # Modifier les permissions
-RUN chown -R www-data:www-data /var/www/html/var
+RUN chown -R www-data:www-data /var/www/html
 
 # Exposer le port 8000
 EXPOSE 8000
