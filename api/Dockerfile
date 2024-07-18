@@ -1,49 +1,49 @@
-# Utiliser une image PHP avec FPM
-FROM php:8.1-fpm
+# Utiliser une image PHP avec Apache basée sur PHP 8.1
+FROM php:8.1-apache
 
-# Installer les dépendances système
-RUN apt-get update && apt-get install -y \
-    git \
-    unzip \
-    libicu-dev \
-    libpq-dev \
-    libzip-dev \
-    libpng-dev \
-    libjpeg-dev \
-    libfreetype6-dev \
-    locales \
-    openssl \
-    && docker-php-ext-configure intl \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo pdo_mysql intl zip gd
+# Définir l'environnement APP_ENV à prod
+ENV APP_ENV prod
 
-# Installer Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+# Installer les dépendances nécessaires
+RUN apt-get update \
+    && apt-get install -y \
+        libicu-dev \
+        git \
+        unzip \
+    && docker-php-ext-install \
+        intl \
+        pdo_mysql \
+    && a2enmod rewrite
 
-# Installer Symfony CLI
-RUN curl -sS https://get.symfony.com/cli/installer | bash \
-    && mv /root/.symfony*/bin/symfony /usr/local/bin/symfony
+# Copier les fichiers de l'application Symfony dans le conteneur
+COPY . /var/www/html
 
 # Définir le répertoire de travail
 WORKDIR /var/www/html
 
-# Copier les fichiers de l'application
-COPY . .
+# Installer Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Définir l'environnement pour autoriser Composer à s'exécuter en tant que root
-ENV COMPOSER_ALLOW_SUPERUSER=1
+# Installer les dépendances PHP avec Composer en mode production
+RUN composer install --no-dev --optimize-autoloader --no-scripts --no-interaction
 
-# Installer les dépendances PHP sans les scripts automatiques
-RUN composer install --no-dev --optimize-autoloader --no-scripts
+# Remplacer APP_ENV=dev par APP_ENV=prod dans .env
+RUN sed -i 's/APP_ENV=dev/APP_ENV=prod/g' .env
 
-# Générer les clés JWT en mode production
-#RUN composer run-script post-install-cmd --no-dev --working-dir=/var/www/html
+# Installer les assets Symfony
+RUN php bin/console assets:install --symlink --env=prod
 
-# Modifier les permissions
-RUN chown -R www-data:www-data /var/www/html
+# Configurer les permissions des fichiers de cache et de logs
+RUN chown -R www-data:www-data var/
 
-# Exposer le port 8000
-EXPOSE 8000
+# Configuration d'Apache pour Symfony
+COPY apacheCesi.conf /etc/apache2/sites-available/000-default.conf
 
-# Démarrer Symfony
-CMD ["symfony", "serve", "--no-tls"]
+# Activer les modules Apache nécessaires pour Symfony
+RUN a2enmod rewrite headers
+
+# Exposer le port Apache
+EXPOSE 80
+
+# Commande par défaut pour lancer Apache quand le conteneur démarre
+CMD ["apache2-foreground"]
