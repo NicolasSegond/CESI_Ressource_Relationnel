@@ -5,16 +5,22 @@ FROM php:8.1-apache
 ENV APP_ENV prod
 
 # Installer les dépendances nécessaires
-RUN apt-get update \
-    && apt-get install -y \
-        libicu-dev \
-        git \
-        unzip \
-        sudo \  # Installer sudo
-    && docker-php-ext-install \
-        intl \
-        pdo_mysql \
-    && a2enmod rewrite
+RUN apt-get update
+
+# Installer les paquets nécessaires
+RUN apt-get install -y \
+    libicu-dev \
+    git \
+    unzip \
+    sudo
+
+# Installer les extensions PHP nécessaires
+RUN docker-php-ext-install \
+    intl \
+    pdo_mysql
+
+# Activer le module rewrite d'Apache
+RUN a2enmod rewrite
 
 # Créer un utilisateur non root
 RUN useradd -ms /bin/bash dockeruser
@@ -28,11 +34,11 @@ COPY . /var/www/html
 # Définir le répertoire de travail
 WORKDIR /var/www/html
 
-# Installer Composer avec sudo
-RUN curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin --filename=composer
+# Installer Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Nettoyer le cache de Composer
-RUN composer clear-cache
+# Installer les dépendances PHP avec Composer en mode production
+RUN composer install --no-dev --optimize-autoloader --no-scripts --no-interaction
 
 # Installer Symfony Runtime
 RUN composer require symfony/runtime
