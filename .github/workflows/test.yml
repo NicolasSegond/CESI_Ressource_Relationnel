@@ -34,7 +34,7 @@ jobs:
     services:
       docker:
         image: moimathis/cesibackend:test
-        options: --health-cmd="curl --fail http://127.0.0.1:8000/api || exit 1" --health-interval=10s --health-timeout=5s --health-retries=5
+        options: --health-cmd="curl --fail http://127.0.0.1:8000/api || exit 1" --health-interval=30s --health-timeout=10s --health-retries=10
         ports:
           - 8000:80
 
@@ -42,13 +42,13 @@ jobs:
       - name: Wait for Docker container to be healthy
         run: |
           CONTAINER_ID=$(docker ps -q -f ancestor=moimathis/cesibackend:test)
-          for i in {1..30}; do
+          for i in {1..60}; do
             if [ "$(docker inspect --format='{{json .State.Health.Status}}' $CONTAINER_ID)" == '"healthy"' ]; then
               echo "Container is healthy"
               exit 0
             fi
-            echo "Waiting for container to be healthy..."
-            sleep 2
+            echo "Waiting for container to be healthy... attempt $i"
+            sleep 5
           done
           echo "Container did not become healthy in time"
           docker logs $CONTAINER_ID
@@ -63,7 +63,7 @@ jobs:
         run: |
           docker stop $(docker ps -q -f ancestor=moimathis/cesibackend:test)
           docker rm $(docker ps -a -q -f ancestor=moimathis/cesibackend:test)
-          
+
   deploy:
     runs-on: ubuntu-latest
     needs: test
