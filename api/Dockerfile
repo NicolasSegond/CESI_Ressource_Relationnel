@@ -1,10 +1,6 @@
 # Utilise une image PHP officielle comme image de base
 FROM php:8.1-cli
 
-# Ajoute des arguments pour définir l'environnement et le serveur
-ARG SERVER=cli
-ARG ENV=dev
-
 # Installe les dépendances système nécessaires
 RUN apt-get update && apt-get install -y \
     libpng-dev \
@@ -59,20 +55,25 @@ RUN composer install --no-scripts
 # Génère les clés JWT
 RUN php bin/console lexik:jwt:generate-keypair
 
-# Installe Apache et configure pour la production
-# Note: Cette étape est conditionnelle, elle sera ignorée si SERVER=cli
+# Note: La configuration conditionnelle de Apache est effectuée après avoir changé l'utilisateur en root
+USER root
+
+# Installe Apache seulement si le serveur est défini comme apache
 RUN if [ "$SERVER" = "apache" ]; then \
-      apt-get update && apt-get install -y apache2 libapache2-mod-php \
-      && a2enmod rewrite \
-      && cp apacheCesi.conf /etc/apache2/sites-available/000-default.conf \
-      && chown -R www-data:www-data /var/www/html \
-      && chmod -R 755 /var/www/html \
-      && apt-get clean \
-      && rm -rf /var/lib/apt/lists/*; \
+    apt-get update && apt-get install -y apache2 libapache2-mod-php \
+    && a2enmod rewrite \
+    && cp apacheCesi.conf /etc/apache2/sites-available/000-default.conf \
+    && chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*; \
     fi
 
-# Expose le port pour Apache ou Symfony Server
-EXPOSE 80 8000
+# Retourne à l'utilisateur non-root
+USER myuser
 
-# Définit la commande par défaut en fonction du serveur
-ENTRYPOINT ["/bin/sh", "-c", "if [ \"$SERVER\" = \"apache\" ]; then apache2-foreground; else symfony server:start --no-tls --port=8000; fi"]
+# Expose le port pour le serveur Symfony
+EXPOSE 8000
+
+# Commande par défaut (peut être écrasée par des arguments de Docker run)
+CMD ["symfony", "server:start", "--no-tls", "--port=8000"]
