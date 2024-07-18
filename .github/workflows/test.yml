@@ -19,8 +19,10 @@ jobs:
       - name: Log in to Docker Hub
         run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
 
-      - name: Build Docker image
+      - name: Build Docker image for development
         run: |
+          # Ensure .env is in dev mode
+          cp api/.env.dev api/.env
           cd api
           docker build -t moimathis/cesibackend:test .
 
@@ -86,16 +88,14 @@ jobs:
       - name: Log in to Docker Hub
         run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
 
-      - name: Pull the Docker image with test tag
-        run: docker pull moimathis/cesibackend:test
-
       - name: Update .env for production environment
         run: |
-          # Create a temporary Docker container to adjust permissions
-          docker run --rm -v $(pwd)/api:/var/www/html -w /var/www/html alpine sh -c "chown -R 1000:1000 /var/www/html && sed -i 's/APP_ENV=dev/APP_ENV=prod/g' .env"
+          cp api/.env.prod api/.env
 
-      - name: Tag the Docker image as latest
-        run: docker tag moimathis/cesibackend:test moimathis/cesibackend:latest
+      - name: Build Docker image for production
+        run: |
+          cd api
+          docker build -t moimathis/cesibackend:latest .
 
       - name: Push the Docker image with latest tag
         run: docker push moimathis/cesibackend:latest
