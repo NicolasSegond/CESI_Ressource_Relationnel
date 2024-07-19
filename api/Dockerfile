@@ -39,6 +39,9 @@ WORKDIR /var/www/html
 # Copy project files
 COPY . /var/www/html
 
+# Set file permissions for bin/console
+RUN chmod +x /var/www/html/bin/console
+
 # Change file permissions
 RUN chown -R myuser:myuser /var/www/html
 
