@@ -100,3 +100,10 @@ jobs:
 
       - name: Push the Docker image with latest tag
         run: docker push moimathis/cesibackend:latest
+
+      - name: Install Symfony assets
+        run: |
+          docker run --rm moimathis/cesibackend:latest bin/console assets:install
+
+      - name: Deploy application
+        run: echo "Deploy steps go here"
