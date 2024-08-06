@@ -50,7 +50,7 @@ USER myuser
 
 # Install Composer dependencies (including dev dependencies)
 RUN composer install --no-scripts --optimize-autoloader
-
+RUN bin/console asset:install
 # Generate JWT keys
 RUN php bin/console lexik:jwt:generate-keypair
 

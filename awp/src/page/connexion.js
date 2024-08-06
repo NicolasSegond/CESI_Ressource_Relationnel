@@ -93,7 +93,6 @@ const Connexion = () => {
             </div>
             <div className={"left-div"}>
                 <div className={"form-container"}>
-                    <img className={"logo"} src={"./logo.png"} alt={"Logo Du site internet"} />
                     <div className={"title"}>Se Connecter</div>
                     <MyForm
                         formData={formData}
