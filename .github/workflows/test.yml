@@ -95,6 +95,17 @@ jobs:
           npm install
           npm run build
 
+      - name: Add .htaccess for Apache routing
+        run: |
+          echo '<IfModule mod_rewrite.c>
+          RewriteEngine On
+          RewriteBase /
+          RewriteCond %{REQUEST_FILENAME} -f [OR]
+          RewriteCond %{REQUEST_FILENAME} -d
+          RewriteRule ^ - [L]
+          RewriteRule . /index.html [L]
+          </IfModule>' > awp/build/.htaccess
+
       - name: Log in to Docker Hub
         run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
 
