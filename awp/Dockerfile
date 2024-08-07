@@ -29,7 +29,7 @@ COPY myapp.conf /usr/local/apache2/conf/extra/httpd-vhosts.conf
 RUN echo "Include /usr/local/apache2/conf/extra/httpd-vhosts.conf" >> /usr/local/apache2/conf/httpd.conf
 
 # Expose le port sur lequel Apache écoutera
-EXPOSE 80
+EXPOSE 3040
 
 # Démarre Apache
 CMD ["httpd-foreground"]
