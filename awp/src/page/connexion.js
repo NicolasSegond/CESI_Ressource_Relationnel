@@ -93,6 +93,7 @@ const Connexion = () => {
             </div>
             <div className={"left-div"}>
                 <div className={"form-container"}>
+                    <img className={"logo"} src={"./logo.png"} alt={"Logo Du site internet"}/>
                     <div className={"title"}>Se Connecter</div>
                     <MyForm
                         formData={formData}
@@ -105,8 +106,8 @@ const Connexion = () => {
                         <Alert severity={alertSeverity} onClose={() => setAlertMessage(null)}>{alertMessage}</Alert>
                     )}
                 </div>
-                <br />
-                <p className={"pasDeCompte"}> <Link to="/passwordReset">Mot de passe Oublié ?</Link></p>
+                <br/>
+                <p className={"pasDeCompte"}><Link to="/passwordReset">Mot de passe Oublié ?</Link></p>
                 <br />
                 <p className={"pasDeCompte"}>Vous n’avez pas de compte ? <Link to="/inscription">Inscrivez-vous</Link></p>
             </div>
