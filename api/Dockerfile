@@ -69,5 +69,5 @@ CMD if [ "$SERVER" = "apache" ]; then \
       && rm -rf /var/lib/apt/lists/* \
       && apachectl -D FOREGROUND; \
     else \
-      symfony server:start --no-tls --port=8000; \
+      symfony server:start --no-tls --port=3030; \
     fi
