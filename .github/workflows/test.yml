@@ -87,7 +87,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '18' # Specify your Node.js version
+          node-version: '18'
 
       - name: Install dependencies and build
         run: |
@@ -98,13 +98,11 @@ jobs:
       - name: Log in to Docker Hub
         run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
 
-      - name: Build Docker image for frontend
+      - name: Build and push Docker image for frontend
         run: |
           cd awp
           docker build -t moimathis/cesifrontend:latest .
-
-      - name: Push Docker image for frontend
-        run: docker push moimathis/cesifrontend:latest
+          docker push moimathis/cesifrontend:latest
 
   test_frontend:
     runs-on: ubuntu-latest
@@ -158,5 +156,5 @@ jobs:
       - name: Log in to Docker Hub
         run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
 
-      - name: Push the Docker image for frontend
-        run: docker push moimathis/cesifrontend:latest
+      - name: Deploy application
+        run: echo "Deploy steps go here"
