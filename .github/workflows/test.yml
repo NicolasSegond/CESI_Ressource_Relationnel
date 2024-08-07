@@ -77,9 +77,39 @@ jobs:
           docker stop $(docker ps -q -f ancestor=moimathis/cesibackend:test)
           docker rm $(docker ps -a -q -f ancestor=moimathis/cesibackend:test)
 
-  deploy:
+  build_frontend:
     runs-on: ubuntu-latest
     needs: test
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14' # Specify your Node.js version
+
+      - name: Install dependencies and build
+        run: |
+          cd awp
+          npm install
+          npm run build
+
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
+
+      - name: Build Docker image for frontend
+        run: |
+          cd awp
+          docker build -t moimathis/cesifrontend:latest .
+
+      - name: Push Docker image for frontend
+        run: docker push moimathis/cesifrontend:latest
+
+  deploy_backend:
+    runs-on: ubuntu-latest
+    needs: build
 
     steps:
       - name: Checkout repository
@@ -106,3 +136,17 @@ jobs:
 
       - name: Deploy application
         run: echo "Deploy steps go here"
+
+  deploy_frontend:
+    runs-on: ubuntu-latest
+    needs: build_frontend
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
+
+      - name: Push the Docker image for frontend
+        run: docker push moimathis/cesifrontend:latest
