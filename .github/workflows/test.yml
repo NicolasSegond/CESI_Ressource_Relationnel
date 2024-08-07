@@ -79,7 +79,6 @@ jobs:
 
   build_frontend:
     runs-on: ubuntu-latest
-    needs: test
 
     steps:
       - name: Checkout repository
@@ -109,7 +108,7 @@ jobs:
 
   deploy_backend:
     runs-on: ubuntu-latest
-    needs: build
+    needs: test
 
     steps:
       - name: Checkout repository
