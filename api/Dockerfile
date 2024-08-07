@@ -55,7 +55,7 @@ RUN bin/console asset:install
 RUN php bin/console lexik:jwt:generate-keypair
 
 # Expose port
-EXPOSE 8000
+EXPOSE 3030
 
 # CMD to start the application
 ARG SERVER=cli
