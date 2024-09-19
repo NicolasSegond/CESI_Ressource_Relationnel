@@ -1,5 +1,5 @@
 const apiConfig = {
-    apiUrl: 'http://127.0.0.1:8000',
+    apiUrl: 'http://172.17.0.4:3030',
 };
 
 export default apiConfig;
