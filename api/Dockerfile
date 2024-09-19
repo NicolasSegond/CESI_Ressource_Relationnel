@@ -39,6 +39,9 @@ WORKDIR /var/www/html
 # Copy project files
 COPY . /var/www/html
 
+# Copy the Apache configuration file
+COPY apacheCesi.conf /etc/apache2/sites-available/000-default.conf
+
 # Set file permissions for bin/console
 RUN chmod +x /var/www/html/bin/console
 
@@ -51,6 +54,7 @@ USER myuser
 # Install Composer dependencies (including dev dependencies)
 RUN composer install --no-scripts --optimize-autoloader
 RUN bin/console asset:install
+
 # Generate JWT keys
 RUN php bin/console lexik:jwt:generate-keypair
 
@@ -62,7 +66,6 @@ ARG SERVER=cli
 CMD if [ "$SERVER" = "apache" ]; then \
       apt-get update && apt-get install -y apache2 libapache2-mod-php \
       && a2enmod rewrite \
-      && cp apacheCesi.conf /etc/apache2/sites-available/000-default.conf \
       && chown -R www-data:www-data /var/www/html \
       && chmod -R 755 /var/www/html \
       && apt-get clean \
