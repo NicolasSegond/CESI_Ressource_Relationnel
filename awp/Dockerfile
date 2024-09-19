@@ -1,4 +1,4 @@
-# Utilise l'image officielle Node.js comme image de base pour la construction
+# Utilise l'image officielle Node.js comme image de base pour la constructions
 FROM node:18 AS build
 
 # Définit le répertoire de travail dans le conteneur
