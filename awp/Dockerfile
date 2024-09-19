@@ -17,7 +17,7 @@ COPY . .
 RUN npm run build
 
 # Expose le port sur lequel ton application Node.js écoute (3040 dans ton cas)
-EXPOSE 3040
+EXPOSE 3000
 
 # Commande de démarrage de l'application (en supposant que "npm start" démarre le serveur)
 CMD ["npm", "start"]
