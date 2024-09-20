@@ -94,7 +94,7 @@ const Connexion = () => {
             <div className={"left-div"}>
                 <div className={"form-container"}>
                     <img className={"logo"} src={"./logo.png"} alt={"Logo Du site internet"}/>
-                    <div className={"title"}>Se Connecter</div>
+                    <div className={"title"}>Se Connecter MAJ 20/09/2024 13h25</div>
                     <MyForm
                         formData={formData}
                         onSubmit={handleSubmit}
