@@ -155,11 +155,3 @@ jobs:
           cd awp
           docker build -t moimathis/cesifrontend:latest .
           docker push moimathis/cesifrontend:latest
-
-  test_pipeline: 
-   runs-on: ubuntu-latest
-
-   steps: 
-     - name: Test pipeline
-       run: echo "test"
-    
