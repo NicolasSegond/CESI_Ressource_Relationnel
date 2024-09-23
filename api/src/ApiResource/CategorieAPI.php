@@ -20,13 +20,6 @@ use Symfony\Component\Serializer\Attribute\Groups;
 #[ApiResource(
     shortName: 'Categorie',
     operations: [
-        new GetCollection(),
-        new Get(),
-        new Post(),
-        new Delete(
-            controller: CategorieController::class . '::delete',
-            security: "is_granted('ROLE_ADMIN')",
-        ),
         new Patch(security: "is_granted('ROLE_ADMIN')")
     ],
     provider: EntityToDtoStateProvider::class, # GET, GET collection
