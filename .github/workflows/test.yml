@@ -77,47 +77,8 @@ jobs:
           docker stop $(docker ps -q -f ancestor=moimathis/cesibackend:test)
           docker rm $(docker ps -a -q -f ancestor=moimathis/cesibackend:test)
 
-  build_frontend:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '18'
-
-      - name: Install dependencies and build
-        run: |
-          cd awp
-          npm install
-          npm run build
-
-      - name: Add .htaccess for Apache routing
-        run: |
-          echo '<IfModule mod_rewrite.c>
-          RewriteEngine On
-          RewriteBase /
-          RewriteCond %{REQUEST_FILENAME} -f [OR]
-          RewriteCond %{REQUEST_FILENAME} -d
-          RewriteRule ^ - [L]
-          RewriteRule . /index.html [L]
-          </IfModule>' > awp/build/.htaccess
-
-      - name: Log in to Docker Hub
-        run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
-
-      - name: Build and push Docker image for frontend
-        run: |
-          cd awp
-          docker build -t moimathis/cesifrontend:latest .
-          docker push moimathis/cesifrontend:latest
-
   test_frontend:
     runs-on: ubuntu-latest
-    needs: build_frontend
 
     steps:
       - name: Checkout repository
@@ -164,8 +125,33 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18'
+
+      - name: Install dependencies and build
+        run: |
+          cd awp
+          npm install
+          npm run build
+
+      - name: Add .htaccess for Apache routing
+        run: |
+          echo '<IfModule mod_rewrite.c>
+          RewriteEngine On
+          RewriteBase /
+          RewriteCond %{REQUEST_FILENAME} -f [OR]
+          RewriteCond %{REQUEST_FILENAME} -d
+          RewriteRule ^ - [L]
+          RewriteRule . /index.html [L]
+          </IfModule>' > awp/build/.htaccess
+
       - name: Log in to Docker Hub
         run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
 
-      - name: Deploy application
-        run: echo "Deploy steps go here"
+      - name: Build and push Docker image for frontend
+        run: |
+          cd awp
+          docker build -t moimathis/cesifrontend:latest .
+          docker push moimathis/cesifrontend:latest
