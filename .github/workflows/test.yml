@@ -156,12 +156,3 @@ jobs:
           docker build -t moimathis/cesifrontend:latest .
           docker push moimathis/cesifrontend:latest
 
-  test_echo:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: test pap
-        run: echo "oui ça marche"
